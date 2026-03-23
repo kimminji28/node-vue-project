@@ -3,7 +3,7 @@ const selectById = `
 SELECT gu.name as 보호자, 
       iu.name as 담당자,
       su.name as 지원대상자,
-      sv.created_at as 지원신청일,
+      DATE_FORMAT(sv.created_at, '%y-%m-%d') as 지원신청일,
       sv.result
 FROM GeneralUser_Tbl gu
 INNER JOIN InstiUser_Tbl iu
