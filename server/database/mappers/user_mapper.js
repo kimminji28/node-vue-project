@@ -22,8 +22,7 @@ const insertUser = async (userInfo) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let [result] = await conn.query(userSql.insertUsert, no);
-    let info = result[0];
+    let [result] = await conn.query(userSql.insertUser, userInfo);
     return result;
   } catch (err) {
     console.log(err);
@@ -34,7 +33,23 @@ const insertUser = async (userInfo) => {
   }
 };
 
+//기관이용자 회원가입<김경환, DB에 일반이용자의 회원정보를 등록>
+const insertInstiUser = async (instiUserInfo) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let [result] = await conn.query(userSql.insertInstiUser, instiUserInfo);
+    return result;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+};
 module.exports = {
   testSelect,
   insertUser,
+  insertInstiUser,
 };

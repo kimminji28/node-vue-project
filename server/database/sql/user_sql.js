@@ -6,7 +6,12 @@ const insertUser = `
 INSERT INTO GeneralUser_TBL (name, id, password, tel, email, zipCode, address, document1, document2)
 VALUES(?,?,?,?,?,?,?,?,?) `;
 
+//기관이용자 회원가입 sql문<김경환, 기관이용자 회원가입 쿼리문>
+const insertInstiUser = `
+INSERT INTO InstiUser_Tbl (name, id, password, tel)
+VALUES(?,?,?,?)`;
 module.exports = {
   testSelect,
   insertUser,
+  insertInstiUser,
 };

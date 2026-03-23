@@ -16,4 +16,10 @@ router.post(`/users`, async (req, res) => {
   res.send(result);
 });
 
+//기관이용자 회원가입<김경환, 응답결과 전달>
+router.post(`/instiUsers`, async (req, res) => {
+  let target = req.body;
+  let result = await userService.createInstiUser(target);
+  res.send(result);
+});
 module.exports = router;
