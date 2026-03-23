@@ -13,6 +13,7 @@ const fineInfoByNo = async (surveyNo) => {
   return detail;
 };
 
+//조사지 등록 <김민지, mapper에 있는 함수 가져와서 라우터에 결과 전달>
 const createInfo = async (surveyObj) => {
   //객체 구조분해
   const {
@@ -40,6 +41,7 @@ const createInfo = async (surveyObj) => {
 
   //mapper에서 함수 가져와서 실행
   let outcome = await surveyMapper.insertSurvey(insertData);
+  //outcome : 결과
 
   //결과 처리
   let outObj = {

@@ -201,7 +201,6 @@
                           {{ qIdx + 1 }}.
                           {{ typeof q === "string" ? q : q.text }}
                         </div>
-
                         <div
                           v-if="
                             q.hasExtraInput &&
@@ -260,9 +259,7 @@
           </div>
 
           <div class="card-footer d-flex justify-content-between border-top">
-            <button class="btn btn-info mb-0" @click="handleRegister">
-              등록
-            </button>
+            <button class="btn btn-info mb-0" @click="surveyInfo">등록</button>
             <button class="btn btn-outline-secondary mb-0" @click="closeModal">
               취소
             </button>
@@ -275,8 +272,12 @@
 
 <script setup>
 import { ref, reactive } from "vue";
+// import { useRouter } from "vue-router";
+
+// const router = useRouter();
 
 const allSections = [
+  //설문 전체 구조 (카테고리 → 질문)
   {
     title: "지원사유",
     subs: [
@@ -306,7 +307,7 @@ const allSections = [
           "현재 이용 가능한 지원 서비스나 제도에 대한 안내 및 상담이 필요하다.",
           {
             text: "향후 생활 지원을 위한 개인 맞춤형 계획 수립이 필요하다.",
-            hasExtraInput: true,
+            hasExtraInput: true, //추가 입력창 필요
           },
         ],
       },
@@ -354,32 +355,56 @@ const allSections = [
   },
 ];
 
-// 정적 배열로 답변 구조 생성 (초기값 "")
 const answers = reactive(
   allSections.map((s) => s.subs.map((sub) => sub.questions.map(() => ""))),
+  //구조를 그대로 따라가서 빈 값("")으로 초기화
+  //[[ ["", "", ""], ["", "", ""] ], [ ["", "", ""], ["", ""] ],]
+  //section → sub → question 순서 + 각 질문에 "예 / 아니오" 저장할 자리
 );
 
 const extraInputs = reactive({
   reason: "",
   date: "",
+  //추가 입력값 저장
+  //reason → 구체적 사유 + / date → 필요 시기
 });
 
-const extraRequest = ref("");
-const isModalOpen = ref(false);
+const extraRequest = ref(""); //추가 요청 텍스트 (단일 값)
+const isModalOpen = ref(false); //모달 열림 여부 1. false → 닫힘 / 2. true → 열림
 
 const openModal = () => {
+  //모달 열기 / 스크롤 막기 (overflow = hidden)
   isModalOpen.value = true;
   document.body.style.overflow = "hidden";
 };
 
 const closeModal = () => {
+  //모달 닫기 / 스크롤 다시 가능
   isModalOpen.value = false;
   document.body.style.overflow = "auto";
 };
 
-const handleRegister = () => {
+// [1] 상단에 emit 정의 (함수 밖에 선언) -> 부모로 이벤트 내보내기
+const emit = defineEmits(["submit-survey"]);
+
+// [2] 등록 버튼 클릭 시 실행될 통합 함수
+const surveyInfo = () => {
+  //설문 제출 함수 시작
+  // 1. 부모(survey.vue)에게 신호와 데이터를 함께 보냄
+  emit("submit-survey", {
+    answers: answers, // 사용자가 체크한 '예/아니오' 배열
+    extraInputs: extraInputs, // 구체적 사유 및 필요시기
+  });
+
+  // 2. 알림창 표시 (선택사항 - 부모에서 띄워도 됩니다)
   alert("정상적으로 등록되었습니다.");
-  closeModal();
+
+  // 3. 확인 모달 닫기
+  closeModal(); //모달 닫기
+
+  // ⚠️ 주의: 자식에서 router.push를 하면 부모의 통신 로직이 완료되기 전에
+  // 페이지가 이동될 수 있습니다. 페이지 이동은 부모(survey.vue)의
+  // surveyInfo 함수 마지막에 넣는 것을 권장합니다.
 };
 </script>
 

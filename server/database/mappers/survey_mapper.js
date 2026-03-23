@@ -21,7 +21,7 @@ const selectSurveyById = async (no) => {
   let conn = null;
   conn = await pool.getConnection();
   try {
-    let rows = await conn.query(surveySql.selectSurveyById, [no]);
+    let rows = await conn.query(surveySql.selectSurveyById, no);
     return rows[0];
   } catch (err) {
     console.log(err);

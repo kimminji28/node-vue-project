@@ -1,7 +1,7 @@
 <script setup>
-import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
-import { useStore } from "vuex";
+import { computed, ref } from "vue"; //계산된 값과 변수를 반응형으로 만듦
+import { useRoute } from "vue-router"; //현재 URL 정보를 가져옴
+import { useStore } from "vuex"; //전역 데이터 접근 시 사용
 
 import SidenavItem from "./SidenavItem.vue";
 import SidenavCard from "./SidenavCard.vue";
@@ -9,16 +9,23 @@ import SidenavCard from "./SidenavCard.vue";
 const store = useStore();
 const route = useRoute();
 const isRTL = computed(() => store.state.isRTL);
+//RTL(오른쪽 → 왼쪽 레이아웃) 여부 ????????????
+// 👉 store에 있는 값을 가져와서 반응형으로 사용
 
 // 현재 경로가 설문 추가 페이지인지 확인 (라우트 이름 또는 경로 포함 여부 체크)
 const isSurveyPage = computed(() => {
   return route.name === "userSurveyAdd" || route.path.includes("userSurveyAdd");
 });
+//route.name === "userSurveyAdd" 👉 라우트 이름으로 확인
+// route.path.includes("userSurveyAdd") 👉 URL에 해당 문자열 포함되어 있는지 확인
+// 👉 둘 중 하나라도 맞으면 true
 
 const getRoute = () => {
   const routeArr = route.path.split("/");
   return routeArr[1];
 };
+//👉 현재 URL을 / 기준으로 쪼개서 첫 번째 경로 가져오기 ["", "user", "survey", "add"]
+//👉 routeArr[1] → "user"
 
 // 인풋 데이터 정의
 const applicantName = ref("홍길동");
@@ -112,8 +119,8 @@ const birthDate = ref("");
       <template v-else>
         <li class="nav-item">
           <sidenav-item
-            to="/dashboard-default"
-            :class="getRoute() === 'dashboard-default' ? 'active' : ''"
+            to="/user/surveyadd"
+            :class="getRoute() === '/user/surveyadd' ? 'active' : ''"
             :navText="isRTL ? 'لوحة القيادة' : 'Dashboard'"
           >
             <template v-slot:icon>
