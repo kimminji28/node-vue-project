@@ -27,4 +27,17 @@ FROM Survey_Tbl
 WHERE J_ID = ?
 `;
 
-module.exports = { selectSurveyAll, selectSurveyById };
+//조사지 등록 <김민지, 조사지 등록 쿼리 작성>
+const insertSurvey = `
+INSERT INTO Survey_Tbl (J_ID,
+       Ver_Id,
+       G_UserId,
+       support_id,
+       result,
+       reason,
+       created_at,
+       updated_at)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?)
+`;
+
+module.exports = { selectSurveyAll, selectSurveyById, insertSurvey };

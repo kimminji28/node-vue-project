@@ -12,8 +12,14 @@ router.get("/user", async (req, res) => {
 //조사지 건별조회 <김민지, 브라우저에 응답 결과 전달>
 router.get("/user/:no", async (req, res) => {
   let target = req.params.no;
-  console.log("no:", target);
   let result = await surveyService.fineInfoByNo(target);
+  res.send(result);
+});
+
+//조사지 등록 <김민지, 브라우저에 응답 결과 전달>
+router.post(`/user`, async (req, res) => {
+  let target = req.body;
+  let result = await surveyService.createInfo(target);
   res.send(result);
 });
 

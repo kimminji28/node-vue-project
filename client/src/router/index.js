@@ -13,12 +13,11 @@ import Support from "./support_router";
 import Main from "./surveyList_router";
 import SurveyAdd from "./survey_router";
 
-
 const routes = [
   {
-    path : "/",
-    name : "/",
-    redirect : "/user/main",
+    path: "/",
+    name: "/",
+    redirect: "/user/main",
   },
   // {
   //   path: "/",
@@ -68,8 +67,8 @@ const routes = [
   ...Login,
   ...Signup,
   ...Support,
-  ...Main, 
-  ...SurveyAdd
+  ...Main,
+  ...SurveyAdd,
 ];
 
 const router = createRouter({
