@@ -22,7 +22,8 @@ const insertUser = async (userInfo) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let [result] = await conn.query(userSql.insertUser, userInfo);
+    let result = await conn.query(userSql.insertUser, userInfo);
+    console.log(result);
     return result;
   } catch (err) {
     console.log(err);
@@ -51,21 +52,18 @@ const insertInstiUser = async (instiUserInfo) => {
 
 //지원대상자 PK 생성용 마지막 row PK조회
 const getLastSupportId = async () => {
-  let conn = null
-  try{
+  let conn = null;
+  try {
     conn = await pool.getConnection();
     let [rows, meta] = await conn.query(userSql.lastSupportId);
     console.log(rows);
     return rows;
-  }
-  catch(err) {
+  } catch (err) {
     console.log(err);
-  }
-  finally{
+  } finally {
     conn.release();
   }
 };
-
 
 const supportAdd = async (supportInfo) => {
   let conn = null;
@@ -74,7 +72,6 @@ const supportAdd = async (supportInfo) => {
     let result = await conn.query(userSql.supportAddSql, supportInfo);
     console.log(result);
     return result;
-
   } catch (err) {
     console.log(err);
   } finally {

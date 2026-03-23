@@ -12,6 +12,19 @@ const body = document.getElementsByTagName("body")[0];
 
 const store = useStore();
 
+// //회원가입 reactive
+// const info = reactive({
+//   //서버와 통신
+//   name: '',
+//   id:'',
+//   password:'',
+//   tel:'',
+//   email:'',
+//   zipCode: null,
+//   address: null,
+
+// })
+
 onBeforeMount(() => {
   store.state.hideConfigButton = true;
   store.state.showNavbar = false;
