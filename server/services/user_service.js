@@ -22,16 +22,16 @@ const createUser = async (userObj) => {
     document2,
   } = userObj;
   try {
-    let user_id;
+    let G_UserId;
     const lastUserId = await userMapper.getLastUserId();
     if (!lastUserId) {
-      insti_id = "GUSR0001";
+      G_UserId = "GUSR0001";
     } else {
-      const num = parseInt(lastUserId.G_UserId.substring(3), 10);
-      user_id = "GUSR" + String(num + 1).padStart(4, "0");
+      const num = parseInt(lastUserId.G_UserId.substring(4), 10);
+      G_UserId = "GUSR" + String(num + 1).padStart(4, "0");
     }
     let insertData = [
-      user_id,
+      G_UserId,
       institution_id,
       name,
       id,
@@ -48,7 +48,7 @@ const createUser = async (userObj) => {
     let result = await userMapper.insertUser(insertData);
     return {
       status: result.affectedRows > 0 ? "success" : "fail",
-      user_id,
+      G_UserId,
     };
   } catch (err) {
     if (err.code !== "ER_DUP_ENTRY") {
@@ -58,28 +58,27 @@ const createUser = async (userObj) => {
       return { status: "Failed", message: "PK 중복으로 인한 등록 실패" };
     }
   }
-  //해당 값을 배열로 생성
 };
 
 //기관이용자 회원가입<김경환, mapper에 있는 함수를 라우터에 결과 전달>(김경환 2026.03.24 수정 및 pk 증가로직 추가)
 const createInstiUser = async (userObj) => {
-  const { institution_id, name, id, password, tel } = userObj;
+  const { institution_id, name, id, password, tel, roll } = userObj;
   try {
-    let insti_id;
+    let I_UserId;
     const lastInstiId = await userMapper.getLastInstiId();
     if (!lastInstiId) {
-      insti_id = "IUSR0001";
+      I_UserId = "IUSR0001";
     } else {
-      const num = parseInt(lastInstiId.I_UserId.substring(3), 10);
-      insti_id = "IUSR" + String(num + 1).padStart(4, "0");
+      const num = parseInt(lastInstiId.I_UserId.substring(4), 10);
+      I_UserId = "IUSR" + String(num + 1).padStart(4, "0");
     }
-    let insertData = [insti_id, institution_id, name, id, password, tel];
+    let insertData = [I_UserId, institution_id, name, id, password, tel, roll];
     console.log(insertData);
 
     let result = await userMapper.insertInstiUser(insertData);
     return {
       status: result.affectedRows > 0 ? "success" : "fail",
-      insti_id,
+      I_UserId,
     };
   } catch (err) {
     if (err.code !== "ER_DUP_ENTRY") {

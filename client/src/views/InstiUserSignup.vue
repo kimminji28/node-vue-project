@@ -3,7 +3,7 @@
 import { onBeforeUnmount, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 
-import Navbar from "@/examples/PageLayout/Navbar.vue";
+// import Navbar from "@/examples/PageLayout/Navbar.vue";
 // import AppFooter from "@/examples/PageLayout/Footer.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
 // import ArgonCheckbox from "@/components/ArgonCheckbox.vue";
@@ -11,6 +11,13 @@ import ArgonButton from "@/components/ArgonButton.vue";
 const body = document.getElementsByTagName("body")[0];
 
 const store = useStore();
+
+//일반이용자 이동 버튼(김경환 2026.03.24)
+import { useRouter } from "vue-router";
+const router = useRouter();
+const goUser = () => {
+  router.push("/user/signup");
+};
 
 onBeforeMount(() => {
   store.state.hideConfigButton = true;
@@ -62,6 +69,12 @@ onBeforeUnmount(() => {
             <div class="card-header text-center pt-4">
               <h5>Register with</h5>
             </div>
+            <div class="row px-xl-5 px-sm-4 px-3">
+              <div class="mt-auto p-3">
+                <argon-button @click="goUser()">일반회원</argon-button>
+              </div>
+            </div>
+
             <!-- <div class="row px-xl-5 px-sm-4 px-3">
               <div class="col-3 ms-auto px-1">
                 <a class="btn btn-outline-light w-100" href="javascript:;">

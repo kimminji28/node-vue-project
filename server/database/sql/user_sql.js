@@ -5,7 +5,7 @@ const testSelect = `SELECT * FROM GeneralUser_Tbl`;
 const lastUserId = `
 SELECT G_UserId
 FROM GeneralUser_Tbl
-ORDER BY G_User_id DESC
+ORDER BY G_UserId DESC
 LIMIT 1
 `;
 
@@ -24,8 +24,8 @@ LIMIT 1
 
 //기관이용자 회원가입 sql문<김경환, 기관이용자 회원가입 쿼리문>
 const insertInstiUser = `
-INSERT INTO InstiUser_Tbl (I_UserId ,institution_id ,name, id, password, tel)
-VALUES(?,?,?,?,?,?)`;
+INSERT INTO InstiUser_Tbl (I_UserId ,institution_id ,name, id, password, tel, roll)
+VALUES(?,?,?,?,?,?,?)`;
 
 //지원대상자마지막PK조회 Query
 const lastSupportId = `
