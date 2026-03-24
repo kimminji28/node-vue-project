@@ -52,7 +52,7 @@ const multiFiles = (event) => {
   input.value = "";
 };
 
-//특정 파일 선택 삭제(김경환 2026.03.24)
+// 특정 파일 선택 삭제(김경환 2026.03.24)
 const removeFiles = (index) => {
   files.value.splice(index, 1);
 };
@@ -68,8 +68,8 @@ const userInfo = reactive({
   email: "",
   zipCode: zipCode.value,
   address: `${mainAddress.value} ${detailAddress.value}`.trim(),
-  document1: null,
-  document2: null,
+  document1: "", // 나중에 수정
+  document2: "", // 나중에 수정
 });
 const isPrinted = ref(false);
 
@@ -103,18 +103,19 @@ const addUserInfo = async () => {
     document1: userInfo.document1,
     document2: userInfo.document2,
   };
+  console.log(data);
 
   let result = await fetch(`/api/user/users`, {
     method: "POST",
     headers: {
-      "content-type": "appication/json",
+      "content-type": "application/json",
     },
     body: JSON.stringify(data),
   })
     .then((res) => res.json())
     .catch((err) => console.log(err));
   if (result.status == "success") {
-    router.push({ name: "userInfo", params: { no: result.G_userId } });
+    router.push({ name: "userLogin", params: { no: result.G_userId } });
   } else {
     isPrinted.value = true;
   }
@@ -182,18 +183,21 @@ onBeforeUnmount(() => {
                   type="text"
                   placeholder="이름"
                   aria-label="Name"
+                  v-model="userInfo.name"
                 />
                 <argon-input
                   id="id"
                   type="text"
                   placeholder="아이디"
                   aria-label="Id"
+                  v-model="userInfo.id"
                 />
                 <argon-input
                   id="password"
                   type="password"
                   placeholder="비밀번호"
                   aria-label="Password"
+                  v-model="userInfo.password"
                 />
                 <argon-input
                   id="passwordCheck"
@@ -206,12 +210,14 @@ onBeforeUnmount(() => {
                   type="tel"
                   placeholder="연락처"
                   aria-label="Tel"
+                  v-model="userInfo.tel"
                 />
                 <argon-input
                   id="email"
                   type="email"
                   placeholder="이메일"
                   aria-label="Email"
+                  v-model="userInfo.email"
                 />
                 <div class="row">
                   <div class="col-md-12">
@@ -300,6 +306,7 @@ onBeforeUnmount(() => {
                   id="institution"
                   type="text"
                   placeholder="기관 선택"
+                  v-model="userInfo.institution_id"
                 />
                 <!-- <argon-checkbox checked>
                   <label class="form-check-label" for="flexCheckDefault">
@@ -315,7 +322,7 @@ onBeforeUnmount(() => {
                     color="dark"
                     variant="gradient"
                     class="my-4 mb-2"
-                    v-on:click="addUserInfo()"
+                    v-on:click.prevent="addUserInfo()"
                     >회원가입 신청</argon-button
                   >
                 </div>

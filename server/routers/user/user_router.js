@@ -12,7 +12,9 @@ router.get(`/test`, async (req, res) => {
 //일반이용자 회원가입<김경환, 응답결과 전달>
 router.post(`/users`, async (req, res) => {
   let target = req.body;
+  console.log(target);
   let result = await userService.createUser(target);
+  console.log(result);
   res.send(result);
 });
 
@@ -31,22 +33,22 @@ router.post(`/support/add`, async (req, res) => {
 });
 
 //지원 대상자 수정
-router.put(`/support/:supId`, async(req, res) => {
+router.put(`/support/:supId`, async (req, res) => {
   let supId = req.params.supId;
   let body = req.body;
-  let result = await userService.supUpdate(supId,body);
+  let result = await userService.supUpdate(supId, body);
   res.send(result);
 });
 
 //지원 대상자 삭제
-router.delete(`/support/:supId`, async(req,res) => {
+router.delete(`/support/:supId`, async (req, res) => {
   let supId = req.params.supId;
   let result = await userService.supDelete(supId);
   res.send(result);
 });
 
 //일반사용자 마이페이지 지원 대상자 목록 호출
-router.get(`/support/supList/:guserId`, async(req,res) => {
+router.get(`/support/supList/:guserId`, async (req, res) => {
   let loginParams = req.params.guserId;
   let result = await userService.getSupportList(loginParams);
   res.send(result);
