@@ -19,9 +19,7 @@ router.get("/user/:no", async (req, res) => {
 //조사지 등록 <김민지, 브라우저에 응답 결과 전달>
 router.post(`/user`, async (req, res) => {
   let target = req.body;
-  console.log("req.body:", req.body);
   let result = await surveyService.createInfo(target);
-  console.log("길이:", target.result.length);
   res.send(result);
 });
 

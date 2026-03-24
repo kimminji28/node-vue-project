@@ -46,4 +46,26 @@ const insertSurvey = async (surveyInfo) => {
   }
 };
 
-module.exports = { selectSurveyAll, selectSurveyById, insertSurvey };
+//일반이용자 조사지 pk 생성용 마지막 row pk조회(김민지 26.03.24 추가)
+const getLastJ_ID = async () => {
+  let conn = null;
+
+  try {
+    conn = await pool.getConnection();
+    let rows = await conn.query(surveySql.lastJ_Id);
+    console.log(rows);
+    return rows;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+module.exports = {
+  selectSurveyAll,
+  selectSurveyById,
+  insertSurvey,
+  getLastJ_ID,
+};

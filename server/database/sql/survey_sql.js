@@ -40,4 +40,12 @@ INSERT INTO Survey_Tbl (J_ID,
 VALUES(?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
-module.exports = { selectSurveyAll, selectSurveyById, insertSurvey };
+//일반이용자 조사지 마지막 pk조회 sql문 (김민지 26.03.24 추가)
+const lastJ_Id = ` 
+SELECT J_ID
+      FROM Survey_Tbl
+      ORDER BY J_ID DESC
+      LIMIT 1
+    `;
+
+module.exports = { selectSurveyAll, selectSurveyById, insertSurvey, lastJ_Id };
