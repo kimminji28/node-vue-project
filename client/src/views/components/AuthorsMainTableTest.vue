@@ -26,13 +26,7 @@ const props = defineProps({
           <thead>
             <tr>
               <th
-                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
-                번호
-              </th>
-
-              <th
-                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
               >
                 지원자명
               </th>
@@ -84,8 +78,6 @@ const props = defineProps({
               >
                 지원결과
               </th>
-
-              <th class="text-secondary opacity-7"></th>
             </tr>
           </thead>
           <tbody>
@@ -93,12 +85,6 @@ const props = defineProps({
               v-for="(item, index) in props.surveyList"
               :key="item.surveyId || index"
             >
-              <td class="align-middle text-center">
-                <span class="text-secondary text-xs font-weight-bold">
-                  {{ props.surveyList.length - index }}
-                </span>
-              </td>
-
               <td class="align-middle text-center">
                 <h6 class="mb-0 text-sm">{{ item.supportName }}</h6>
               </td>
@@ -116,7 +102,10 @@ const props = defineProps({
               </td>
 
               <td class="align-middle text-center">
-                <button class="btn btn-primary btn-sm mb-0 px-3 py-1">
+                <button
+                  class="btn btn-primary btn-sm mb-0 px-3 py-1"
+                  @click="$router.push(`/survey/detail/${item.surveyId}`)"
+                >
                   보기
                 </button>
               </td>
@@ -124,7 +113,7 @@ const props = defineProps({
               <td class="align-middle text-center">
                 <p class="text-xs font-weight-bold mb-0">
                   <button
-                    v-if="props.userRole === 'ADMIN' && !item.instiName"
+                    v-if="props.userRole === 'GENERAL' && !item.instiName"
                     class="badge bg-gradient-warning border-0"
                   >
                     배정

@@ -18,4 +18,9 @@ export default [
     name: "generalMain",
     component: () => import("../views/GeneralMain.vue"),
   },
+  {
+    path: "/survey/detail/:id",
+    name: "surveySearch",
+    component: () => import("../views/components/surveySelectCard.vue"),
+  },
 ];
