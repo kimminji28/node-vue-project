@@ -111,7 +111,6 @@ const supportAdd = async (supportObj) => {
 
   //Pk증가로직
   //PK중복 방지용 3회 반복문 작성
-  // for (let retry = 0; retry < 3; retry++) {
   try {
     let support_id;
     const lastSupportId = await userMapper.getLastSupportId();
@@ -136,7 +135,7 @@ const supportAdd = async (supportObj) => {
       middle,
       sub,
     ];
-    console.log(insertData);
+  
 
     let result = await userMapper.supportAdd(insertData);
     return {
@@ -148,11 +147,7 @@ const supportAdd = async (supportObj) => {
       //"ER_DUP_ENTRY" 중복 값에 대한 mariadb 에러코드
       return { status: "Failed", message: err.message };
     }
-    if (retry == 2) {
-      return { status: "Failed", message: "PK 중복으로 인한 등록 실패" };
-    }
   }
-  // }
 };
 
 //지원대상자 수정
