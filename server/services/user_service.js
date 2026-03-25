@@ -189,6 +189,25 @@ const getSupportList = async (supInfo) => {
   return result;
 };
 
+//로그인 정보 확인(김경환 2026.03.25)
+const confirmUser = async (id, password) => {
+  let infos = await userMapper.confirmUser(id, password);
+  if (infos.length > 0) {
+    return { success: true, user: infos[0] };
+  } else {
+    return { success: false };
+  }
+};
+
+//기관
+const confirmInstiUser = async (id, password) => {
+  let infos = await userMapper.confirmInstiUser(id, password);
+  if (infos.length > 0) {
+    return { success: true, user: infos[0] };
+  } else {
+    return { success: false };
+  }
+};
 module.exports = {
   testSelect,
   createUser,
@@ -197,4 +216,6 @@ module.exports = {
   getSupportList,
   supUpdate,
   supDelete,
+  confirmUser,
+  confirmInstiUser,
 };

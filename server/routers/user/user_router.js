@@ -53,4 +53,21 @@ router.get(`/support/supList/:guserId`, async (req, res) => {
   let result = await userService.getSupportList(loginParams);
   res.send(result);
 });
+
+//로그인확인(김경환 2026.03.25)
+router.post(`/login`, async (req, res) => {
+  let body = req.body;
+  console.log(body);
+  let result = await userService.confirmUser(body.id, body.password);
+  res.send(result);
+});
+
+//기관
+router.post(`/login`, async (req, res) => {
+  let body = req.body;
+  console.log(body);
+  let result = await userService.confirmInstiUser(body.id, body.password);
+  res.send(result);
+});
+
 module.exports = router;

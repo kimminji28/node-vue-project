@@ -2,10 +2,8 @@
 //일반이용자 회원가입 페이지
 import { ref, reactive, onBeforeUnmount, onBeforeMount } from "vue";
 import { useStore } from "vuex";
-// import Navbar from "@/examples/PageLayout/Navbar.vue";
-// import AppFooter from "@/examples/PageLayout/Footer.vue";
+
 import ArgonInput from "@/components/ArgonInput.vue";
-// import ArgonCheckbox from "@/components/ArgonCheckbox.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
 const body = document.getElementsByTagName("body")[0];
 
@@ -30,7 +28,7 @@ const multiFiles = (event) => {
   let tempFiles = [...files.value];
 
   //각 파일들을 비교 후 첨부
-  //some(): 배열안에 특정 조건을 찾는데 사용(이름, 크기...)
+  //some(): 배열안에 특정 조건을 찾는데 사용(파일 이름)
   selectedFiles.forEach((newFile) => {
     const isSameFile = tempFiles.some(
       (file) => file.name === newFile.name && newFile.size,
@@ -76,9 +74,14 @@ const isPrinted = ref(false);
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-//기관이용자 이동 버튼(김경환 2026.03.24)
+//기관이용자 이동 라우터(김경환 2026.03.24)
 const goInsti = () => {
   router.push("/insti/signup");
+};
+
+//계정이 있을 경우 로그인 페이지로 이동하는 라우터(김경환 2026.03.25)
+const goLogin = () => {
+  router.push("/user/login");
 };
 
 const openPostcode = () => {
@@ -90,6 +93,8 @@ const openPostcode = () => {
     },
   }).open();
 };
+
+//일반이용자의 정보를 db에 전송시키는 함수(김경환 2026.03.24)
 const addUserInfo = async () => {
   let data = {
     institution_id: userInfo.institution_id,
@@ -171,9 +176,16 @@ onBeforeUnmount(() => {
             <div class="card-header text-center pt-4">
               <h5>Register with</h5>
             </div>
-            <div class="row px-xl-5 px-sm-4 px-3">
-              <div class="mt-auto p-3">
-                <argon-button @click="goInsti()"> 기관직원</argon-button>
+            <div class="row px-xl-7 px-sm-8 px-8">
+              <div class="mt-auto p-3 d-flex justify-content-center gap-3">
+                <div class="col-auto">
+                  <argon-button>일반이용자</argon-button>
+                </div>
+                <div class="col-auto">
+                  <argon-button color="dark" @click="goInsti()"
+                    >기관직원</argon-button
+                  >
+                </div>
               </div>
             </div>
             <div class="card-body">
@@ -308,14 +320,6 @@ onBeforeUnmount(() => {
                   placeholder="기관 선택"
                   v-model="userInfo.institution_id"
                 />
-                <!-- <argon-checkbox checked>
-                  <label class="form-check-label" for="flexCheckDefault">
-                    I agree the
-                    <a href="javascript:;" class="text-dark font-weight-bolder"
-                      >Terms and Conditions</a
-                    >
-                  </label>
-                </argon-checkbox> -->
                 <div class="text-center">
                   <argon-button
                     fullWidth
@@ -326,12 +330,17 @@ onBeforeUnmount(() => {
                     >회원가입 신청</argon-button
                   >
                 </div>
-                <!-- <p class="text-sm mt-3 mb-0">
-                  Already have an account?
-                  <a href="javascript:;" class="text-dark font-weight-bolder"
-                    >Sign in</a
-                  >
-                </p> -->
+                <div class="px-1 pt-0 text-center card-footer px-lg-2">
+                  <p class="mx-auto mb-4 text-sm">
+                    계정이 있으신가요?
+                    <a
+                      href="javascript:;"
+                      class="text-success text-gradient font-weight-bold"
+                      @click="goLogin()"
+                      >로그인</a
+                    >
+                  </p>
+                </div>
               </form>
             </div>
           </div>

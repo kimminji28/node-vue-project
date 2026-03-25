@@ -43,8 +43,7 @@ VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
 `;
 
 //일반이용자의 지원대상자 목록
-const supportList = 
-`
+const supportList = `
 SELECT 
     support_id,
     G_UserId,
@@ -63,21 +62,32 @@ FROM Support_Tbl
 WHERE G_userId = ?
 `;
 
-
 //지원대상자 정보 업데이트
-const supUpdateSql = 
-`
+const supUpdateSql = `
 UPDATE Support_Tbl
 SET ?
 WHERE support_id = ?
 `;
 
 //지원대상자 삭제
-const supDelSql = 
-`
+const supDelSql = `
 DELETE FROM Support_Tbl
 WHERE support_id = ?
 `;
+
+//회원 로그인 확인(김경환 2026.03.25)
+const confirmUser = `
+SELECT G_UserId, institution_id, name, id, password, tel, email, zipCode, address, document1, document2
+FROM GeneralUser_Tbl       
+WHERE id = ?
+AND password = ?
+`;
+
+const confirmInstiUser = `
+SELECT I_UserId ,institution_id ,name, id, password, tel, roll
+FROM InstiUser_Tbl
+WHERE id = ?
+AND password = ?`;
 
 module.exports = {
   testSelect,
@@ -89,5 +99,7 @@ module.exports = {
   lastInstiId,
   supportList,
   supUpdateSql,
-  supDelSql
+  supDelSql,
+  confirmUser,
+  confirmInstiUser,
 };

@@ -115,17 +115,15 @@ const supUpdate = async (supId, supInfo) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    await conn.beginTransaction();  //Auto Commit 해제
+    await conn.beginTransaction(); //Auto Commit 해제
     let result = await conn.query(userSql.supUpdateSql, [supInfo, supId]);
     //추가 DML 실행 => 같은 트랜잭션으로 묶임
     conn.commit();
     return result;
-
   } catch (err) {
     console.log(err);
     conn.rollback();
-  }
-  finally {
+  } finally {
     if (conn) {
       conn.release();
     }
@@ -140,13 +138,11 @@ const supDel = async (supId) => {
     let result = await conn.query(userSql.supDelSql, supId);
     conn.commit();
     return result;
-  }
-  catch (err) {
+  } catch (err) {
     console.log(err);
     conn.rollback();
-  }
-  finally{
-    if(conn){
+  } finally {
+    if (conn) {
       conn.release();
     }
   }
@@ -158,18 +154,50 @@ const supportList = async (supInfo) => {
     conn = await pool.getConnection();
     let result = await conn.query(userSql.supportList, supInfo);
     return result;
-
   } catch (err) {
     console.log(err);
-  }
-  finally {
+  } finally {
     if (conn) {
       conn.release();
     }
   }
-
 };
 
+//회원 로그인  확인(김경환 2026.03.25)
+const confirmUser = async (id, password) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    console.log(id, password);
+    let result = await conn.query(userSql.confirmUser, [id, password]);
+    console.log(result[0]);
+    return result;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+};
+
+//기관
+const confirmInstiUser = async (id, password) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    console.log(id, password);
+    let result = await conn.query(userSql.confirmInstiUser, [id, password]);
+    console.log(result[0]);
+    return result;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+};
 module.exports = {
   testSelect,
   insertUser,
@@ -181,4 +209,6 @@ module.exports = {
   supportList,
   supUpdate,
   supDel,
+  confirmUser,
+  confirmInstiUser,
 };

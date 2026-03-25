@@ -1,13 +1,38 @@
 <script setup>
-import { onBeforeUnmount, onBeforeMount } from "vue";
+import { ref, onBeforeUnmount, onBeforeMount } from "vue";
 import { useStore } from "vuex";
-import Navbar from "@/examples/PageLayout/Navbar.vue";
+// import Navbar from "@/examples/PageLayout/Navbar.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
 // import ArgonSwitch from "@/components/ArgonSwitch.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
 const body = document.getElementsByTagName("body")[0];
 
 const store = useStore();
+
+import { useRouter } from "vue-router";
+const router = useRouter();
+
+//회원가입으로 이동하는 router(김경환 2026.03.25)
+const goSingup = () => {
+  router.push("/user/signup");
+};
+
+//회원가입으로 생성한 계정으로 로그인 시도(김경환 2026.03.25)
+import { useAuthStore } from "@/stores/counter";
+const authStore = useAuthStore();
+const loginId = ref("");
+const loginPw = ref("");
+const goMain = async () => {
+  // 스토어의 login 함수 호출
+  const isSuccess = await authStore.login(loginId.value, loginPw.value);
+
+  if (isSuccess) {
+    alert(`${authStore.user.name}님, 환영합니다!`); // DB에서 가져온 이름 활용
+    router.push("/user/main"); // 메인 페이지로 이동
+  } else {
+    alert("아이디 또는 비밀번호가 올바르지 않습니다.");
+  }
+};
 onBeforeMount(() => {
   store.state.hideConfigButton = true;
   store.state.showNavbar = false;
@@ -59,6 +84,7 @@ onBeforeUnmount(() => {
                         placeholder="아이디"
                         name="id"
                         size="lg"
+                        v-model="loginId"
                       />
                     </div>
                     <div class="mb-3">
@@ -68,6 +94,7 @@ onBeforeUnmount(() => {
                         placeholder="비밀번호"
                         name="password"
                         size="lg"
+                        v-model="loginPw"
                       />
                     </div>
                     <!-- <argon-switch id="rememberMe" name="remember-me"
@@ -81,6 +108,7 @@ onBeforeUnmount(() => {
                         color="success"
                         fullWidth
                         size="lg"
+                        @click.prevent="goMain()"
                         >로그인</argon-button
                       >
                     </div>
@@ -109,6 +137,7 @@ onBeforeUnmount(() => {
                     <a
                       href="javascript:;"
                       class="text-success text-gradient font-weight-bold"
+                      @click="goSingup()"
                       >회원가입</a
                     >
                   </p>
