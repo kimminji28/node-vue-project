@@ -26,7 +26,7 @@ const fetchSurveyList = async (page = 1) => {
     totalCount.value = response.data.totalCount; // 총 개수 숫자
     currentPage.value = page; // 화면에 현재 페이지 갱신
   } catch (error) {
-    console.error("일반 이용자 데이터 통신 에러:", error);
+    console.error("기관 담당자 데이터 통신 에러:", error);
   }
 };
 
@@ -45,7 +45,7 @@ const handlePageChange = (newPage) => {
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-12">
-        <authors-table :surveyList="listData" userRole="USER" />
+        <authors-table :surveyList="listData" userRole="MANAGER" />
 
         <main-pagination
           :totalCount="totalCount"
