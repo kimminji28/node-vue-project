@@ -86,7 +86,6 @@ const getLastSupportId = async () => {
   try {
     conn = await pool.getConnection();
     let [rows, meta] = await conn.query(userSql.lastSupportId);
-    console.log(rows);
     return rows;
   } catch (err) {
     console.log(err);
