@@ -151,12 +151,13 @@ const getSafeAnswer = (sIdx, subIdx, qIdx) => {
   <div class="py-4 container-fluid survey-view-page">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-11">
-        <!-- Header -->
         <div class="survey-header-container shadow-sm mb-0">
           <div
             class="d-flex align-items-center p-3 px-4 text-white header-bg position-relative"
           >
-            <h5 class="mb-0 font-weight-bolder text-white">홍길동님 조사지</h5>
+            <h5 class="mb-0 font-weight-bolder text-white">
+              홍길동님 조사지 결과
+            </h5>
             <div class="date-center">
               <span class="text-sm font-weight-bold opacity-9"
                 >등록일 : 2026.03.12</span
@@ -164,16 +165,13 @@ const getSafeAnswer = (sIdx, subIdx, qIdx) => {
             </div>
             <button
               class="btn-close btn-close-white ms-auto"
-              aria-label="Close"
               @click="$router.back()"
             ></button>
           </div>
         </div>
 
-        <!-- Survey Content -->
         <div class="card shadow-lg border-radius-top-none mb-5">
           <div class="card-body p-4 pt-5">
-            <!-- ✅ 수정됨: 하드코딩 삭제, sections props 사용 -->
             <template v-for="(section, sIdx) in sections" :key="sIdx">
               <div class="section-title-box mb-3" :class="{ 'mt-5': sIdx > 0 }">
                 <div class="d-flex align-items-center">
@@ -228,6 +226,7 @@ const getSafeAnswer = (sIdx, subIdx, qIdx) => {
                       >
                         <td
                           class="text-center text-secondary text-sm font-weight-bold border-end align-middle"
+                          style="width: 50px"
                         >
                           {{ qIdx + 1 }}
                         </td>
@@ -235,8 +234,6 @@ const getSafeAnswer = (sIdx, subIdx, qIdx) => {
                           class="text-sm text-dark text-wrap py-3 ps-3 align-middle"
                         >
                           {{ typeof q === "string" ? q : q.text }}
-
-                          <!-- ✅ 수정됨: extraInputs props 사용 -->
                           <div
                             v-if="
                               q.hasExtraInput &&
@@ -262,8 +259,6 @@ const getSafeAnswer = (sIdx, subIdx, qIdx) => {
                             </div>
                           </div>
                         </td>
-
-                        <!-- ✅ 수정됨: getSafeAnswer props 활용 -->
                         <td class="text-center border-start align-middle">
                           <div
                             class="result-box"
@@ -295,17 +290,12 @@ const getSafeAnswer = (sIdx, subIdx, qIdx) => {
                           </div>
                         </td>
                       </tr>
-
-                      <tr v-if="subIdx < section.subs.length - 1">
-                        <td colspan="4" class="p-2 bg-white border-0"></td>
-                      </tr>
                     </template>
                   </tbody>
                 </table>
               </div>
             </template>
 
-            <!-- ✅ 수정됨: extraRequest props 사용 -->
             <div class="mt-5 mb-5">
               <h6 class="text-sm font-weight-bolder mb-3 text-dark">
                 <span class="text-success me-1">●</span> 추가 요청사항
@@ -320,7 +310,6 @@ const getSafeAnswer = (sIdx, subIdx, qIdx) => {
             <div class="d-flex justify-content-center mt-5 mb-4">
               <button
                 class="btn btn-list-back px-7 py-2-5 shadow-sm"
-                aria-label="Close"
                 @click="$router.back()"
               >
                 목록으로
@@ -333,35 +322,12 @@ const getSafeAnswer = (sIdx, subIdx, qIdx) => {
   </div>
 </template>
 
-<style>
-/* 중요: scoped가 없는 전역 스타일입니다. 
-   사이드바는 레이아웃에 있으므로 여기서 강제로 제어해야 합니다. */
-#sidenav-main,
-.sidenav,
-aside {
-  display: none !important;
-}
-
-/* 본문 영역 왼쪽 여백 강제 제거 */
-.main-content,
-#panel {
-  margin-left: 0 !important;
-  padding-left: 0 !important;
-}
-
-/* 전체 배경 처리 */
-body.g-sidenav-show {
-  overflow-x: hidden !important;
-}
-</style>
-
 <style scoped>
-/* 페이지 내부 디자인용 scoped 스타일 */
+/* 조회 페이지 스타일 (등록 페이지와 100% 동일하게 유지) */
 .survey-view-page {
   font-family: "Noto Sans KR", sans-serif;
   color: #333;
 }
-
 .header-bg {
   background-color: #5dbe8a !important;
   border-radius: 12px 12px 0 0;
@@ -371,39 +337,32 @@ body.g-sidenav-show {
   left: 50%;
   transform: translateX(-50%);
 }
-
 .border-radius-top-none {
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
 }
-
 .dot-icon {
   color: #49d38a;
   font-size: 0.9rem;
 }
-
 .section-title-box {
   border-bottom: 2px solid #ebf1f5;
   padding-bottom: 8px;
 }
-
 .custom-bordered-table {
   border: 1px solid #dee2e6;
   border-collapse: collapse;
+  width: 100%;
 }
-
 .sub-header-row {
   border-top: 2px solid #333;
 }
-
 .border-bottom-dark {
   border-bottom: 1px solid #333 !important;
 }
-
 .question-row {
   border-bottom: 1px solid #dee2e6;
 }
-
 .result-box {
   display: inline-flex;
   align-items: center;
@@ -421,24 +380,20 @@ body.g-sidenav-show {
   color: white !important;
   font-size: 14px;
 }
-
 .bg-info-soft {
   background-color: #e8f9fd;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 10px;
 }
-
 .btn-list-back {
   background-color: #7a89a0;
   color: white;
   border: none;
   border-radius: 10px;
   font-weight: 700;
-  padding-left: 4rem !important;
-  padding-right: 4rem !important;
+  padding: 0.7rem 4rem;
 }
-
 .text-wrap {
   word-break: keep-all;
   line-height: 1.6;

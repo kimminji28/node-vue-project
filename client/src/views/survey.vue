@@ -1,4 +1,7 @@
 <template>
+  <div>
+    <surveyTop />
+  </div>
   <div class="py-4 container-fluid">
     <sidebar />
     <div class="row">
@@ -14,6 +17,7 @@
 <script setup>
 import surveyCard from "./components/surveyCard.vue"; //조사지 카드 컴포넌트 가져옴
 import Sidebar from "../examples/Sidenav/SidenavList.vue"; //사이드바 컴포넌트 가져옴
+import surveyTop from "../examples/Navbars/surveyTop.vue";
 import { ref, reactive } from "vue";
 import { useRouter } from "vue-router"; //페이지 이동(라우팅) 위해 사용
 const router = useRouter(); //router 인스턴스 생성

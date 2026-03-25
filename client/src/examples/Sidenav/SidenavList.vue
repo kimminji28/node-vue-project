@@ -38,17 +38,15 @@ const birthDate = ref("");
 
 <template>
   <div
-    class="collapse navbar-collapse w-auto h-auto h-100"
+    class="collapse navbar-collapse w-auto h-auto h-100 sidebar-layout-container"
     id="sidenav-collapse-main"
   >
     <ul class="navbar-nav">
       <template v-if="isSurveyPage">
-        <!-- isSurveyPage가 true일 때만 사이드바 내용 보여줌 -->
         <li class="nav-item ps-4 pt-4">
           <h5 class="font-weight-bolder text-dark mb-4">지원자 정보 입력</h5>
 
           <div class="mb-3 me-3">
-            <!-- 이 부분 수정 (디비에서 데이터 가져오면 연동 가능 / 함수 시도중) -->
             <select
               v-model="applicantName"
               class="form-select border custom-input"
@@ -120,7 +118,48 @@ const birthDate = ref("");
 </template>
 
 <style scoped>
-/* 입력창이 확실히 보이도록 하는 스타일 */
+/* 1. 사이드바 위치 강제 조정 (상단바 아래로) */
+.sidebar-layout-container,
+.sidebar-main-wrapper {
+  position: fixed !important;
+  top: 100px !important;
+  left: 0 !important;
+  width: 250px !important;
+  height: calc(100vh - 85px) !important;
+  z-index: 1000 !important;
+  background-color: #ffffff !important;
+  border-right: 1px solid #e9ecef !important;
+
+  /* 핵심: 스크롤 기능은 유지하되 바만 숨김 */
+  overflow-y: auto !important; /* 내용이 넘칠 때만 스크롤 작동 */
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+}
+/* Chrome, Safari, Opera에서 스크롤바를 숨김 */
+.sidebar-layout-container::-webkit-scrollbar,
+.sidebar-main-wrapper::-webkit-scrollbar {
+  display: none;
+}
+/* 2. 메인 콘텐츠 영역 중앙 정렬 강제 (사이드바 침범 방지) */
+/* 부모의 content-area를 사이드바 너비만큼 왼쪽 마진을 주어 중앙으로 밀어넣습니다. */
+:deep(.content-area),
+:global(.content-area) {
+  margin-left: 250px !important;
+  display: flex !important;
+  justify-content: center !important;
+  padding: 2rem !important;
+}
+
+/* 3. 조사지 카드 너비 제한 (너무 퍼지지 않게 중앙 집중) */
+:deep(.row),
+:global(.row) {
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+}
+
+/* --- 기존 스타일 및 주석 유지 --- */
 .custom-input {
   display: block !important;
   width: 100% !important;
@@ -157,8 +196,13 @@ const birthDate = ref("");
   margin: 1rem 0;
 }
 
-/* 스크롤바 설정 */
-.navbar-collapse {
+/* 스크롤바 설정 .navbar-collapse {
   overflow-y: auto !important;
+} */
+
+/* 템플릿 기본 aside 태그 강제 하단 이동 */
+:deep(aside),
+:deep(.sidenav) {
+  top: 85px !important;
 }
 </style>

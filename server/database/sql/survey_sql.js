@@ -72,17 +72,6 @@ INSERT INTO SurveyUserAnswer_Tbl (
 ) VALUES (?, ?, ?, ?)
 `;
 
-// //조사지 답변 <김민지, 조사지 답변 쿼리 26.03.24 추가>
-// const selectAnswer = `
-// SELECT
-//   answer_id,
-//   J_ID,
-//   question_id,
-//   answer
-//   FROM SurveyUserAnswer_Tbl
-//   ORDER BY answer_id
-// `;
-
 // 조사지 기본정보 + 문항 가져오기 <김민지, 2026.03.24>
 const surveyQuestion = `
 SELECT

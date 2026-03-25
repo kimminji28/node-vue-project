@@ -1,14 +1,12 @@
-<!-- <김민지, 전체 코드 다이어트+주석달기 2026.03.25> -->
 <script setup>
 import { ref, reactive } from "vue";
 
 const allSections = [
-  //설문 전체 구조 (카테고리 → 질문)
   {
-    title: "지원사유", //section1 대분류
+    title: "지원사유",
     subs: [
       {
-        subTitle: "긴급 지원 필요", //sub 중분류
+        subTitle: "긴급 지원 필요",
         description: "즉시 지원인식 및 서비스 필요",
         questions: [
           "현재 긴급하게 도움이 필요한 상황(주거, 건강, 안전 등)이 있다.",
@@ -33,17 +31,17 @@ const allSections = [
           "현재 이용 가능한 지원 서비스나 제도에 대한 안내 및 상담이 필요하다.",
           {
             text: "향후 생활 지원을 위한 개인 맞춤형 계획 수립이 필요하다.",
-            hasExtraInput: true, //추가 입력창 필요
+            hasExtraInput: true,
           },
         ],
       },
     ],
   },
   {
-    title: "지원이 필요한 서비스", //section2 대분류
+    title: "지원이 필요한 서비스",
     subs: [
       {
-        subTitle: "개인별 지원", //sub 중분류
+        subTitle: "개인별 지원",
         questions: [
           "개인의 상황에 맞는 맞춤형 지원 서비스가 필요하다.",
           "일상생활(식사, 위생, 정리 등)에 개인 지원이 필요하다.",
@@ -60,10 +58,10 @@ const allSections = [
     ],
   },
   {
-    title: "이용중인 복지 서비스", //section3
+    title: "이용중인 복지 서비스",
     subs: [
       {
-        subTitle: "생활안정", //sub 중분류
+        subTitle: "생활안정",
         questions: [
           "현재 생활비 또는 기본적인 생계 유지에 어려움이 있다.",
           "안정적인 주거 환경 유지에 어려움이 있다.",
@@ -83,235 +81,212 @@ const allSections = [
 
 const answers = reactive(
   allSections.map((s) => s.subs.map((sub) => sub.questions.map(() => ""))),
-  //allSections : 문항 큰 틀
-  //subs : 문항 소제목들
-  //questions : 문항들
-  //버튼 결과를 저장할 공간을 미리 만들어놓는다는 의미
-  //[[ ["", "", ""], ["", "", ""] ], [ ["", "", ""], ["", ""] ],]
 );
 
-const extraRequest = ref(""); //추가 요청 텍스트 (단일 값)
-const isModalOpen = ref(false); //모달창이 기본적으로 닫혀있음
-
-const extraInputs = reactive({
-  result: "",
-  reason: "",
-  date: "",
-  //초기값이 빈 문자열("")인 상태
-  //객체를 반응형으로 바꿔서 값을 렌더링함 / 입력하면 입력한 값이 렌더링됨
-});
+const extraRequest = ref("");
+const isModalOpen = ref(false);
+const extraInputs = reactive({ result: "", reason: "", date: "" });
 
 const openModal = () => {
-  //모달 열기 / 스크롤 막기 (overflow = hidden)
   isModalOpen.value = true;
   document.body.style.overflow = "hidden";
-  //모달 열었을 때 뒤에 있는 기본 페이지가 스크롤 안되게 막아줌
 };
 
 const closeModal = () => {
-  //모달 닫기 / 스크롤 다시 가능
   isModalOpen.value = false;
   document.body.style.overflow = "auto";
-  //모달 닫으면 뒤에 있던 기본 페이지 다시 스크롤 가능
 };
 
-//모달창 등록 함수 / emit 정의 (함수 밖에 선언) -> 부모로 이벤트 내보내기
 const emit = defineEmits(["submit-survey"]);
 
-//등록 버튼 클릭 시 실행될 통합 함수
 const surveyInfo = () => {
-  //설문 제출 함수 시작
-  // 1. 부모(survey.vue)에게 사용자가 체크한 데이터를 보냄 => submit-survey 이벤트 활용
   emit("submit-survey", {
-    answers: answers, // 사용자가 체크한 '예/아니오' 배열
-    extraInputs: extraInputs, // 구체적 사유 및 필요시기
-    extraRequest: extraRequest.value, //추가 요청사항 텍스트 값
+    answers: answers,
+    extraInputs: extraInputs,
+    extraRequest: extraRequest.value,
   });
-
-  // 2. 등록됐을떄 알림창 띄움
   alert("정상적으로 등록되었습니다.");
-
-  // 3. 모달창 내부에서 취소 버튼 클릭 시 모달창 닫힘
-  closeModal(); //모달 닫기
+  closeModal();
 };
 
-//조사지 문항 취소 버튼 클릭 시 데이터 초기화
 const resetCancel = () => {
-  // answers 초기화 (핵심🔥)
   allSections.forEach((section, sIdx) => {
     section.subs.forEach((sub, subIdx) => {
       sub.questions.forEach((_, qIdx) => {
         answers[sIdx][subIdx][qIdx] = "";
-        // [sIdx][subIdx][qIdx] -> 인덱스 값이 자동으로 만들어짐
       });
     });
   });
-
-  // extraInputs 초기화
-  extraInputs.reason = ""; //입력한 데이터 초기화
-  extraInputs.date = ""; //입력한 데이터 초기화
-
-  // textarea 초기화
-  extraRequest.value = ""; //입력한 데이터 초기화
-
-  //모달 닫기
+  extraInputs.reason = "";
+  extraInputs.date = "";
+  extraRequest.value = "";
   closeModal();
 };
 </script>
 
-<!-- 조사지 문항 템플릿 -->
 <template>
-  <div class="py-4 container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <div class="card shadow-lg mb-4">
-          <div class="card-header pb-0 p-4">
-            <div class="d-flex justify-content-between align-items-center">
-              <h6 class="mb-0 font-weight-bolder text-info">조사지 신청하기</h6>
-              <div class="d-flex align-items-center">
-                <span class="text-sm me-2 text-secondary font-weight-bold"
-                  >작성일</span
-                >
-                <div class="date-display p-2 bg-light border-radius-md border">
-                  <span class="text-xs font-weight-bold">2026.03.12</span>
-                </div>
-              </div>
+  <div class="py-4 container-fluid survey-view-page">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-11">
+        <div class="survey-header-container shadow-sm mb-0">
+          <div
+            class="d-flex align-items-center p-3 px-4 text-white header-bg position-relative"
+          >
+            <h5 class="mb-0 font-weight-bolder text-white">조사지 신청하기</h5>
+            <div class="date-center">
+              <span class="text-sm font-weight-bold opacity-9"
+                >작성일 : 2026.03.12</span
+              >
             </div>
           </div>
+        </div>
 
-          <div class="card-body p-4">
+        <div class="card shadow-lg border-radius-top-none mb-5">
+          <div class="card-body p-4 pt-5">
             <template v-for="(section, sIdx) in allSections" :key="sIdx">
-              <div
-                class="d-flex justify-content-between align-items-center mb-4 p-3 bg-gray-100 border-radius-lg"
-                :class="{ 'mt-5': sIdx > 0 }"
-              >
+              <div class="section-title-box mb-3" :class="{ 'mt-5': sIdx > 0 }">
                 <div class="d-flex align-items-center">
-                  <span class="text-success me-2">●</span>
-                  <span class="text-sm font-weight-bolder">{{
-                    section.title
-                  }}</span>
+                  <span class="dot-icon me-2">●</span>
+                  <h6 class="mb-0 font-weight-bolder text-dark">
+                    {{ section.title }}
+                  </h6>
                 </div>
               </div>
 
-              <div class="table-responsive">
-                <table class="table align-items-center mb-0 border-top">
-                  <thead>
-                    <tr class="bg-light">
-                      <th colspan="2" class="ps-4 text-sm font-weight-bolder">
-                        설문 항목
-                      </th>
-                      <th class="text-center text-xs text-secondary">예</th>
-                      <th class="text-center text-xs text-secondary">아니오</th>
-                    </tr>
-                  </thead>
+              <div class="table-responsive mb-4">
+                <table
+                  class="table align-items-center mb-0 custom-bordered-table"
+                >
                   <tbody>
                     <template
                       v-for="(sub, subIdx) in section.subs"
                       :key="subIdx"
                     >
-                      <tr class="bg-gray-100">
+                      <tr class="sub-header-row bg-white">
                         <td
-                          colspan="4"
-                          class="py-2 ps-4 text-xs font-weight-bold text-info text-uppercase"
+                          class="text-success font-weight-bolder text-sm ps-3 py-3 border-bottom-dark"
+                          style="width: 15%"
                         >
                           {{ sub.subTitle }}
-                          <span
-                            v-if="sub.description"
-                            class="ms-2 font-weight-normal text-secondary text-lowercase"
-                          >
-                            {{ sub.description }}
-                          </span>
+                        </td>
+                        <td
+                          class="text-dark font-weight-bolder text-sm ps-3 py-3 border-bottom-dark"
+                        >
+                          {{
+                            sub.description || "즉시 지원인식 및 서비스 필요"
+                          }}
+                        </td>
+                        <td
+                          class="text-center text-dark font-weight-bolder text-sm py-3 border-bottom-dark border-start"
+                          style="width: 80px"
+                        >
+                          예
+                        </td>
+                        <td
+                          class="text-center text-dark font-weight-bolder text-sm py-3 border-bottom-dark border-start"
+                          style="width: 80px"
+                        >
+                          아니오
                         </td>
                       </tr>
-                      <template v-for="(q, qIdx) in sub.questions" :key="qIdx">
-                        <tr>
-                          <td class="text-center text-xs text-secondary ps-4">
-                            {{ qIdx + 1 }}
-                          </td>
-                          <td class="text-sm text-dark text-wrap align-top">
-                            <div class="mb-1">
-                              {{ typeof q === "string" ? q : q.text }}
-                            </div>
 
-                            <div
-                              v-if="q.hasExtraInput"
-                              class="mt-2 p-0 border-0"
-                            >
-                              <div class="col-12 mb-2">
+                      <tr
+                        v-for="(q, qIdx) in sub.questions"
+                        :key="qIdx"
+                        class="question-row"
+                      >
+                        <td
+                          class="text-center text-secondary text-sm font-weight-bold border-end align-middle"
+                          style="width: 50px"
+                        >
+                          {{ qIdx + 1 }}
+                        </td>
+                        <td
+                          class="text-sm text-dark text-wrap py-3 ps-3 align-middle"
+                        >
+                          {{ typeof q === "string" ? q : q.text }}
+                          <div
+                            v-if="q.hasExtraInput"
+                            class="mt-3 p-3 bg-gray-100 border-radius-md border extra-info-box"
+                          >
+                            <div class="row">
+                              <div class="col-md-6 mb-2">
                                 <label
                                   class="text-xs font-weight-bold text-dark mb-1 d-block"
-                                  >구체적 사유</label
+                                  >[구체적 사유]</label
                                 >
                                 <input
                                   type="text"
-                                  class="form-control form-control-sm border"
-                                  style="max-width: 400px"
-                                  placeholder="사유를 입력해주세요"
+                                  class="form-control form-control-sm"
                                   v-model="extraInputs.reason"
+                                  placeholder="사유를 입력해주세요"
                                 />
                               </div>
-                              <div class="col-12 mb-2">
+                              <div class="col-md-6 mb-2">
                                 <label
                                   class="text-xs font-weight-bold text-dark mb-1 d-block"
-                                  >필요시기</label
+                                  >[필요시기]</label
                                 >
                                 <input
                                   type="text"
-                                  class="form-control form-control-sm border"
-                                  style="max-width: 400px"
-                                  placeholder="시기를 입력해주세요"
+                                  class="form-control form-control-sm"
                                   v-model="extraInputs.date"
+                                  placeholder="시기를 입력해주세요"
                                 />
                               </div>
                             </div>
-                          </td>
-                          <td class="text-center">
-                            <input
-                              type="radio"
-                              :name="`q_${sIdx}_${subIdx}_${qIdx}`"
-                              value="예"
-                              v-model="answers[sIdx][subIdx][qIdx]"
-                              class="form-check-input custom-radio"
-                            />
-                          </td>
-                          <td class="text-center">
-                            <input
-                              type="radio"
-                              :name="`q_${sIdx}_${subIdx}_${qIdx}`"
-                              value="아니오"
-                              v-model="answers[sIdx][subIdx][qIdx]"
-                              class="form-check-input custom-radio"
-                            />
-                          </td>
-                        </tr>
-                      </template>
+                          </div>
+                        </td>
+                        <td class="text-center border-start align-middle">
+                          <input
+                            type="radio"
+                            :name="`q_${sIdx}_${subIdx}_${qIdx}`"
+                            value="예"
+                            v-model="answers[sIdx][subIdx][qIdx]"
+                            class="form-check-input custom-radio"
+                          />
+                        </td>
+                        <td class="text-center border-start align-middle">
+                          <input
+                            type="radio"
+                            :name="`q_${sIdx}_${subIdx}_${qIdx}`"
+                            value="아니오"
+                            v-model="answers[sIdx][subIdx][qIdx]"
+                            class="form-check-input custom-radio"
+                          />
+                        </td>
+                      </tr>
                     </template>
                   </tbody>
                 </table>
               </div>
             </template>
 
-            <div class="mt-4">
-              <h6 class="text-sm font-weight-bolder mb-2 text-secondary">
+            <div class="mt-5 mb-5">
+              <h6 class="text-sm font-weight-bolder mb-3 text-dark">
                 <span class="text-success me-1">●</span> 추가 요청사항
               </h6>
               <textarea
-                class="form-control"
+                class="form-control comment-box"
                 rows="4"
                 v-model="extraRequest"
+                placeholder="추가로 요청하실 사항을 적어주세요."
               ></textarea>
-              <!-- textarea에 글 쓰면 자동으로 extraRequest 값이 바뀜 -->
             </div>
 
-            <div class="d-flex justify-content-end mt-4">
-              <button class="btn btn-success me-2" @click="openModal">
-                저장
+            <div class="d-flex justify-content-center mt-5 mb-4">
+              <button
+                class="btn btn-success px-6 py-2-5 me-3 shadow-sm"
+                @click="openModal"
+              >
+                저장하기
               </button>
-              <button class="btn btn-outline-secondary" @click="resetCancel">
-                취소
+              <button
+                class="btn btn-outline-secondary px-6 py-2-5 shadow-sm"
+                @click="resetCancel"
+              >
+                취소하기
               </button>
-              <!-- 취소 버튼은 아직 이벤트가 안걸려있는데 취소 버튼 클릭 시
-               입력한 텍스트가 리셋돼야함 -->
             </div>
           </div>
         </div>
@@ -321,123 +296,143 @@ const resetCancel = () => {
     <!-- 모달창 템플릿 / Transition 쓰는 이유는 모달창이 부드럽게 열리게 하려고 사용함-->
     <Transition name="fade">
       <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
-        <div class="modal-content-wrapper card shadow-lg mt-5 mb-5">
-          <div class="card-header bg-white pb-3 border-bottom">
-            <div class="d-flex justify-content-between align-items-center">
-              <h5 class="mb-0 font-weight-bolder">조사지 신청 내용 확인</h5>
-              <div class="text-end">
-                <span class="text-xs text-secondary d-block">작성일</span>
-                <span class="text-sm font-weight-bold">2026.03.12</span>
-              </div>
+        <div class="modal-content-wrapper shadow-lg">
+          <div class="header-bg p-3 px-4 position-relative">
+            <h5 class="mb-0 font-weight-bolder text-white">
+              조사지 신청 내용 확인
+            </h5>
+            <div class="date-center">
+              <span class="text-white text-sm font-weight-bold opacity-9"
+                >작성일 : 2026.03.12</span
+              >
             </div>
           </div>
 
-          <div class="card-body modal-scrollable p-4">
+          <div class="card-body modal-scrollable p-4 bg-white">
             <template v-for="(section, sIdx) in allSections" :key="'m' + sIdx">
-              <div class="mb-3 mt-2 font-weight-bolder text-sm">
-                <span class="text-success me-2">●</span> {{ section.title }}
+              <div class="section-title-box mb-3" :class="{ 'mt-4': sIdx > 0 }">
+                <div class="d-flex align-items-center">
+                  <span class="dot-icon me-2">●</span>
+                  <h6 class="mb-0 font-weight-bolder text-dark">
+                    {{ section.title }}
+                  </h6>
+                </div>
               </div>
-              <table class="table align-items-center mb-4 border">
-                <thead class="bg-light">
-                  <tr>
-                    <th
-                      class="ps-3 text-xs font-weight-bold"
-                      style="width: 70%"
+
+              <div class="table-responsive mb-4">
+                <table
+                  class="table align-items-center mb-0 custom-bordered-table"
+                >
+                  <tbody>
+                    <template
+                      v-for="(sub, subIdx) in section.subs"
+                      :key="'ms' + subIdx"
                     >
-                      설문 항목
-                    </th>
-                    <th class="text-center text-xs font-weight-bold">예</th>
-                    <th class="text-center text-xs font-weight-bold">아니오</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <template
-                    v-for="(sub, subIdx) in section.subs"
-                    :key="'ms' + subIdx"
-                  >
-                    <tr class="bg-gray-100">
-                      <td
-                        colspan="3"
-                        class="ps-3 py-1 text-xxs font-weight-bolder text-info"
+                      <tr class="sub-header-row bg-white">
+                        <td
+                          class="text-success font-weight-bolder text-sm ps-3 py-2 border-bottom-dark"
+                          style="width: 20%"
+                        >
+                          {{ sub.subTitle }}
+                        </td>
+                        <td
+                          class="text-dark font-weight-bolder text-sm ps-3 py-2 border-bottom-dark"
+                        >
+                          {{
+                            sub.description || "즉시 지원인식 및 서비스 필요"
+                          }}
+                        </td>
+                        <td
+                          class="text-center text-dark font-weight-bolder text-sm py-2 border-bottom-dark border-start"
+                          style="width: 70px"
+                        >
+                          예
+                        </td>
+                        <td
+                          class="text-center text-dark font-weight-bolder text-sm py-2 border-bottom-dark border-start"
+                          style="width: 70px"
+                        >
+                          아니오
+                        </td>
+                      </tr>
+
+                      <tr
+                        v-for="(q, qIdx) in sub.questions"
+                        :key="'mq' + qIdx"
+                        class="question-row"
                       >
-                        {{ sub.subTitle }}
-                        <span
-                          v-if="sub.description"
-                          class="ms-2 text-muted text-xxs"
-                          >{{ sub.description }}</span
+                        <td
+                          class="text-center text-secondary text-xs font-weight-bold border-end align-middle"
+                          style="width: 50px"
                         >
-                        <!-- description 값이 있어서 v-if 사용해 렌더링 -->
-                      </td>
-                    </tr>
-                    <tr v-for="(q, qIdx) in sub.questions" :key="'mq' + qIdx">
-                      <td class="ps-3 text-xs text-wrap align-top">
-                        <div class="mb-1">
-                          {{ qIdx + 1 }}.
+                          {{ qIdx + 1 }}
+                        </td>
+                        <td
+                          class="text-sm text-dark text-wrap py-2 ps-3 align-middle"
+                        >
                           {{ typeof q === "string" ? q : q.text }}
-                        </div>
-                        <div
-                          v-if="
-                            q.hasExtraInput &&
-                            answers[sIdx][subIdx][qIdx] === '예'
-                          "
-                          class="mt-2 p-2 bg-gray-100 border-radius-md"
-                        >
-                          <div class="mb-2">
-                            <span
-                              class="text-xxs font-weight-bold text-info d-block mb-1"
-                              >[구체적 사유]</span
+                          <div
+                            v-if="
+                              q.hasExtraInput &&
+                              answers[sIdx][subIdx][qIdx] === '예'
+                            "
+                            class="mt-2 p-2 bg-gray-100 border-radius-md text-xs border"
+                          >
+                            <span class="text-success font-weight-bold"
+                              >[사유]</span
                             >
-                            <div class="p-2 bg-white border border-radius-sm">
-                              {{ extraInputs.reason || "(입력 안 함)" }}
-                            </div>
-                          </div>
-                          <div>
-                            <span
-                              class="text-xxs font-weight-bold text-info d-block mb-1"
-                              >[필요시기]</span
+                            {{ extraInputs.reason || "-" }}
+                            <span class="ms-2 text-success font-weight-bold"
+                              >[시기]</span
                             >
-                            <div class="p-2 bg-white border border-radius-sm">
-                              {{ extraInputs.date || "(입력 안 함)" }}
-                              <!-- 값이 없으면 기본 메세지 띄워줌 -->
-                            </div>
+                            {{ extraInputs.date || "-" }}
                           </div>
-                        </div>
-                      </td>
-                      <td class="text-center align-top">
-                        <span
-                          v-if="answers[sIdx][subIdx][qIdx] === '예'"
-                          class="text-success font-weight-bolder"
-                          >✔</span
-                        >
-                      </td>
-                      <td class="text-center align-top">
-                        <span
-                          v-if="answers[sIdx][subIdx][qIdx] === '아니오'"
-                          class="text-danger font-weight-bolder"
-                          >✔</span
-                        >
-                      </td>
-                    </tr>
-                  </template>
-                </tbody>
-              </table>
+                        </td>
+                        <td class="text-center border-start align-middle">
+                          <div
+                            v-if="answers[sIdx][subIdx][qIdx] === '예'"
+                            class="selected-dot mx-auto"
+                          ></div>
+                        </td>
+                        <td class="text-center border-start align-middle">
+                          <div
+                            v-if="answers[sIdx][subIdx][qIdx] === '아니오'"
+                            class="selected-dot mx-auto"
+                          ></div>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
             </template>
 
-            <div class="mt-3 border-top pt-3">
-              <h6 class="text-sm font-weight-bolder text-secondary">
-                ● 추가 요청사항
+            <div class="mt-4">
+              <h6 class="text-sm font-weight-bolder mb-2 text-dark">
+                <span class="text-success me-1">●</span> 추가 요청사항
               </h6>
-              <div class="p-3 bg-light border-radius-md text-sm min-vh-10">
-                {{ extraRequest || "입력 사항 없음" }}
-                <!-- 값(false, null, undefined, "")이 없으면 "입력 사항 없음" 출력 -->
+              <div
+                class="p-3 bg-gray-100 border-radius-md text-sm border min-vh-10"
+              >
+                {{ extraRequest || "내용 없음" }}
               </div>
             </div>
           </div>
 
-          <div class="card-footer d-flex justify-content-between border-top">
-            <button class="btn btn-info mb-0" @click="surveyInfo">등록</button>
-            <button class="btn btn-outline-secondary mb-0" @click="closeModal">
-              취소
+          <div
+            class="modal-footer d-flex justify-content-center bg-white border-top py-3"
+          >
+            <button
+              class="btn btn-success px-5 py-2 me-2 shadow-sm"
+              @click="surveyInfo"
+            >
+              등록
+            </button>
+            <button
+              class="btn btn-outline-secondary px-5 py-2 shadow-sm"
+              @click="closeModal"
+            >
+              닫기
             </button>
           </div>
         </div>
@@ -447,22 +442,70 @@ const resetCancel = () => {
 </template>
 
 <style scoped>
+/* 조회 페이지 & 모달 공통 스타일 */
+.survey-view-page {
+  font-family: "Noto Sans KR", sans-serif;
+  color: #333;
+}
+.header-bg {
+  background-color: #5dbe8a !important;
+  border-radius: 12px 12px 0 0;
+}
+.date-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.border-radius-top-none {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+.dot-icon {
+  color: #49d38a;
+  font-size: 0.9rem;
+}
+.section-title-box {
+  border-bottom: 2px solid #ebf1f5;
+  padding-bottom: 8px;
+}
+.custom-bordered-table {
+  border: 1px solid #dee2e6;
+  border-collapse: collapse;
+  width: 100%;
+}
+.sub-header-row {
+  border-top: 2px solid #333;
+}
+.border-bottom-dark {
+  border-bottom: 1px solid #333 !important;
+}
+.question-row {
+  border-bottom: 1px solid #dee2e6;
+}
 .custom-radio {
+  width: 22px;
+  height: 22px;
   cursor: pointer;
-  width: 1.2rem;
-  height: 1.2rem;
-  border: 1px solid #d2d6da;
+  border: 2px solid #c1c9d0;
 }
 .custom-radio:checked {
-  background-color: #2dce89;
-  border-color: #2dce89;
+  background-color: #5dbe8a;
+  border-color: #5dbe8a;
 }
-.table td {
-  padding: 0.75rem 0.5rem;
+.extra-info-box {
+  background-color: #f8f9fa;
 }
-.bg-gray-100 {
-  background-color: #f8f9fa !important;
+.comment-box {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
 }
+.px-6 {
+  padding-left: 3rem !important;
+  padding-right: 3rem !important;
+}
+
+/* 수정된 모달 전용 스타일 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -472,30 +515,44 @@ const resetCancel = () => {
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center; /* 중앙 정렬 */
   z-index: 1050;
-  overflow-y: auto;
 }
+
 .modal-content-wrapper {
-  width: 90%;
-  max-width: 800px;
-  background: white;
-  border-radius: 1rem;
-  margin: 2rem 0;
+  width: 95%;
+  max-width: 900px; /* 메인 카드 너비와 유사하게 조정 */
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh; /* 화면을 벗어나지 않게 */
 }
+
 .modal-scrollable {
-  max-height: 70vh;
   overflow-y: auto;
+  flex: 1;
 }
-.text-wrap {
-  white-space: normal !important;
+
+/* 선택된 항목 표시용 녹색 점 (라디오 버튼 스타일) */
+.selected-dot {
+  width: 18px;
+  height: 18px;
+  background-color: #5dbe8a;
+  border-radius: 50%;
+  border: 2px solid #5dbe8a;
 }
-.border-radius-sm {
-  border-radius: 4px;
+
+.modal-footer {
+  border-top: 1px solid #dee2e6;
+  gap: 10px;
 }
+
+/* 페이드 효과 애니메이션 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s;
+  transition: opacity 0.3s ease;
 }
 .fade-enter-from,
 .fade-leave-to {
