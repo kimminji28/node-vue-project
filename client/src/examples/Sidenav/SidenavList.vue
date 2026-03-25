@@ -1,39 +1,39 @@
+<!-- <김민지, 전체 코드 간략하게 수정중 26.03.25>  -->
 <script setup>
 import { computed, ref } from "vue"; //계산된 값과 변수를 반응형으로 만듦
+// import {onMounted} from "vue"; //지원대상자 이름 가지고오는 함수 시도중
 import { useRoute } from "vue-router"; //현재 URL 정보를 가져옴
-import { useStore } from "vuex"; //전역 데이터 접근 시 사용
-
-import SidenavItem from "./SidenavItem.vue";
-import SidenavCard from "./SidenavCard.vue";
-
-const store = useStore();
 const route = useRoute();
-const isRTL = computed(() => store.state.isRTL);
-//RTL(오른쪽 → 왼쪽 레이아웃) 여부 ????????????
-// 👉 store에 있는 값을 가져와서 반응형으로 사용
 
 // 현재 경로가 설문 추가 페이지인지 확인 (라우트 이름 또는 경로 포함 여부 체크)
 const isSurveyPage = computed(() => {
   return route.name === "userSurveyAdd" || route.path.includes("userSurveyAdd");
 });
-//route.name === "userSurveyAdd" 👉 라우트 이름으로 확인
-// route.path.includes("userSurveyAdd") 👉 URL에 해당 문자열 포함되어 있는지 확인
-// 👉 둘 중 하나라도 맞으면 true
-
-const getRoute = () => {
-  const routeArr = route.path.split("/");
-  return routeArr[1];
-};
-//👉 현재 URL을 / 기준으로 쪼개서 첫 번째 경로 가져오기 ["", "user", "survey", "add"]
-//👉 routeArr[1] → "user"
+//route.name === "userSurveyAdd" 라우트 이름
+//route.path.includes("userSurveyAdd") = URL에 해당 문자열 포함되어 있는지 확인
+//includes : 문자열 안에 특정 글자가 포함되어 있는지 확인하는 함수
+// || : 둘 중 하나라도 맞으면 true
+//이 함수 없으면 템플릿에서 사용한 변수가 사라지는거라 렌더딩안됨
 
 // 인풋 데이터 정의
-const applicantName = ref("홍길동");
+const applicantName = ref("");
 const largeCategory = ref("");
 const mediumCategory = ref("");
 const smallCategory = ref("");
 const gender = ref("");
 const birthDate = ref("");
+
+//지원대상자명 선택하는 함수 시도중
+// const users = ref([]);
+
+// onMounted(async () => {
+//   //페이지 로딩 시 자동 실행
+//   const guserId = "GUSR0002"; //지원대상자 이름 실제값 반응형
+//   const resp = await axios.get(`/main/support/supList/${guserId.value}`);
+//   //axios : 프론트 + 백엔드 연결해주는 durgkf
+//   users.value = resp.data;
+//   console.log(resp);
+// });
 </script>
 
 <template>
@@ -43,20 +43,20 @@ const birthDate = ref("");
   >
     <ul class="navbar-nav">
       <template v-if="isSurveyPage">
+        <!-- isSurveyPage가 true일 때만 사이드바 내용 보여줌 -->
         <li class="nav-item ps-4 pt-4">
           <h5 class="font-weight-bolder text-dark mb-4">지원자 정보 입력</h5>
 
           <div class="mb-3 me-3">
-            <label class="form-label text-sm font-weight-bold text-secondary"
-              >지원자명</label
-            >
+            <!-- 이 부분 수정 (디비에서 데이터 가져오면 연동 가능 / 함수 시도중) -->
             <select
               v-model="applicantName"
               class="form-select border custom-input"
             >
-              <option value="홍길동">홍길동</option>
-              <option value="김철수">김철수</option>
-              <option value="이영희">이영희</option>
+              <option value="">선택하세요</option>
+              <option v-for="user in users" :key="user.id" :value="user.name">
+                {{ user.name }}
+              </option>
             </select>
           </div>
 
@@ -115,38 +115,7 @@ const birthDate = ref("");
           </div>
         </li>
       </template>
-
-      <template v-else>
-        <li class="nav-item">
-          <sidenav-item
-            to="/user/surveyadd"
-            :class="getRoute() === '/user/surveyadd' ? 'active' : ''"
-            :navText="isRTL ? 'لوحة القيادة' : 'Dashboard'"
-          >
-            <template v-slot:icon>
-              <i class="ni ni-tv-2 text-primary text-sm opacity-10"></i>
-            </template>
-          </sidenav-item>
-        </li>
-      </template>
     </ul>
-  </div>
-
-  <div v-if="!isSurveyPage" class="pt-3 mx-3 mt-3 sidenav-footer">
-    <sidenav-card
-      :card="{
-        title: 'Need Help?',
-        description: 'Please check our docs',
-        links: [
-          {
-            label: 'Documentation',
-            route:
-              'https://www.creative-tim.com/learning-lab/vue/overview/argon-dashboard/',
-            color: 'dark',
-          },
-        ],
-      }"
-    />
   </div>
 </template>
 

@@ -1,19 +1,167 @@
+<script setup>
+import { onMounted, onUnmounted } from "vue";
+
+// 부모로부터 props 받기
+const props = defineProps({
+  sections: Array,
+  answers: Array,
+  extraInputs: Object,
+  extraRequest: String,
+});
+
+// ================== 사이드바 숨김/복구 (원본 유지) ==================
+onMounted(() => {
+  document.body.classList.remove("g-sidenav-show");
+  // → 일반적으로 사이드바가 보이도록 하는 클래스를 제거해서 숨김 처리
+  const sidenav = document.getElementById("sidenav-main");
+  // HTML 문서에서 id가 "sidenav-main"인 요소를 가져옴 ???
+  if (sidenav) sidenav.style.setProperty("display", "none", "important");
+  // sidenav 요소가 존재하면  display 속성을 "none"으로 강제 설정하여 화면에서 숨김
+});
+
+onUnmounted(() => {
+  document.body.classList.add("g-sidenav-show");
+  // body 태그에 "g-sidenav-show" 클래스를 다시 추가
+  // → 컴포넌트가 제거되면 원래 상태(사이드바 보임)로 복구
+  const sidenav = document.getElementById("sidenav-main");
+  // 다시 id가 "sidenav-main"인 요소를 가져옴
+  if (sidenav) sidenav.style.display = "";
+  // sidenav 요소가 존재하면 display 속성을 기본값("")으로 돌려 화면에 보이도록 함
+});
+
+// ================== allSections를 ref로 감싸 반응형으로 수정 ==================
+// 기존 배열 그대로 사용하되 Vue 반응형으로 변환
+// const allSections = ref([
+//   {
+//     title: "지원사유",
+//     subs: [
+//       {
+//         subTitle: "긴급 지원 필요",
+//         questions: [
+//           "현재 긴급하게 도움이 필요한 상황(주거, 건강, 안전 등)이 있다.",
+//           "최근 돌봄 제공자(가족, 보호자)의 부재 또는 돌봄 공백이 발생하였다.",
+//           "현재 상황이 즉각적인 공공기관 또는 서비스 지원이 필요할 정도로 위급하다.",
+//         ],
+//       },
+//       {
+//         subTitle: "중점 지원 필요",
+//         questions: [
+//           "일상생활을 유지하기 위해 지속적인 도움이나 지원 서비스가 필요하다.",
+//           "현재 받고 있는 지원만으로는 생활 유지에 어려움이 있다.",
+//           "특정 영역(건강, 생활, 이동 등)에서 우선적으로 지원이 필요하다.",
+//         ],
+//       },
+//       {
+//         subTitle: "계획 수립 필요",
+//         questions: [
+//           "앞으로의 생활 또는 서비스 이용을 위한 장기적인 계획이 필요하다.",
+//           "현재 이용 가능한 지원 서비스나 제도에 대한 안내 및 상담이 필요하다.",
+//           {
+//             text: "향후 생활 지원을 위한 개인 맞춤형 계획 수립이 필요하다.",
+//             hasExtraInput: true,
+//           },
+//         ],
+//       },
+//     ],
+//   },
+//   {
+//     title: "지원이 필요한 서비스",
+//     subs: [
+//       {
+//         subTitle: "개인별 지원",
+//         questions: [
+//           "개인의 상황에 맞는 맞춤형 지원 서비스가 필요하다.",
+//           "일상생활(식사, 위생, 정리 등)에 개인 지원이 필요하다.",
+//           "개인 활동(외출, 사회활동 등)에 도움이 필요하다.",
+//         ],
+//       },
+//       {
+//         title: "교통",
+//         questions: [
+//           "병원, 복지시설 등 필요한 장소로 이동하는데 어려움이 있다.",
+//           "대중교통 이용이 어렵거나 제한이 있다.",
+//         ],
+//       },
+//     ],
+//   },
+//   {
+//     title: "이용중인 복지 서비스",
+//     subs: [
+//       {
+//         subTitle: "생활안정",
+//         questions: [
+//           "현재 생활비 또는 기본적인 생계 유지에 어려움이 있다.",
+//           "안정적인 주거 환경 유지에 어려움이 있다.",
+//           "생활을 유지하기 위해 추가적인 경제적 지원이 필요하다.",
+//         ],
+//       },
+//       {
+//         subTitle: "고용",
+//         questions: [
+//           "취업을 원하지만 취업 기회를 얻기 어렵다.",
+//           "취업을 위해 직업 교육 또는 취업 지원 서비스가 필요하다.",
+//         ],
+//       },
+//     ],
+//   },
+// ]);
+
+// ================== answers, extraInputs, extraRequest 기존 그대로 ==================
+// const answers = ref([
+//   [
+//     ["예", "예", "아니오"],
+//     ["예", "예", "아니오"],
+//     ["아니오", "아니오", "예"],
+//   ],
+//   [
+//     ["예", "아니오", "예"],
+//     ["예", "아니오"],
+//   ],
+//   [
+//     ["예", "예", "아니오"],
+//     ["아니오", "아니오"],
+//   ],
+// ]);
+
+// const extraInputs = ref({ reason: "거동이 매우 불편함", date: "2026년 4월" });
+// const extraRequest = ref("가급적 빠른 처리를 부탁드립니다.");
+
+// ================== 안전하게 답변 가져오기 함수 기존 그대로 ==================
+const getSafeAnswer = (sIdx, subIdx, qIdx) => {
+  //answers.value[sIdx][subIdx][qIdx]를 바로 쓰면,
+  // 데이터가 아직 없거나 구조가 달라서 에러가 날 수 있음.
+  try {
+    //try/catch로 안전하게 처리하고, 값이 없으면 빈 문자열("") 반환
+    return props.answers?.[sIdx]?.[subIdx]?.[qIdx] || "";
+  } catch (e) {
+    return "";
+  }
+};
+
+// ================== Vue용 구조 확인용 콘솔 추가 ==================
+// onMounted(() => {
+//   console.log(
+//     "Vue용 구조로 변환한 allSections (반응형 Proxy):",
+//     allSections.value,
+//   );
+// });
+</script>
+
 <template>
   <div class="py-4 container-fluid survey-view-page">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-11">
+        <!-- Header -->
         <div class="survey-header-container shadow-sm mb-0">
           <div
             class="d-flex align-items-center p-3 px-4 text-white header-bg position-relative"
           >
             <h5 class="mb-0 font-weight-bolder text-white">홍길동님 조사지</h5>
-
             <div class="date-center">
               <span class="text-sm font-weight-bold opacity-9"
                 >등록일 : 2026.03.12</span
               >
             </div>
-
             <button
               class="btn-close btn-close-white ms-auto"
               aria-label="Close"
@@ -22,9 +170,11 @@
           </div>
         </div>
 
+        <!-- Survey Content -->
         <div class="card shadow-lg border-radius-top-none mb-5">
           <div class="card-body p-4 pt-5">
-            <template v-for="(section, sIdx) in allSections" :key="sIdx">
+            <!-- ✅ 수정됨: 하드코딩 삭제, sections props 사용 -->
+            <template v-for="(section, sIdx) in sections" :key="sIdx">
               <div class="section-title-box mb-3" :class="{ 'mt-5': sIdx > 0 }">
                 <div class="d-flex align-items-center">
                   <span class="dot-icon me-2">●</span>
@@ -86,6 +236,7 @@
                         >
                           {{ typeof q === "string" ? q : q.text }}
 
+                          <!-- ✅ 수정됨: extraInputs props 사용 -->
                           <div
                             v-if="
                               q.hasExtraInput &&
@@ -98,7 +249,7 @@
                                 >[구체적 사유]</span
                               >
                               <div class="text-xs text-dark ps-1 fw-bold">
-                                {{ extraInputs.reason || "내용 없음" }}
+                                {{ extraInputs?.reason || "내용 없음" }}
                               </div>
                             </div>
                             <div>
@@ -106,11 +257,13 @@
                                 >[필요시기]</span
                               >
                               <div class="text-xs text-dark ps-1 fw-bold">
-                                {{ extraInputs.date || "내용 없음" }}
+                                {{ extraInputs?.date || "내용 없음" }}
                               </div>
                             </div>
                           </div>
                         </td>
+
+                        <!-- ✅ 수정됨: getSafeAnswer props 활용 -->
                         <td class="text-center border-start align-middle">
                           <div
                             class="result-box"
@@ -142,6 +295,7 @@
                           </div>
                         </td>
                       </tr>
+
                       <tr v-if="subIdx < section.subs.length - 1">
                         <td colspan="4" class="p-2 bg-white border-0"></td>
                       </tr>
@@ -151,6 +305,7 @@
               </div>
             </template>
 
+            <!-- ✅ 수정됨: extraRequest props 사용 -->
             <div class="mt-5 mb-5">
               <h6 class="text-sm font-weight-bolder mb-3 text-dark">
                 <span class="text-success me-1">●</span> 추가 요청사항
@@ -163,12 +318,13 @@
             </div>
 
             <div class="d-flex justify-content-center mt-5 mb-4">
-              <router-link
-                :to="{ name: 'userMain' }"
+              <button
                 class="btn btn-list-back px-7 py-2-5 shadow-sm"
+                aria-label="Close"
+                @click="$router.back()"
               >
                 목록으로
-              </router-link>
+              </button>
             </div>
           </div>
         </div>
@@ -176,134 +332,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-
-// 페이지 진입 시 사이드바 숨김 처리
-onMounted(() => {
-  document.body.classList.remove("g-sidenav-show");
-  // 강제로 스타일 주입 (사이드바 요소가 있을 경우)
-  const sidenav = document.getElementById("sidenav-main");
-  if (sidenav) {
-    sidenav.style.setProperty("display", "none", "important");
-  }
-});
-
-// 페이지 이탈 시 다시 사이드바 복구 (다른 페이지 영향 방지)
-onUnmounted(() => {
-  document.body.classList.add("g-sidenav-show");
-  const sidenav = document.getElementById("sidenav-main");
-  if (sidenav) {
-    sidenav.style.display = ""; // 원래 상태로 복구
-  }
-});
-
-const allSections = [
-  {
-    title: "지원사유",
-    subs: [
-      {
-        subTitle: "긴급 지원 필요",
-        description: "즉시 지원인식 및 서비스 필요",
-        questions: [
-          "현재 긴급하게 도움이 필요한 상황(주거, 건강, 안전 등)이 있다.",
-          "최근 돌봄 제공자(가족, 보호자)의 부재 또는 돌봄 공백이 발생하였다.",
-          "현재 상황이 즉각적인 공공기관 또는 서비스 지원이 필요할 정도로 위급하다.",
-        ],
-      },
-      {
-        subTitle: "중점 지원 필요",
-        description: "즉시 지원인식 및 서비스 필요",
-        questions: [
-          "일상생활을 유지하기 위해 지속적인 도움이나 지원 서비스가 필요하다.",
-          "현재 받고 있는 지원만으로는 생활 유지에 어려움이 있다.",
-          "특정 영역(건강, 생활, 이동 등)에서 우선적으로 지원이 필요하다.",
-        ],
-      },
-      {
-        subTitle: "계획 수립 필요",
-        description: "즉시 지원인식 및 서비스 필요",
-        questions: [
-          "앞으로의 생활 또는 서비스 이용을 위한 장기적인 계획이 필요하다.",
-          "현재 이용 가능한 지원 서비스나 제도에 대한 안내 및 상담이 필요하다.",
-          {
-            text: "향후 생활 지원을 위한 개인 맞춤형 계획 수립이 필요하다.",
-            hasExtraInput: true,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "지원이 필요한 서비스",
-    subs: [
-      {
-        subTitle: "개인별 지원",
-        questions: [
-          "개인의 상황에 맞는 맞춤형 지원 서비스가 필요하다.",
-          "일상생활(식사, 위생, 정리 등)에 개인 지원이 필요하다.",
-          "개인 활동(외출, 사회활동 등)에 도움이 필요하다.",
-        ],
-      },
-      {
-        subTitle: "교통",
-        questions: [
-          "병원, 복지시설 등 필요한 장소로 이동하는데 어려움이 있다.",
-          "대중교통 이용이 어렵거나 제한이 있다.",
-        ],
-      },
-    ],
-  },
-  {
-    title: "이용중인 복지 서비스",
-    subs: [
-      {
-        subTitle: "생활안정",
-        questions: [
-          "현재 생활비 또는 기본적인 생계 유지에 어려움이 있다.",
-          "안정적인 주거 환경 유지에 어려움이 있다.",
-          "생활을 유지하기 위해 추가적인 경제적 지원이 필요하다.",
-        ],
-      },
-      {
-        subTitle: "고용",
-        questions: [
-          "취업을 원하지만 취업 기회를 얻기 어렵다.",
-          "취업을 위해 직업 교육 또는 취업 지원 서비스가 필요하다.",
-        ],
-      },
-    ],
-  },
-];
-
-const answers = ref([
-  [
-    ["예", "예", "아니오"],
-    ["예", "예", "아니오"],
-    ["아니오", "아니오", "예"],
-  ],
-  [
-    ["예", "아니오", "예"],
-    ["예", "아니오"],
-  ],
-  [
-    ["예", "예", "아니오"],
-    ["아니오", "아니오"],
-  ],
-]);
-
-const extraInputs = ref({ reason: "거동이 매우 불편함", date: "2026년 4월" });
-const extraRequest = ref("가급적 빠른 처리를 부탁드립니다.");
-
-const getSafeAnswer = (sIdx, subIdx, qIdx) => {
-  try {
-    return answers.value[sIdx][subIdx][qIdx] || "";
-  } catch (e) {
-    return "";
-  }
-};
-</script>
 
 <style>
 /* 중요: scoped가 없는 전역 스타일입니다. 

@@ -22,12 +22,12 @@ defineProps({
     :class="isBlur ? isBlur : 'shadow-none my-2 navbar-transparent w-100'"
   >
     <div class="container ps-2 pe-0">
-      <router-link
+      <!-- <router-link
         class="navbar-brand font-weight-bolder ms-lg-0 ms-3"
         :class="darkMode ? 'text-black' : 'text-white'"
         to="/"
         >Argon Dashboard 2</router-link
-      >
+      > -->
       <button
         class="shadow-none navbar-toggler ms-2"
         type="button"

@@ -3,7 +3,8 @@
     <sidebar />
     <div class="row">
       <div class="col-12">
-        <survey-table @submit-survey="surveyInfo" />
+        <surveyCard @submit-survey="surveyInfo" />
+        <!-- 자식 컴포넌트에서 surveyInfo 함수 가져와서 데이터 받음 -->
         <surveyAnswer />
       </div>
     </div>
@@ -11,16 +12,15 @@
 </template>
 
 <script setup>
-import surveyTable from "./components/surveyCard.vue";
-import Sidebar from "../examples/Sidenav/SidenavList.vue";
-import { ref, reactive, onMounted } from "vue";
-import { useRouter } from "vue-router"; //👉 페이지 이동(라우팅) 위해 사용
-
-const router = useRouter(); //👉 router 객체 생성 → router.push() 사용 가능
+import surveyCard from "./components/surveyCard.vue"; //조사지 카드 컴포넌트 가져옴
+import Sidebar from "../examples/Sidenav/SidenavList.vue"; //사이드바 컴포넌트 가져옴
+import { ref, reactive } from "vue";
+import { useRouter } from "vue-router"; //페이지 이동(라우팅) 위해 사용
+const router = useRouter(); //router 인스턴스 생성
 
 ////조사지 등록 함수
 const info = reactive({
-  //👉 서버로 보낼 설문 데이터 객체
+  //서버로 보낼 설문 데이터 객체
   J_ID: "",
   Ver_Id: "",
   G_UserId: "",
@@ -31,21 +31,19 @@ const info = reactive({
   updated_at: null,
 });
 
-const isPrinted = ref(false); //👉 실패 여부 표시용 상태값
+const isPrinted = ref(false);
+//디비에 등록하려고 하는 데이터가 출력이 되었는지 묻는 코드고, 기본값은 출력안됐는 의미
 
-// [수정] 자식으로부터 데이터를 받기 위해 payload 파라미터 추가
+//자식 컴포넌트(surveyCard)가 보낸 데이터를 받기 위해 payload 파라미터 추가
 const surveyInfo = async (payload) => {
   console.log("자식으로부터 받은 데이터:", payload);
-
   // 0. 전달받은 데이터를 전송 객체에 할당
-  info.result = JSON.stringify(payload.answers);
-  //👉 우선순위 결과 저장 👉 배열/객체 → 문자열로 변환해서 서버 전송
-  info.reason = payload.extraInputs.reason; //👉 반려사유 저장
-  info.created_at = new Date(); //👉 현재 시간 저장
+  info.result = payload.extraInputs.result; // 우선순위 저장 (조사지 첫 등록건이라 우선순위 없음)
+  info.reason = payload.extraInputs.reason; //반려사유 저장 (조사지 첫 등록건이라 반려사유 없음)
+  info.created_at = new Date(); //현재 시간 저장
 
   let data = {
-    //👉 서버로 보낼 최종 데이터 객체 생성 👉 reactive에서 값 꺼내서 새 객체로 구성
-    //불필요한 반응성 제거 + API 전송용 데이터 정리
+    //서버로 보낼 최종 데이터 객체 생성 => reactive에서 값 꺼내서 새 객체로 구성
     J_ID: info.J_ID,
     Ver_Id: info.Ver_Id,
     G_UserId: info.G_UserId,
@@ -56,25 +54,24 @@ const surveyInfo = async (payload) => {
     updated_at: info.updated_at,
   };
 
-  data.answers = [
-    { question_id: 1, answer: "예" },
-    { question_id: 2, answer: "아니오" },
-  ];
+  data.answers = payload.answers; //surveyCard에 있는 answers 코드 안에 있는 예/아니오 데이터 가져옴
 
   try {
-    let response = await fetch(`http://localhost:3000/survey/user/survey`, {
+    let response = await fetch(`http://localhost:3000/survey/user`, {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
 
     let result = await response.json();
+    console.log(result);
 
     if (result && result.status == "success") {
       //👉 서버가 성공 응답했는지 체크
       alert("정상적으로 등록되었습니다.");
-      router.push({ name: "userSurveyAdd", params: { no: result.J_ID } });
-      console.log(`등록 완료 회원번호 : ${result.J_ID}`);
+      router.push({ name: "userMain", params: { no: result.J_ID } });
+      //여기서 등록 버튼을 클릭했을때 정상적으로 데이터가 넘어가면 일반이용자 조사지 메인페이지로 넘어감
+      console.log(`등록되었습니다. 조사지번호 : ${result.J_ID}`);
     } else {
       isPrinted.value = true; //👉 실패 상태 ON
       alert("등록에 실패했습니다.");
@@ -106,67 +103,4 @@ const surveyInfo = async (payload) => {
 // answer.result = JSON.stringify(payload.answer);
 
 // answer.res
-
-//조사지 조회 함수
-const allSections = ref([]); // 문항 데이터
-const answers = ref([]); // 선택된 답변
-const extraInputs = ref({}); // 추가 입력
-const extraRequest = ref(""); // 추가 요청사항
-
-onMounted(async () => {
-  try {
-    const J_ID = "SUV0000"; // 조회할 조사지 ID
-    const response = await fetch(
-      `http://localhost:3000/survey/getQuestionsByJID/${J_ID}`,
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const rawQuestions = await response.json();
-    // ✅ 수정: rawQuestions 선언 후 console.log 사용
-
-    console.log("DB에서 내려온 데이터:", rawQuestions); // ✅ 수정: 선언 후 로그 출력
-
-    // DB에서 내려온 raw 데이터를 Vue template 구조에 맞게 변환
-    const sectionsMap = {};
-
-    rawQuestions.forEach((q) => {
-      // section 구분
-      if (!sectionsMap[q.titleCode]) {
-        sectionsMap[q.titleCode] = { title: q.titleCode, subs: [] };
-      }
-      const section = sectionsMap[q.titleCode];
-
-      // subTitle 별로 sub 생성
-      let sub = section.subs.find((s) => s.subTitle === q.subTitle);
-      if (!sub) {
-        sub = {
-          subTitle: q.subTitle,
-          description: q.description || "",
-          questions: [],
-        };
-        section.subs.push(sub);
-      }
-
-      sub.questions.push({
-        text: q.question_text,
-        question_id: q.question_id,
-        hasExtraInput: false, // 필요 시 DB 컬럼 추가 후 true/false 처리
-      });
-    });
-
-    allSections.value = Object.values(sectionsMap);
-
-    // 답변/추가 입력 초기값
-    answers.value = [];
-    extraInputs.value = {};
-    extraRequest.value = "";
-
-    console.log("뷰용 구조로 변환한 데이터:", allSections.value);
-  } catch (err) {
-    console.error("조사항목 불러오기 실패:", err);
-  }
-});
 </script>

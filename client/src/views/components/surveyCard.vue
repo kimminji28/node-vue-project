@@ -1,3 +1,165 @@
+<!-- <김민지, 전체 코드 다이어트+주석달기 2026.03.25> -->
+<script setup>
+import { ref, reactive } from "vue";
+
+const allSections = [
+  //설문 전체 구조 (카테고리 → 질문)
+  {
+    title: "지원사유", //section1 대분류
+    subs: [
+      {
+        subTitle: "긴급 지원 필요", //sub 중분류
+        description: "즉시 지원인식 및 서비스 필요",
+        questions: [
+          "현재 긴급하게 도움이 필요한 상황(주거, 건강, 안전 등)이 있다.",
+          "최근 돌봄 제공자(가족, 보호자)의 부재 또는 돌봄 공백이 발생하였다.",
+          "현재 상황이 즉각적인 공공기관 또는 서비스 지원이 필요할 정도로 위급하다.",
+        ],
+      },
+      {
+        subTitle: "중점 지원 필요",
+        description: "즉시 지원인식 및 서비스 필요",
+        questions: [
+          "일상생활을 유지하기 위해 지속적인 도움이나 지원 서비스가 필요하다.",
+          "현재 받고 있는 지원만으로는 생활 유지에 어려움이 있다.",
+          "특정 영역(건강, 생활, 이동 등)에서 우선적으로 지원이 필요하다.",
+        ],
+      },
+      {
+        subTitle: "계획 수립 필요",
+        description: "즉시 지원인식 및 서비스 필요",
+        questions: [
+          "앞으로의 생활 또는 서비스 이용을 위한 장기적인 계획이 필요하다.",
+          "현재 이용 가능한 지원 서비스나 제도에 대한 안내 및 상담이 필요하다.",
+          {
+            text: "향후 생활 지원을 위한 개인 맞춤형 계획 수립이 필요하다.",
+            hasExtraInput: true, //추가 입력창 필요
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "지원이 필요한 서비스", //section2 대분류
+    subs: [
+      {
+        subTitle: "개인별 지원", //sub 중분류
+        questions: [
+          "개인의 상황에 맞는 맞춤형 지원 서비스가 필요하다.",
+          "일상생활(식사, 위생, 정리 등)에 개인 지원이 필요하다.",
+          "개인 활동(외출, 사회활동 등)에 도움이 필요하다.",
+        ],
+      },
+      {
+        subTitle: "교통",
+        questions: [
+          "병원, 복지시설 등 필요한 장소로 이동하는데 어려움이 있다.",
+          "대중교통 이용이 어렵거나 제한이 있다.",
+        ],
+      },
+    ],
+  },
+  {
+    title: "이용중인 복지 서비스", //section3
+    subs: [
+      {
+        subTitle: "생활안정", //sub 중분류
+        questions: [
+          "현재 생활비 또는 기본적인 생계 유지에 어려움이 있다.",
+          "안정적인 주거 환경 유지에 어려움이 있다.",
+          "생활을 유지하기 위해 추가적인 경제적 지원이 필요하다.",
+        ],
+      },
+      {
+        subTitle: "고용",
+        questions: [
+          "취업을 원하지만 취업 기회를 얻기 어렵다.",
+          "취업을 위해 직업 교육 또는 취업 지원 서비스가 필요하다.",
+        ],
+      },
+    ],
+  },
+];
+
+const answers = reactive(
+  allSections.map((s) => s.subs.map((sub) => sub.questions.map(() => ""))),
+  //allSections : 문항 큰 틀
+  //subs : 문항 소제목들
+  //questions : 문항들
+  //버튼 결과를 저장할 공간을 미리 만들어놓는다는 의미
+  //[[ ["", "", ""], ["", "", ""] ], [ ["", "", ""], ["", ""] ],]
+);
+
+const extraRequest = ref(""); //추가 요청 텍스트 (단일 값)
+const isModalOpen = ref(false); //모달창이 기본적으로 닫혀있음
+
+const extraInputs = reactive({
+  result: "",
+  reason: "",
+  date: "",
+  //초기값이 빈 문자열("")인 상태
+  //객체를 반응형으로 바꿔서 값을 렌더링함 / 입력하면 입력한 값이 렌더링됨
+});
+
+const openModal = () => {
+  //모달 열기 / 스크롤 막기 (overflow = hidden)
+  isModalOpen.value = true;
+  document.body.style.overflow = "hidden";
+  //모달 열었을 때 뒤에 있는 기본 페이지가 스크롤 안되게 막아줌
+};
+
+const closeModal = () => {
+  //모달 닫기 / 스크롤 다시 가능
+  isModalOpen.value = false;
+  document.body.style.overflow = "auto";
+  //모달 닫으면 뒤에 있던 기본 페이지 다시 스크롤 가능
+};
+
+//모달창 등록 함수 / emit 정의 (함수 밖에 선언) -> 부모로 이벤트 내보내기
+const emit = defineEmits(["submit-survey"]);
+
+//등록 버튼 클릭 시 실행될 통합 함수
+const surveyInfo = () => {
+  //설문 제출 함수 시작
+  // 1. 부모(survey.vue)에게 사용자가 체크한 데이터를 보냄 => submit-survey 이벤트 활용
+  emit("submit-survey", {
+    answers: answers, // 사용자가 체크한 '예/아니오' 배열
+    extraInputs: extraInputs, // 구체적 사유 및 필요시기
+    extraRequest: extraRequest.value, //추가 요청사항 텍스트 값
+  });
+
+  // 2. 등록됐을떄 알림창 띄움
+  alert("정상적으로 등록되었습니다.");
+
+  // 3. 모달창 내부에서 취소 버튼 클릭 시 모달창 닫힘
+  closeModal(); //모달 닫기
+};
+
+//조사지 문항 취소 버튼 클릭 시 데이터 초기화
+const resetCancel = () => {
+  // answers 초기화 (핵심🔥)
+  allSections.forEach((section, sIdx) => {
+    section.subs.forEach((sub, subIdx) => {
+      sub.questions.forEach((_, qIdx) => {
+        answers[sIdx][subIdx][qIdx] = "";
+        // [sIdx][subIdx][qIdx] -> 인덱스 값이 자동으로 만들어짐
+      });
+    });
+  });
+
+  // extraInputs 초기화
+  extraInputs.reason = ""; //입력한 데이터 초기화
+  extraInputs.date = ""; //입력한 데이터 초기화
+
+  // textarea 초기화
+  extraRequest.value = ""; //입력한 데이터 초기화
+
+  //모달 닫기
+  closeModal();
+};
+</script>
+
+<!-- 조사지 문항 템플릿 -->
 <template>
   <div class="py-4 container-fluid">
     <div class="row">
@@ -138,19 +300,25 @@
                 rows="4"
                 v-model="extraRequest"
               ></textarea>
+              <!-- textarea에 글 쓰면 자동으로 extraRequest 값이 바뀜 -->
             </div>
 
             <div class="d-flex justify-content-end mt-4">
               <button class="btn btn-success me-2" @click="openModal">
                 저장
               </button>
-              <button class="btn btn-outline-secondary">취소</button>
+              <button class="btn btn-outline-secondary" @click="resetCancel">
+                취소
+              </button>
+              <!-- 취소 버튼은 아직 이벤트가 안걸려있는데 취소 버튼 클릭 시
+               입력한 텍스트가 리셋돼야함 -->
             </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- 모달창 템플릿 / Transition 쓰는 이유는 모달창이 부드럽게 열리게 하려고 사용함-->
     <Transition name="fade">
       <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
         <div class="modal-content-wrapper card shadow-lg mt-5 mb-5">
@@ -193,6 +361,12 @@
                         class="ps-3 py-1 text-xxs font-weight-bolder text-info"
                       >
                         {{ sub.subTitle }}
+                        <span
+                          v-if="sub.description"
+                          class="ms-2 text-muted text-xxs"
+                          >{{ sub.description }}</span
+                        >
+                        <!-- description 값이 있어서 v-if 사용해 렌더링 -->
                       </td>
                     </tr>
                     <tr v-for="(q, qIdx) in sub.questions" :key="'mq' + qIdx">
@@ -224,6 +398,7 @@
                             >
                             <div class="p-2 bg-white border border-radius-sm">
                               {{ extraInputs.date || "(입력 안 함)" }}
+                              <!-- 값이 없으면 기본 메세지 띄워줌 -->
                             </div>
                           </div>
                         </div>
@@ -254,6 +429,7 @@
               </h6>
               <div class="p-3 bg-light border-radius-md text-sm min-vh-10">
                 {{ extraRequest || "입력 사항 없음" }}
+                <!-- 값(false, null, undefined, "")이 없으면 "입력 사항 없음" 출력 -->
               </div>
             </div>
           </div>
@@ -269,145 +445,6 @@
     </Transition>
   </div>
 </template>
-
-<script setup>
-import { ref, reactive } from "vue";
-
-// import { useRouter } from "vue-router";
-
-// const router = useRouter();
-
-const allSections = [
-  //설문 전체 구조 (카테고리 → 질문)
-  {
-    title: "지원사유",
-    subs: [
-      {
-        subTitle: "긴급 지원 필요",
-        description: "즉시 지원인식 및 서비스 필요",
-        questions: [
-          "현재 긴급하게 도움이 필요한 상황(주거, 건강, 안전 등)이 있다.",
-          "최근 돌봄 제공자(가족, 보호자)의 부재 또는 돌봄 공백이 발생하였다.",
-          "현재 상황이 즉각적인 공공기관 또는 서비스 지원이 필요할 정도로 위급하다.",
-        ],
-      },
-      {
-        subTitle: "중점 지원 필요",
-        description: "즉시 지원인식 및 서비스 필요",
-        questions: [
-          "일상생활을 유지하기 위해 지속적인 도움이나 지원 서비스가 필요하다.",
-          "현재 받고 있는 지원만으로는 생활 유지에 어려움이 있다.",
-          "특정 영역(건강, 생활, 이동 등)에서 우선적으로 지원이 필요하다.",
-        ],
-      },
-      {
-        subTitle: "계획 수립 필요",
-        description: "즉시 지원인식 및 서비스 필요",
-        questions: [
-          "앞으로의 생활 또는 서비스 이용을 위한 장기적인 계획이 필요하다.",
-          "현재 이용 가능한 지원 서비스나 제도에 대한 안내 및 상담이 필요하다.",
-          {
-            text: "향후 생활 지원을 위한 개인 맞춤형 계획 수립이 필요하다.",
-            hasExtraInput: true, //추가 입력창 필요
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "지원이 필요한 서비스",
-    subs: [
-      {
-        subTitle: "개인별 지원",
-        questions: [
-          "개인의 상황에 맞는 맞춤형 지원 서비스가 필요하다.",
-          "일상생활(식사, 위생, 정리 등)에 개인 지원이 필요하다.",
-          "개인 활동(외출, 사회활동 등)에 도움이 필요하다.",
-        ],
-      },
-      {
-        subTitle: "교통",
-        questions: [
-          "병원, 복지시설 등 필요한 장소로 이동하는데 어려움이 있다.",
-          "대중교통 이용이 어렵거나 제한이 있다.",
-        ],
-      },
-    ],
-  },
-  {
-    title: "이용중인 복지 서비스",
-    subs: [
-      {
-        subTitle: "생활안정",
-        questions: [
-          "현재 생활비 또는 기본적인 생계 유지에 어려움이 있다.",
-          "안정적인 주거 환경 유지에 어려움이 있다.",
-          "생활을 유지하기 위해 추가적인 경제적 지원이 필요하다.",
-        ],
-      },
-      {
-        subTitle: "고용",
-        questions: [
-          "취업을 원하지만 취업 기회를 얻기 어렵다.",
-          "취업을 위해 직업 교육 또는 취업 지원 서비스가 필요하다.",
-        ],
-      },
-    ],
-  },
-];
-
-const answers = reactive(
-  allSections.map((s) => s.subs.map((sub) => sub.questions.map(() => ""))),
-  //구조를 그대로 따라가서 빈 값("")으로 초기화
-  //[[ ["", "", ""], ["", "", ""] ], [ ["", "", ""], ["", ""] ],]
-  //section → sub → question 순서 + 각 질문에 "예 / 아니오" 저장할 자리
-);
-
-const extraInputs = reactive({
-  reason: "",
-  date: "",
-  //추가 입력값 저장
-  //reason → 구체적 사유 + / date → 필요 시기
-});
-
-const extraRequest = ref(""); //추가 요청 텍스트 (단일 값)
-const isModalOpen = ref(false); //모달 열림 여부 1. false → 닫힘 / 2. true → 열림
-
-const openModal = () => {
-  //모달 열기 / 스크롤 막기 (overflow = hidden)
-  isModalOpen.value = true;
-  document.body.style.overflow = "hidden";
-};
-
-const closeModal = () => {
-  //모달 닫기 / 스크롤 다시 가능
-  isModalOpen.value = false;
-  document.body.style.overflow = "auto";
-};
-
-// [1] 상단에 emit 정의 (함수 밖에 선언) -> 부모로 이벤트 내보내기
-const emit = defineEmits(["submit-survey"]);
-
-// [2] 등록 버튼 클릭 시 실행될 통합 함수
-const surveyInfo = () => {
-  //설문 제출 함수 시작
-  // 1. 부모(survey.vue)에게 신호와 데이터를 함께 보냄
-  emit("submit-survey", {
-    answers: answers, // 사용자가 체크한 '예/아니오' 배열
-    extraInputs: extraInputs, // 구체적 사유 및 필요시기
-  });
-
-  // 2. 알림창 표시 (선택사항 - 부모에서 띄워도 됩니다)
-  alert("정상적으로 등록되었습니다.");
-
-  // 3. 확인 모달 닫기
-  closeModal(); //모달 닫기
-
-  // ⚠️ 주의: 자식에서 router.push를 하면 부모의 통신 로직이 완료되기 전에
-  // 페이지가 이동될 수 있습니다. 페이지 이동은 부모(survey.vue)의
-  // surveyInfo 함수 마지막에 넣는 것을 권장합니다.
-};
-</script>
 
 <style scoped>
 .custom-radio {
