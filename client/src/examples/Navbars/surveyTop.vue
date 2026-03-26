@@ -20,13 +20,17 @@
               </div>
               <ul class="nav nav-pills custom-top-menu" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link text-xs p-2" href="#">첫 화면</a>
+                  <RouterLink
+                    class="nav-link text-xs p-2"
+                    :to="{ name: 'userMain' }"
+                    >첫 화면</RouterLink
+                  >
                 </li>
                 <li class="nav-item">
                   <a class="nav-link text-xs p-2" href="#">공지사항</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link text-xs p-2" href="#">지원 계획서</a>
+                  <a class="nav-link text-xs p-2" href="#">히스토리</a>
                 </li>
               </ul>
             </div>
@@ -42,7 +46,11 @@
             <div class="col-lg-4 col-md-7 mt-lg-0 mt-2">
               <ul class="nav nav-pills justify-content-end">
                 <li class="nav-item">
-                  <a class="nav-link text-xs p-2" href="#">My Page</a>
+                  <RouterLink
+                    class="nav-link text-xs p-2"
+                    :to="{ name: 'userSupport' }"
+                    >My Page</RouterLink
+                  >
                 </li>
                 <li class="nav-item">
                   <a class="nav-link text-xs p-2" href="#">Log Out</a>

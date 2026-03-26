@@ -1,5 +1,6 @@
 //조사지 관련 sql문
 
+//조회페이지
 //조사지 전체조회 <김민지, 조사지 전체조회 쿼리 작성>
 const selectSurveyAll = `
 SELECT J_ID,
@@ -13,7 +14,7 @@ SELECT J_ID,
 FROM Survey_Tbl
 ORDER BY J_ID`;
 
-//조사지 건별조회 <김민지, 조사지 건별조회 쿼리 작성>
+//조사지 건별조회 <김민지, 조사지 건별조회 쿼리 작성> <김민지, 쿼리 0326수정>
 const selectSurveyById = `
 SELECT 
     s.J_ID,
@@ -25,21 +26,31 @@ SELECT
     s.created_at,
     q.question_id,
     q.titleCode,
-    q.subTitle,
+    q.question_no,
     q.question_text,
     q.answer_type,
-    q.isEmergency,
-    a.answer_text,
-    a.extra_input
+    a.answer_id,
+    a.answer
 FROM Survey_Tbl s
-JOIN SurveyItem_Tbl q ON s.J_ID = q.J_ID
+JOIN SurveyItem_Tbl q
+ON   s.Ver_Id = q.Ver_Id
 LEFT JOIN SurveyAnswer_Tbl a 
-       ON q.question_id = a.question_id 
-      AND a.user_id = s.G_UserId
-WHERE s.Ver_Id = ?
+     ON q.question_id = a.question_id
+     AND s.J_ID = a.J_ID
+WHERE s.J_ID = ?
 ORDER BY q.question_no;
 `;
 
+// //조사지 답변 조회 <김민지, 260326 추가>
+// const surveySelectAnswer = `
+// SELECT answer_id,
+//        J_ID,
+//        question_id,
+//        answer
+// FROM SurveyUserAnswer_Tbl;
+// ORDER BY answer_id`;
+
+//등록페이지
 //조사지 등록 <김민지, 조사지 등록 쿼리 작성>
 const insertSurvey = `
 INSERT INTO Survey_Tbl (
@@ -54,14 +65,6 @@ INSERT INTO Survey_Tbl (
 VALUES(?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
-//일반이용자 조사지 등록 마지막 pk조회 sql문 (김민지 26.03.24 추가)
-const lastJId = ` 
-SELECT J_ID
-FROM Survey_Tbl
-ORDER BY J_ID DESC
-LIMIT 1
-    `;
-
 // SurveyUserAnswer_Tbl에 답변 등록 <김민지, 조사지 답변 쿼리 26.03.24 추가>
 const insertSurveyAnswer = `
 INSERT INTO SurveyUserAnswer_Tbl (
@@ -72,8 +75,8 @@ INSERT INTO SurveyUserAnswer_Tbl (
 ) VALUES (?, ?, ?, ?)
 `;
 
-// 조사지 기본정보 + 문항 가져오기 <김민지, 2026.03.24>
-const surveyQuestion = `
+// 조사지 문항 조회 쿼리 <김민지, 2026.03.24>
+const surveySelectItem = `
 SELECT
   question_id,
   Ver_Id,
@@ -83,13 +86,27 @@ SELECT
   answer_type
 FROM SurveyItem_Tbl
 WHERE Ver_Id = ?
-ORDER BY question_no;`;
+ORDER BY question_no`;
+
+//일반이용자 조사지 등록 마지막 pk조회 sql문 (김민지 26.03.24 추가)
+const lastJId = ` 
+SELECT J_ID
+FROM Survey_Tbl
+ORDER BY J_ID DESC
+LIMIT 1`;
+
+const lastAnswer = `
+SELECT answer_id
+FROM SurveyUserAnswer_Tbl
+ORDER BY answer_id DESC
+LIMIT 1`;
 
 module.exports = {
   selectSurveyAll,
   selectSurveyById,
   insertSurvey,
-  lastJId,
   insertSurveyAnswer,
-  surveyQuestion,
+  surveySelectItem,
+  lastJId,
+  lastAnswer,
 };

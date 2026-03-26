@@ -21,9 +21,9 @@ const extraRequest = ref(""); // 추가 요청사항
 
 onMounted(async () => {
   try {
-    const Ver_Id = "FORM0001"; // 조회할 설문지 ID 정의
+    const J_Id = "FORM0001"; // 조회할 설문지 ID 정의
 
-    const response = await fetch(`/api/survey/getQuestionsByJID/${Ver_Id}`);
+    const response = await fetch(`/api/survey/getQuestionsByJID/${J_Id}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

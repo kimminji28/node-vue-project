@@ -42,8 +42,8 @@ const isPrinted = ref(false);
 const surveyInfo = async (payload) => {
   console.log("자식으로부터 받은 데이터:", payload);
   // 0. 전달받은 데이터를 전송 객체에 할당
-  info.result = payload.extraInputs.result; // 우선순위 저장 (조사지 첫 등록건이라 우선순위 없음)
-  info.reason = payload.extraInputs.reason; //반려사유 저장 (조사지 첫 등록건이라 반려사유 없음)
+  info.result = payload.extraInputs.result?.trim() || null; // 우선순위 저장 (조사지 첫 등록건이라 우선순위 없음)
+  info.reason = payload.extraInputs.reason || null; //반려사유 저장 (조사지 첫 등록건이라 반려사유 없음)
   info.created_at = new Date(); //현재 시간 저장
 
   let data = {
@@ -52,8 +52,8 @@ const surveyInfo = async (payload) => {
     Ver_Id: info.Ver_Id,
     G_UserId: info.G_UserId,
     support_id: info.support_id,
-    result: info.result,
-    reason: info.reason,
+    result: null,
+    reason: null,
     created_at: info.created_at,
     updated_at: info.updated_at,
   };

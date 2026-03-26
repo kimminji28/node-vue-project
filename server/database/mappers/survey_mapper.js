@@ -2,6 +2,7 @@
 const { pool } = require("../DAO");
 const surveySql = require("../sql/survey_sql");
 
+//조사지 조회페이지!!!!!!!!!!!!!!!!!
 //조사지 전체조회 <김민지, 디비에 있는 데이터 가져와서 전체조회 26.03.23 추가>
 const selectSurveyAll = async () => {
   let conn = null;
@@ -17,12 +18,12 @@ const selectSurveyAll = async () => {
 };
 
 //조사지 건별조회 <김민지, 디비에 있는 데이터 가져와서 건별조회 26.03.23 추가>
-const selectSurveyById = async (no) => {
+const selectSurveyById = async (J_ID) => {
   let conn = null;
   conn = await pool.getConnection();
   try {
-    let rows = await conn.query(surveySql.selectSurveyById, no);
-    return rows[0];
+    let rows = await conn.query(surveySql.selectSurveyById, J_ID);
+    return rows;
   } catch (err) {
     console.log(err);
   } finally {
@@ -30,6 +31,22 @@ const selectSurveyById = async (no) => {
   }
 };
 
+// //조사지 답변 조회 <김민지 26.03.24 추가>
+// const surveySelectAnswer = async (data) => {
+//   let conn = null;
+//   try {
+//     conn = await pool.getConnection();
+//     let rows = await conn.query(surveySql.surveySelectAnswer, data);
+//     console.log(rows);
+//     return rows;
+//   } catch (err) {
+//     console.log(err);
+//   } finally {
+//     if (conn) conn.release();
+//   }
+// };
+
+//조사지 등록페이지!!!!!!!!!!!!!!!!!
 //조사지 등록 <김민지 26.03.23 추가> 👉등록1번
 const insertSurvey = async (surveyInfo) => {
   let conn = null; //아직 커넥션 안빌려왔으니 초기값을 null로 설정;
@@ -77,27 +94,12 @@ const insertSurveyAnswer = async (answerData) => {
   }
 };
 
-//조사지 답변 <김민지 26.03.24 추가>
-const selectAnswer = async (data) => {
-  let conn = null;
-  try {
-    conn = await pool.getConnection();
-    let rows = await conn.query(surveySql.selectAnswer, data);
-    console.log(rows);
-    return rows;
-  } catch (err) {
-    console.log(err);
-  } finally {
-    if (conn) conn.release();
-  }
-};
-
 //조사지 마지막 답변 (pk 생성용) 마지막 row pk조회(김민지 26.03.24 추가)
 const lastAnswer = async () => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let rows = await conn.query(surveySql.selectAnswer);
+    let rows = await conn.query(surveySql.lastAnswer);
     console.log(rows);
     return rows;
   } catch (err) {
@@ -108,11 +110,11 @@ const lastAnswer = async () => {
 };
 
 //조사지 문항에 대한 답변 <김민지, 26.03.24 추가>
-const selectQuestionsByJID = async (id) => {
+const selectItemsByJID = async (id) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let rows = await conn.query(surveySql.surveyQuestion, [id]); // MySQL2 기준
+    let rows = await conn.query(surveySql.surveySelectItem, [id]); // MySQL2 기준
     return rows;
   } catch (err) {
     console.log(err);
@@ -124,10 +126,9 @@ const selectQuestionsByJID = async (id) => {
 module.exports = {
   selectSurveyAll,
   selectSurveyById,
+  selectItemsByJID,
   insertSurvey,
   getLastJID,
-  selectAnswer,
   lastAnswer,
   insertSurveyAnswer,
-  selectQuestionsByJID,
 };
