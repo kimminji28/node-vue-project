@@ -61,9 +61,16 @@ INSERT INTO Survey_Tbl (
        result,
        reason,
        created_at,
-       updated_at)
-VALUES(?, ?, ?, ?, ?, ?, ?, ?)
-`;
+       updated_at
+)
+VALUES (
+?,  -- J_ID
+       (SELECT Ver_Id 
+        FROM SurveyForm_Tbl 
+        WHERE use_yn = 'Y' 
+        ORDER BY created_at DESC 
+        LIMIT 1),
+       ?, ?, ?, ?, ?, ?)`;
 
 // SurveyUserAnswer_Tbl에 답변 등록 <김민지, 조사지 답변 쿼리 26.03.24 추가>
 const insertSurveyAnswer = `
@@ -72,8 +79,7 @@ INSERT INTO SurveyUserAnswer_Tbl (
   J_ID,
   question_id,
   answer
-) VALUES (?, ?, ?, ?)
-`;
+) VALUES (?, ?, ?, ?)`;
 
 // 조사지 문항 조회 쿼리 <김민지, 2026.03.24>
 const surveySelectItem = `
@@ -85,8 +91,14 @@ SELECT
   question_text,
   answer_type
 FROM SurveyItem_Tbl
-WHERE Ver_Id = ?
-ORDER BY question_no`;
+WHERE Ver_Id = (
+    SELECT Ver_Id
+    FROM SurveyForm_Tbl
+    WHERE is_active = 'Y'
+    LIMIT 1
+)
+ORDER BY question_no
+`;
 
 //일반이용자 조사지 등록 마지막 pk조회 sql문 (김민지 26.03.24 추가)
 const lastJId = ` 

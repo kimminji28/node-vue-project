@@ -101,6 +101,11 @@ const findInfoByNo = async (J_ID) => {
 // };
 
 const surveyInfo = async (data) => {
+  if (!data.G_UserId) {
+    console.error("G_UserId가 없습니다!");
+    throw new Error("G_UserId 필수"); // ← throw로 에러 던지기
+  }
+
   try {
     // 1. 조사지 문항 + 답변 전체를 한 번에 처리
     const lastJID = await surveyMapper.getLastJID();
@@ -117,16 +122,34 @@ const surveyInfo = async (data) => {
     const createDate = new Date().toISOString().slice(0, 19).replace("T", " ");
     const updateDate = createDate;
 
+    if (!data.G_UserId) {
+      console.error("G_UserId가 없습니다!");
+      return res.status(400).send({ error: "G_UserId 필수" });
+    }
+    if (!data.Ver_Id) {
+      console.error("Ver_Id가 없습니다!");
+      return res.status(400).send({ error: "Ver_Id 필수" });
+    }
+
+    const [verRow] = await db.query(
+      "SELECT Ver_Id FROM SurveyForm_Tbl WHERE use_yn = 'Y' ORDER BY created_at DESC LIMIT 1",
+    );
+    const Ver_Id = verRow?.Ver_Id;
+    if (!Ver_Id) throw new Error("사용 중인 Ver_Id가 없습니다");
+
     const surveyData = [
       newJID,
-      data.Ver_Id || "FORM0000",
-      data.G_UserId || "GUSR0000",
-      data.support_id || "SUP0000",
+      Ver_Id,
+      data.G_UserId,
+      data.support_id || "",
       data.result || null, //기존 null 처리에서 Vue에서 받은 result JSON 저장
       data.reason || null,
       createDate,
       updateDate,
     ];
+
+    console.log("DEBUG INSERT SURVEY:", surveyData);
+    console.log("G_UserId 전송값:", data.G_UserId);
 
     // Survey_Tbl에 설문 기본 정보 저장
     await surveyMapper.insertSurvey(surveyData);
@@ -153,24 +176,24 @@ const surveyInfo = async (data) => {
       throw new Error("답변 데이터 없음");
     }
 
-    // 👉 1. answer 값들을 하나의 문자열로 합침 ("예,예,아니오,...")
+    // 1. answer 값들을 하나의 문자열로 합침 ("예,예,아니오,...")
     const answerString = data.answers
       .map((ans) => ans.answer) // 각 answer 값만 꺼냄
       .join(","); // 콤마로 합침
 
-    // 👉 2. question_id는 하나만 사용 (첫 번째 질문 기준)
+    // 2. question_id는 하나만 사용 (첫 번째 질문 기준)
     const firstQuestionId = data.answers[0].question_id;
 
-    // 👉 3. answer_id는 1개만 생성 (기존처럼 증가 로직 유지)
+    // 3. answer_id는 1개만 생성 (기존처럼 증가 로직 유지)
     lastAnsIdNum += 1;
     const answer_id = "ANS" + String(lastAnsIdNum).padStart(4, "0");
 
-    // 👉 4. insert도 1번만 실행 (핵심 수정 부분)
+    // 4. insert도 1번만 실행 (핵심 수정 부분)
     const answerData = [
       answer_id, // 생성된 answer_id
       newJID, // 조사지 ID
       firstQuestionId, // 대표 question_id
-      answerString, // 👉 "예,예,아니오,..." 형태로 저장
+      answerString, // "예,예,아니오,..." 형태로 저장
     ];
 
     await surveyMapper.insertSurveyAnswer(answerData);

@@ -21,6 +21,7 @@ import surveyTop from "../examples/Navbars/surveyTop.vue";
 import { ref, reactive } from "vue";
 import { useRouter } from "vue-router"; //페이지 이동(라우팅) 위해 사용
 const router = useRouter(); //router 인스턴스 생성
+// import axios from "axios";
 
 ////조사지 등록 함수
 const info = reactive({
@@ -42,9 +43,15 @@ const isPrinted = ref(false);
 const surveyInfo = async (payload) => {
   console.log("자식으로부터 받은 데이터:", payload);
   // 0. 전달받은 데이터를 전송 객체에 할당
+  info.J_ID = payload.extraInputs.J_ID;
+  info.Ver_Id = payload.Ver_Id || "현재사용중Ver";
+  info.G_UserId = payload.extraInputs.G_UserId;
+  info.support_id = payload.support_id || "";
+
   info.result = payload.extraInputs.result?.trim() || null; // 우선순위 저장 (조사지 첫 등록건이라 우선순위 없음)
   info.reason = payload.extraInputs.reason || null; //반려사유 저장 (조사지 첫 등록건이라 반려사유 없음)
   info.created_at = new Date(); //현재 시간 저장
+  info.updated_at = new Date();
 
   let data = {
     //서버로 보낼 최종 데이터 객체 생성 => reactive에서 값 꺼내서 새 객체로 구성
@@ -56,7 +63,9 @@ const surveyInfo = async (payload) => {
     reason: null,
     created_at: info.created_at,
     updated_at: info.updated_at,
+    answers: payload.answers,
   };
+  console.log("DEBUG 전송 데이터:", data); // 값 확인 필수
 
   data.answers = payload.answers; //surveyCard에 있는 answers 코드 안에 있는 예/아니오 데이터 가져옴
 
@@ -71,13 +80,13 @@ const surveyInfo = async (payload) => {
     console.log(result);
 
     if (result && result.status == "success") {
-      //👉 서버가 성공 응답했는지 체크
+      //서버가 성공 응답했는지 체크
       alert("정상적으로 등록되었습니다.");
       router.push({ name: "userMain", params: { no: result.J_ID } });
       //여기서 등록 버튼을 클릭했을때 정상적으로 데이터가 넘어가면 일반이용자 조사지 메인페이지로 넘어감
       console.log(`등록되었습니다. 조사지번호 : ${result.J_ID}`);
     } else {
-      isPrinted.value = true; //👉 실패 상태 ON
+      isPrinted.value = true;
       alert("등록에 실패했습니다.");
     }
   } catch (err) {

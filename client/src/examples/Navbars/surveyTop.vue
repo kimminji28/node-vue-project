@@ -27,10 +27,14 @@
                   >
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link text-xs p-2" href="#">공지사항</a>
+                  <RouterLink
+                    class="nav-link text-xs p-2"
+                    :to="{ name: 'userSurveyAdd' }"
+                    >조사지신청</RouterLink
+                  >
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link text-xs p-2" href="#">히스토리</a>
+                  <a class="nav-link text-xs p-2" href="#">공지사항</a>
                 </li>
               </ul>
             </div>
