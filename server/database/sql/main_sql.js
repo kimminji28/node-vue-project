@@ -5,7 +5,7 @@ const baseSelect = `
 SELECT gu.name as generalName,
       iu.name as instiName,
       su.name as supportName,
-      DATE_FORMAT(sv.created_at, '%y-%m-%d') as registerDate,
+      sv.created_at as registerDate,
       sv.result as priorityCode,
       sv.J_ID as surveyId,
       (

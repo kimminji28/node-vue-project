@@ -8,7 +8,16 @@ const formatListData = (list) => {
   if (!list || list.length === 0) return [];
 
   // 우선순위 코드 => 등급 변환
+  // 날짜 포맷팅
   return list.map((item) => {
+    if (item.registerDate) {
+      const date = new Date(item.registerDate);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      item.registerDate = `${year}-${month}-${day}`;
+    }
+
     let rankName = "";
     switch (item.priorityCode) {
       case "f005":
