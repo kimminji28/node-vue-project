@@ -13,19 +13,18 @@
                 </div>
               </div>
             </div>
+            <button class="btn btn-outline-primary w-15">이전버전 불러오기</button>
           </div>
 
           <div class="card-body p-4">
-            <div class="row mb-4">
-              <div class="col-md-4">
-                <label class="form-control-label text-sm">버전</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="예: 1.1"
-                  v-model="version"
-                />
-              </div>
+            <div class="mb-4">
+              <label class="form-control-label text-sm">버전</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="예: 1.1"
+                v-model="version"
+              />
             </div>
 
             <div class="mb-4">

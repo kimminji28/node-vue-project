@@ -16,6 +16,12 @@ export default [
     path : "/admin/surveylist",
     name : "adminSurveyList",
     component: () => import("../views/adminSurveyList.vue"),
+  },
+  //시스템 관리자 조사지 버전 Detail
+  {
+    path : "/admin/surveydetail/:verId",
+    name : "adminSurveyDetail",
+    component : () => import("../views/surveyDetail.vue"),
   }
 ];
 

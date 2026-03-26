@@ -56,6 +56,24 @@ SET use_yn = 'Y'
 WHERE Ver_Id = ?
 `;
 
+const getSurveyDetail = 
+`
+SELECT
+    f.Ver_Id,
+    f.version,
+    f.description,
+    f.created_at,
+    i.titleCode,
+    i.question_no,
+    i.question_text,
+    i.answer_type
+FROM SurveyForm_Tbl AS f
+JOIN SurveyItem_Tbl AS i
+    ON f.Ver_Id = i.Ver_Id
+WHERE f.Ver_Id = ?
+ORDER BY i.titleCode, i.question_no
+`;
+
 module.exports = {
   lastFormId,
   lastItemId,
@@ -64,5 +82,6 @@ module.exports = {
   adminLoginSql,
   getSurveyVersionList,
   useYtoNSql,
-  useVersionSql 
+  useVersionSql ,
+  getSurveyDetail
 };

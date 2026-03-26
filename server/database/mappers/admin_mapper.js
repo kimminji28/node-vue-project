@@ -145,11 +145,27 @@ const setActiveVersion = async (verId) => {
   }
 };
 
+const getDetailVersion = async (verId) => {
+  let conn = null;
+
+  try {
+    conn = await pool.getConnection();
+    const rows = await conn.query(adminSql.getSurveyDetail, [verId]);
+    return rows;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
 module.exports = {
   getLastSurveyFormId,
   getLastSurveyItemId,
   insertSurveyAll,
   adminLogin,
   surveyVersionList,
-  setActiveVersion
+  setActiveVersion,
+  getDetailVersion
 };

@@ -3,6 +3,7 @@ import { ref, onBeforeMount, onMounted, onBeforeUnmount, reactive } from "vue";
 import { useStore } from "vuex";
 import ArgonInput from "@/components/ArgonInput.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
+import MyPageHeader from "./components/myPageHeader.vue";
 
 const body = document.getElementsByTagName("body")[0];
 
@@ -250,7 +251,8 @@ const editSup = async (item) => {
 </script>
 <template>
   <main>
-    <div class="container-fluid">
+    <MyPageHeader />
+    <!-- <div class="container-fluid">
       <div class="page-header min-height-100">
         <span class="mask bg-gradient-success opacity-6"></span>
       </div>
@@ -569,7 +571,7 @@ const editSup = async (item) => {
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="py-4 container-fluid">
       <div class="row align-items-stretch">

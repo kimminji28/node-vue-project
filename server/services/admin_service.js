@@ -121,13 +121,29 @@ const getSurveyVersionList = async () => {
 const setActiveVersion = async (verId) => {
   let result = await adminMapper.setActiveVersion(verId);
 
-  return{
-    status : "Success",
-    message : "버전 변경 완료"
+  return {
+    status: "Success",
+    message: "버전 변경 완료"
   }
 };
 
 
+const getSurveyDetail = async (verId) => {
+  const rows = await adminMapper.getDetailVersion(verId);
+
+  if (!rows || rows.length === 0) {
+    return {
+      status: "Fail",
+      message: "해당 버전의 조사지가 없습니다."
+    };
+  }
+
+  return {
+    status: "Success",
+    data: rows
+  };
+};
+
 module.exports = {
-  SurveyInsert, sysAdminLogin, getSurveyVersionList, setActiveVersion
+  SurveyInsert, sysAdminLogin, getSurveyVersionList, setActiveVersion,getSurveyDetail
 };

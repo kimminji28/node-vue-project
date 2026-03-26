@@ -1,5 +1,5 @@
 <script setup>
-import surveyTable from "./components/surveyInsertCard.vue";
+import surveyTable from "./components/surveyVersionDetail.vue";
 import MyPageHeader from "./components/adminPageHeader.vue";
 </script>
 <template>
