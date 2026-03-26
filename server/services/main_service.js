@@ -11,6 +11,12 @@ const formatListData = (list) => {
   return list.map((item) => {
     let rankName = "";
     switch (item.priorityCode) {
+      case "f005":
+        rankName = "반려";
+        break;
+      case "f004":
+        rankName = "심사중";
+        break;
       case "f003":
         rankName = "긴급";
         break;
@@ -21,7 +27,7 @@ const formatListData = (list) => {
         rankName = "계획";
         break;
       default:
-        rankName = "심사중";
+        rankName = "미정";
         break;
     }
     item.priorityCode = rankName;
