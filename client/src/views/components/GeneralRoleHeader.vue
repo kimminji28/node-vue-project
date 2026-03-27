@@ -72,7 +72,7 @@
           <div
             class="position-absolute top-50 start-50 translate-middle text-center fw-bold"
           >
-            {{ instiName }}님 환영합니다 ({{ getRoleName(userRole) }})
+            {{ generalName }}님 환영합니다 ({{ getRoleName(userRole) }})
           </div>
 
           <div
@@ -129,11 +129,11 @@ const getRoleName = (role) => {
 };
 
 //사용자 이름 (김경환 20260327)
-import { useInstiAuthStore } from "@/stores/counter";
-const instiAuthStore = useInstiAuthStore();
-// const generalAuthStore = useAuthStore();
+import { useAuthStore } from "@/stores/counter";
+// const instiAuthStore = useInstiAuthStore();
+const generalAuthStore = useAuthStore();
 
-const instiName = computed(() => instiAuthStore.user?.name);
-// const generalName = computed(() => generalAuthStore.user.name);
+// const instiName = computed(() => instiAuthStore.user?.name);
+const generalName = computed(() => generalAuthStore.user?.name);
 // const usersRole = computed(() => authStore.user?.roll);
 </script>

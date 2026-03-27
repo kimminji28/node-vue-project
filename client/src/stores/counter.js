@@ -12,7 +12,7 @@ export const useCounterStore = defineStore("counter", () => {
   return { count, doubleCount, increment };
 });
 
-//기관용 이용자 정보 저장(김경환 2026.03.25 ~ 진행 중)
+//기관용 이용자 정보 저장(김경환 2026.03.25)
 export const useInstiAuthStore = defineStore("instiAuth", {
   state: () => ({
     user: null, // 로그인한 유저 정보 저장
@@ -52,6 +52,26 @@ export const useInstiAuthStore = defineStore("instiAuth", {
         this.isLoggedIn = false;
       }
     },
+    async checkLogin() {
+      try {
+        const res = await axios.get("/api/user/instime");
+
+        if (res.data.status === "success") {
+          this.user = res.data.user;
+          this.isLoggedIn = true;
+          return true;
+        } else {
+          this.user = null;
+          this.isLoggedIn = false;
+          return false;
+        }
+      } catch (err) {
+        console.error("로그인 확인 중 오류 발생:", err);
+        this.user = null;
+        this.isLoggedIn = false;
+        return false;
+      }
+    },
   },
 });
 //로그인 이용자 정보 저장(김경환 2026.03.25)
@@ -82,9 +102,36 @@ export const useAuthStore = defineStore("auth", {
         return false;
       }
     },
-    logout() {
-      this.user = null;
-      this.isLoggedIn = false;
+    async logout() {
+      try {
+        await axios.post("/api/user/userlogout");
+      } catch (error) {
+        console.error("로그아웃 요청 중 오류 발생: ", error);
+      } finally {
+        this.user = null;
+        this.isLoggedIn = false;
+      }
+    },
+
+    async checkLogin() {
+      try {
+        const res = await axios.get("/api/user/userme");
+
+        if (res.data.status === "success") {
+          this.user = res.data.user;
+          this.isLoggedIn = true;
+          return true;
+        } else {
+          this.user = null;
+          this.isLoggedIn = false;
+          return false;
+        }
+      } catch (error) {
+        console.error("로그인 확인 중 오류 발생:", error);
+        this.user = null;
+        this.isLoggedIn = false;
+        return false;
+      }
     },
   },
 });

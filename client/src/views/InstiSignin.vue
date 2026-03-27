@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeUnmount, onBeforeMount } from "vue";
+import { ref, onBeforeUnmount, onBeforeMount, onMounted } from "vue";
 import { useStore } from "vuex";
 // import Navbar from "@/examples/PageLayout/Navbar.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
@@ -12,7 +12,7 @@ const store = useStore();
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-//회원가입으로 이동하는 router(김경환 2026.03.25)
+//회원가입으로 이동하는 router( 2026.03.25)
 const goSingup = () => {
   router.push("/user/signup");
 };
@@ -33,7 +33,7 @@ const goMain = async () => {
 
   if (isSuccess) {
     alert(`${authStore.user.name}님, 환영합니다!`); // DB에서 가져온 이름 활용
-    console.log("role:", authStore.roll);
+    // console.log("role:", authStore.user.roll);
     if (authStore.user.roll === "a002") {
       router.push("/general"); // 기관 관리자 메인 페이지로 이동
     } else {
@@ -43,6 +43,26 @@ const goMain = async () => {
     alert("아이디 또는 비밀번호가 올바르지 않습니다.");
   }
 };
+
+//세션 분리 유지(김경환 20260327)
+const loginUser = ref(null);
+
+onMounted(async () => {
+  try {
+    const res = await fetch(`/api/instime`);
+    const data = await res.json();
+
+    if (data.status === "success") {
+      loginUser.value = data.user;
+      console.log("로그인 사용자:", data.user);
+    } else {
+      alert("로그인이 필요합니다.");
+      router.push("/ilogin");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
 onBeforeMount(() => {
   store.state.hideConfigButton = true;
   store.state.showNavbar = false;

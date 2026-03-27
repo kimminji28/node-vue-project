@@ -60,6 +60,35 @@ const addInstiUserInfo = async () => {
     isPrinted.value = true;
   }
 };
+
+//기관이용자 아이디 중복 확인 (김경환 2060327)
+const message = ref("");
+
+const idCheck = ref(false);
+const isDuplicate = ref(false);
+
+const checkUserId = async () => {
+  if (!instiUserInfo.id) {
+    alert("아이디를 입력하세요");
+    return;
+  }
+  try {
+    let res = await fetch(`/api/user/checkinstiid/${instiUserInfo.id}`);
+    let result = await res.json();
+
+    idCheck.value = true;
+    isDuplicate.value = result.duplicate;
+
+    if (result.duplicate) {
+      message.value = "이미 사용중인 아이디입니다.";
+    } else {
+      message.value = "사용 가능한 아이디입니다.";
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 onBeforeMount(() => {
   store.state.hideConfigButton = true;
   store.state.showNavbar = false;
@@ -124,7 +153,7 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="card-body">
-              <form role="form">
+              <form role="login-form">
                 <argon-input
                   id="name"
                   type="text"
@@ -132,13 +161,26 @@ onBeforeUnmount(() => {
                   aria-label="Name"
                   v-model="instiUserInfo.name"
                 />
-                <argon-input
-                  id="id"
-                  type="text"
-                  placeholder="아이디"
-                  aria-label="Id"
-                  v-model="instiUserInfo.id"
-                />
+                <div class="d-flex gap-2">
+                  <argon-input
+                    id="id"
+                    type="text"
+                    placeholder="아이디"
+                    aria-label="Id"
+                    v-model="instiUserInfo.id"
+                  />
+                  <argon-button
+                    class="mt-auto p-3 d-flex justify-content-center gap-3"
+                    @click.prevent="checkUserId"
+                    >중복확인</argon-button
+                  >
+                </div>
+                <p
+                  v-if="message"
+                  :style="{ color: isDuplicate ? 'red' : 'green' }"
+                >
+                  {{ message }}
+                </p>
                 <argon-input
                   id="password"
                   type="password"

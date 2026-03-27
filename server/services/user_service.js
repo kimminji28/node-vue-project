@@ -209,12 +209,24 @@ const confirmInstiUser = async (id, password) => {
 };
 
 //아이디 중복 확인
-// const userIdCheck = async(id)=>{
-//   let info = await userMapper.userIdCheck(id)
-//   if (info.lengh === 0){
-//     return info
-//   }
-// }
+const userIdCheck = async (id) => {
+  let info = await userMapper.userIdCheck(id);
+  if (info[0].cnt > 0) {
+    return { duplicate: true };
+  } else {
+    return { duplicate: false };
+  }
+};
+
+//기관 중복 확인
+const instiIdCheck = async (id) => {
+  let info = await userMapper.instiIdCheck(id);
+  if (info[0].cnt > 0) {
+    return { duplicate: true };
+  } else {
+    return { duplicate: false };
+  }
+};
 module.exports = {
   testSelect,
   createUser,
@@ -225,4 +237,6 @@ module.exports = {
   supDelete,
   confirmUser,
   confirmInstiUser,
+  userIdCheck,
+  instiIdCheck,
 };
