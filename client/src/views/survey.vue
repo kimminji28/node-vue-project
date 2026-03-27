@@ -1,5 +1,5 @@
 <template>
-  <surveyTop />
+  <!-- <surveyTop /> -->
   <!-- <div class="py-4 container-fluid"> -->
   <!-- <sidebar /> -->
   <sidebar @select-support="loadSupportDetail" />
@@ -10,7 +10,7 @@
       !-- <surveyAnswer /> -->
     <!-- </div> -->
     <div class="col-12">
-      <surveyCard
+      <SurveyCard
         :selected-support="selectedSupport"
         @submit-survey="surveyInfo"
       />
@@ -20,45 +20,55 @@
 </template>
 
 <script setup>
-import surveyCard from "./components/surveyCard.vue"; //조사지 카드 컴포넌트 가져옴
+import SurveyCard from "./components/surveyCard.vue"; //조사지 카드 컴포넌트 가져옴
 import Sidebar from "../examples/Sidenav/SidenavList.vue"; //사이드바 컴포넌트 가져옴
-import surveyTop from "./components/surveyHeader.vue";
-import { ref } from "vue";
-import { useRouter } from "vue-router"; //페이지 이동(라우팅) 위해 사용
+// import surveyTop from "./components/surveyHeader.vue";
+import { ref, reactive, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router"; //페이지 이동(라우팅) 위해 사용
 import axios from "axios";
 
 const router = useRouter(); //router 인스턴스 생성
+const route = useRoute();
 
 // --- [추가] 선택된 대상자 정보를 담을 반응형 변수 ---
 const selectedSupport = ref(null);
 
 // --- [추가] 사이드바에서 선택한 ID로 상세 정보를 가져오는 함수 ---
-const loadSupportDetail = async (supportId) => {
+const loadSupportDetail = async (support_id) => {
+  console.log("부모로 들어온 ID:", support_id);
   try {
     // 우리가 만든 라우터 주소로 GET 요청
     const response = await axios.get(
-      `http://localhost:3000/support/${supportId}`,
+      `http://localhost:3000/survey/support/${support_id}`,
     );
-    if (response.data) {
-      selectedSupport.value = response.data[0]; // 받아온 데이터를 저장 -> surveyCard로 전달됨
+    if (response.data && response.data.length > 0) {
+      // 서버에서 배열로 주므로, [0]번째 객체를 저장해야 .support_id를 쓸 수 있음
+      selectedSupport.value = response.data[0];
+      console.log("선택된 support_id 확인:", selectedSupport.value.support_id);
+    } else {
+      selectedSupport.value = null;
     }
   } catch (err) {
     console.error("대상자 정보를 불러오는데 실패했습니다.", err);
   }
 };
 
+onMounted(() => {
+  info.support_id = route.query.support_id; // URL 파라미터에서 가져오기 등
+});
+
 ////조사지 등록 함수
-// const info = reactive({
-//   //서버로 보낼 설문 데이터 객체
-//   J_ID: "",
-//   Ver_Id: "",
-//   G_UserId: "",
-//   support_id: "",
-//   result: null,
-//   reason: null,
-//   created_at: null,
-//   updated_at: null,
-// });
+const info = reactive({
+  //서버로 보낼 설문 데이터 객체
+  J_ID: "",
+  Ver_Id: "",
+  G_UserId: "",
+  support_id: "",
+  result: null,
+  reason: null,
+  created_at: null,
+  updated_at: null,
+});
 
 const isPrinted = ref(false);
 //디비에 등록하려고 하는 데이터가 출력이 되었는지 묻는 코드고, 기본값은 출력안됐는 의미
@@ -66,6 +76,24 @@ const isPrinted = ref(false);
 //자식 컴포넌트(surveyCard)가 보낸 데이터를 받기 위해 payload 파라미터 추가
 const surveyInfo = async (payload) => {
   console.log("자식으로부터 받은 데이터:", payload);
+
+  // const currentGUserId = payload.extraInputs?.G_UserId || "GUSR0000";
+  const finalSupportId =
+    payload.support_id || selectedSupport.value?.support_id;
+  if (!selectedSupport.value?.support_id) {
+    alert("지원 대상자를 먼저 선택해주세요.");
+    return;
+  }
+
+  console.log("selectedSupport:", selectedSupport.value);
+  console.log("payload:", payload);
+  console.log("finalSupportId:", finalSupportId);
+
+  // if (!currentSupportId) {
+  //   alert("지원 대상자를 먼저 선택해주세요.");
+  //   return;
+  // }
+
   // 0. 전달받은 데이터를 전송 객체에 할당
   // info.J_ID = payload.extraInputs.J_ID;
   // info.Ver_Id = payload.Ver_Id || "현재사용중Ver";
@@ -77,12 +105,25 @@ const surveyInfo = async (payload) => {
   // info.created_at = new Date(); //현재 시간 저장
   // info.updated_at = new Date();
 
+  // let data = {
+  //   //서버로 보낼 최종 데이터 객체 생성 => reactive에서 값 꺼내서 새 객체로 구성
+  //   J_ID: info.J_ID,
+  //   Ver_Id: info.Ver_Id,
+  //   G_UserId: info.G_UserId,
+  //   support_id: info.support_id,
+  //   result: null,
+  //   reason: null,
+  //   created_at: info.created_at,
+  //   updated_at: info.updated_at,
+  //   answers: payload.answers,
+  // };
+
   let data = {
     //서버로 보낼 최종 데이터 객체 생성 => reactive에서 값 꺼내서 새 객체로 구성
     J_ID: payload.extraInputs?.J_ID || "",
     Ver_Id: payload.Ver_Id || "현재사용중Ver",
     G_UserId: payload.extraInputs?.G_UserId || "GUSR0000",
-    support_id: payload.support_id,
+    support_id: finalSupportId,
     result: payload.extraInputs?.result?.trim() || null,
     reason: payload.extraInputs?.reason || null,
     created_at: new Date(),
@@ -100,12 +141,14 @@ const surveyInfo = async (payload) => {
     });
 
     let result = await response.json();
-    console.log(result);
 
     if (result && result.status == "success") {
       //서버가 성공 응답했는지 체크
       alert("정상적으로 등록되었습니다.");
-      router.push({ name: "userMain", params: { no: result.J_ID } });
+      router.push({
+        name: "userMain",
+        params: { no: result.J_ID },
+      });
       //여기서 등록 버튼을 클릭했을때 정상적으로 데이터가 넘어가면 일반이용자 조사지 메인페이지로 넘어감
       console.log(`등록되었습니다. 조사지번호 : ${result.J_ID}`);
     } else {

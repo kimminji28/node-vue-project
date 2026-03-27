@@ -64,7 +64,7 @@
                 <li class="nav-item">
                   <RouterLink
                     class="px-3 py-2 mb-0 nav-link active"
-                    :to="{ name: 'userSupport' }"
+                    :to="{ name: 'userSupport', params: 'userid1' }"
                   >
                     <span class="ms-1">My Page</span>
                   </RouterLink>

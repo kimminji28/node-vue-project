@@ -134,38 +134,23 @@ const surveyInfo = async (data) => {
     // );
 
     const getActiveVerId = async () => {
-      const rows = await surveyMapper.getActiveVerId(); // 여기서 rows가 배열인지 확인
-      console.log("rows:", rows);
-
-      // rows가 배열이면
-      if (Array.isArray(rows) && rows.length > 0) {
-        return rows[0].Ver_Id;
-      }
-
-      // rows가 객체이면
-      if (rows && rows.Ver_Id) {
-        return rows.Ver_Id;
-      }
-
-      throw new Error("사용 중인 Ver_Id가 없습니다");
+      let changeVerId = await surveyMapper.getActiveVerId();
+      return changeVerId[0];
     };
 
-    // const activeData = await getActiveVerId();
-    const Ver_Id = await getActiveVerId();
-
-    const now = new Date();
-    const created_at = now.toISOString().slice(0, 19).replace("T", " ");
-    const updated_at = created_at;
+    const activeData = await getActiveVerId();
+    const Ver_Id = activeDataList[0]?.Ver_Id;
+    if (!Ver_Id) throw new Error("사용 중인 Ver_Id가 없습니다");
 
     const surveyData = [
       newJID,
-      Ver_Id || "FORM0000",
+      Ver_Id,
       data.G_UserId,
-      data.support_id || null,
-      null,
-      null,
-      created_at,
-      updated_at,
+      data.support_id,
+      data.result || null, //기존 null 처리에서 Vue에서 받은 result JSON 저장
+      data.reason || null,
+      createDate,
+      updateDate,
     ];
 
     // Survey_Tbl에 설문 기본 정보 저장

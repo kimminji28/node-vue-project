@@ -57,12 +57,12 @@ router.beforeEach(async (to, from, next) => {
   }
 
   //일반 회원 마이페이지 route check
-  if(to.path.includes("/mypage")){
+  if (to.path.includes("/mypage")) {
     try {
       const response = await axios.get("/api/user/session-check");
       const result = response.data;
 
-      if(!result.isLogin){
+      if (!result.isLogin) {
         alert("로그인이 필요합니다.");
         return next("/user/login");
       }
@@ -70,40 +70,37 @@ router.beforeEach(async (to, from, next) => {
       const loginUserId = result.user.id;
       const urlUserId = to.params.userId;
 
-      if(urlUserId && loginUserId !== urlUserId){
+      if (urlUserId && loginUserId !== urlUserId) {
         alert("본인 페이지에만 접근할 수 있습니다.");
         return next(`/${loginUserId}/mypage/support`);
       }
-    }
-    catch (err) {
-      console.log("일반회원 가드 오류",err);
+    } catch (err) {
+      console.log("일반회원 가드 오류", err);
       return next("/user/login");
     }
   }
 
   //기관 회원 route check
-  if(to.path === "/manager"){
-    try{
+  if (to.path === "/manager") {
+    try {
       const response = await axios.get("/api/user/isession-check");
       const result = response.data;
 
-      if(!result.isLogin){
+      if (!result.isLogin) {
         alert("기관 회원 로그인이 필요합니다.");
         return next("/user/login");
       }
       const role = result.user.role;
 
-      if(role !== "a002" && role !== "a003") {
+      if (role !== "a002" && role !== "a003") {
         alert("기관 회원 권한이 없습니다.");
         return next("/user/login");
       }
-
-    }catch (err) {  
-      console.log("기관 회원 가드 오류",err);
+    } catch (err) {
+      console.log("기관 회원 가드 오류", err);
       return next("/user/login");
-    } 
+    }
   }
-
 
   next();
 });
