@@ -25,6 +25,20 @@ const fetchSupportInfo = async (id) => {
   return info;
 };
 
+const processPriorityRequest = async (surveyId, reqData) => {
+  // 프론트에서 넘어온 data: { priority: 'f002', reason: '블라블라' }
+  const { priority, reason } = reqData;
+
+  // 성공 여부(true/false) 리턴
+  const isSuccess = await priorityMapper.requestPriorityApproval(
+    surveyId,
+    priority,
+    reason,
+  );
+  return isSuccess;
+};
+
 module.exports = {
   fetchSupportInfo,
+  processPriorityRequest,
 };

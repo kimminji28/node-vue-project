@@ -14,6 +14,24 @@ LEFT JOIN DisMajor_Tbl dm ON sp.major = dm.b_Code
 WHERE sv.J_ID = ?;
 `;
 
+const insertApprovalWait = `
+INSERT INTO ApprovalWait_Tbl (approval_Id, J_ID, appr_type, appr_reason) 
+VALUES (?, ?, ?, ?);
+`;
+
+const updateSurveyStatus = `
+UPDATE Survey_Tbl 
+SET result = 'f004' 
+WHERE J_ID = ?;
+`;
+
+const selectLastApprovalId = `
+SELECT approval_Id FROM ApprovalWait_Tbl ORDER BY approval_Id DESC LIMIT 1;
+`;
+
 module.exports = {
   selectSupportInfo,
+  insertApprovalWait,
+  updateSurveyStatus,
+  selectLastApprovalId,
 };
