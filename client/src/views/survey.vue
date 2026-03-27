@@ -23,7 +23,7 @@
 import surveyCard from "./components/surveyCard.vue"; //조사지 카드 컴포넌트 가져옴
 import Sidebar from "../examples/Sidenav/SidenavList.vue"; //사이드바 컴포넌트 가져옴
 import surveyTop from "./components/surveyHeader.vue";
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router"; //페이지 이동(라우팅) 위해 사용
 import axios from "axios";
 
@@ -40,8 +40,7 @@ const loadSupportDetail = async (supportId) => {
       `http://localhost:3000/support/${supportId}`,
     );
     if (response.data) {
-      selectedSupport.value = response.data; // 받아온 데이터를 저장 -> surveyCard로 전달됨
-      console.log("선택된 대상자 상세 정보:", selectedSupport.value);
+      selectedSupport.value = response.data[0]; // 받아온 데이터를 저장 -> surveyCard로 전달됨
     }
   } catch (err) {
     console.error("대상자 정보를 불러오는데 실패했습니다.", err);
@@ -49,17 +48,17 @@ const loadSupportDetail = async (supportId) => {
 };
 
 ////조사지 등록 함수
-const info = reactive({
-  //서버로 보낼 설문 데이터 객체
-  J_ID: "",
-  Ver_Id: "",
-  G_UserId: "",
-  support_id: "",
-  result: null,
-  reason: null,
-  created_at: null,
-  updated_at: null,
-});
+// const info = reactive({
+//   //서버로 보낼 설문 데이터 객체
+//   J_ID: "",
+//   Ver_Id: "",
+//   G_UserId: "",
+//   support_id: "",
+//   result: null,
+//   reason: null,
+//   created_at: null,
+//   updated_at: null,
+// });
 
 const isPrinted = ref(false);
 //디비에 등록하려고 하는 데이터가 출력이 되었는지 묻는 코드고, 기본값은 출력안됐는 의미
@@ -68,28 +67,26 @@ const isPrinted = ref(false);
 const surveyInfo = async (payload) => {
   console.log("자식으로부터 받은 데이터:", payload);
   // 0. 전달받은 데이터를 전송 객체에 할당
-  info.J_ID = payload.extraInputs.J_ID;
-  info.Ver_Id = payload.Ver_Id || "현재사용중Ver";
-  info.G_UserId = payload.extraInputs.G_UserId;
-  // --- [수정] 만약 선택된 대상자가 있다면 그 ID를 우선적으로 사용 ---
-  info.support_id =
-    selectedSupport.value?.support_id || payload.support_id || "";
+  // info.J_ID = payload.extraInputs.J_ID;
+  // info.Ver_Id = payload.Ver_Id || "현재사용중Ver";
+  // info.G_UserId = currentGUserId;
+  // info.support_id = finalSupportId;
 
-  info.result = payload.extraInputs.result?.trim() || null; // 우선순위 저장 (조사지 첫 등록건이라 우선순위 없음)
-  info.reason = payload.extraInputs.reason || null; //반려사유 저장 (조사지 첫 등록건이라 반려사유 없음)
-  info.created_at = new Date(); //현재 시간 저장
-  info.updated_at = new Date();
+  // info.result = payload.extraInputs.result?.trim() || null; // 우선순위 저장 (조사지 첫 등록건이라 우선순위 없음)
+  // info.reason = payload.extraInputs.reason || null; //반려사유 저장 (조사지 첫 등록건이라 반려사유 없음)
+  // info.created_at = new Date(); //현재 시간 저장
+  // info.updated_at = new Date();
 
   let data = {
     //서버로 보낼 최종 데이터 객체 생성 => reactive에서 값 꺼내서 새 객체로 구성
-    J_ID: info.J_ID,
-    Ver_Id: info.Ver_Id,
-    G_UserId: info.G_UserId,
-    support_id: info.support_id,
-    result: null,
-    reason: null,
-    created_at: info.created_at,
-    updated_at: info.updated_at,
+    J_ID: payload.extraInputs?.J_ID || "",
+    Ver_Id: payload.Ver_Id || "현재사용중Ver",
+    G_UserId: payload.extraInputs?.G_UserId || "GUSR0000",
+    support_id: payload.support_id,
+    result: payload.extraInputs?.result?.trim() || null,
+    reason: payload.extraInputs?.reason || null,
+    created_at: new Date(),
+    updated_at: new Date(),
     answers: payload.answers,
   };
 

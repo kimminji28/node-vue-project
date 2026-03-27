@@ -87,6 +87,13 @@ const extraRequest = ref("");
 const isModalOpen = ref(false);
 const extraInputs = reactive({ result: "", reason: "", date: "" });
 
+const props = defineProps({
+  selectedSupport: {
+    type: Object,
+    default: null,
+  },
+});
+
 const openModal = () => {
   isModalOpen.value = true;
   document.body.style.overflow = "hidden";
@@ -169,8 +176,8 @@ const surveyInfo = () => {
     answers: flatAnswers,
     extraInputs: extraInputs,
     extraRequest: extraRequest.value,
+    support_id: props.selectedSupport?.support_id,
   });
-  alert("정상적으로 등록되었습니다.");
   closeModal();
 };
 
@@ -373,7 +380,7 @@ const todayAdd = new Date().toISOString().split("T")[0];
 
     <!-- 모달창 템플릿 / Transition 쓰는 이유는 모달창이 부드럽게 열리게 하려고 사용함-->
     <Transition name="fade">
-      <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
+      <div v-if="isModalOpen" class="modal-overlay">
         <div class="modal-content-wrapper shadow-lg">
           <div class="header-bg p-3 px-4 position-relative">
             <h5 class="mb-0 font-weight-bolder text-white">
@@ -596,7 +603,7 @@ const todayAdd = new Date().toISOString().split("T")[0];
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center; /* 중앙 정렬 */
+  align-items: center;
   z-index: 1050;
 }
 
@@ -609,6 +616,8 @@ const todayAdd = new Date().toISOString().split("T")[0];
   display: flex;
   flex-direction: column;
   max-height: 90vh; /* 화면을 벗어나지 않게 */
+  position: relative;
+  z-index: 1060;
 }
 
 .modal-scrollable {

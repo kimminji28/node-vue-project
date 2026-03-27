@@ -1,5 +1,5 @@
 //조사지 관련 service
-const surveyMapper = require("../database/mappers/survey_mapper");
+const surveyMapper = require("../database/mappers/survey_mapper.js");
 
 //조사지 전체조회 <김민지, mapper에 있는 함수 가져와서 라우터에 결과 전달>
 const findAll = async () => {
@@ -103,7 +103,7 @@ const findInfoByNo = async (J_ID) => {
 const surveyInfo = async (data) => {
   if (!data.G_UserId) {
     console.error("G_UserId가 없습니다!");
-    throw new Error("G_UserId 필수"); // ← throw로 에러 던지기
+    return { status: "fail", message: "G_UserId 필수" }; // ← throw로 에러 던지기
   }
 
   try {
@@ -123,33 +123,50 @@ const surveyInfo = async (data) => {
     const updateDate = createDate;
 
     if (!data.G_UserId) {
-      console.error("G_UserId가 없습니다!");
-      return res.status(400).send({ error: "G_UserId 필수" });
+      throw new Error("G_UserId 필수");
     }
     if (!data.Ver_Id) {
-      console.error("Ver_Id가 없습니다!");
-      return res.status(400).send({ error: "Ver_Id 필수" });
+      throw new Error("Ver_Id 필수");
     }
 
-    const [verRow] = await db.query(
-      "SELECT Ver_Id FROM SurveyForm_Tbl WHERE use_yn = 'Y' ORDER BY created_at DESC LIMIT 1",
-    );
-    const Ver_Id = verRow?.Ver_Id;
-    if (!Ver_Id) throw new Error("사용 중인 Ver_Id가 없습니다");
+    // const [verRow] = await db.query(
+    //   "SELECT Ver_Id FROM SurveyForm_Tbl WHERE use_yn = 'Y' ORDER BY created_at DESC LIMIT 1",
+    // );
+
+    const getActiveVerId = async () => {
+      const rows = await surveyMapper.getActiveVerId(); // 여기서 rows가 배열인지 확인
+      console.log("rows:", rows);
+
+      // rows가 배열이면
+      if (Array.isArray(rows) && rows.length > 0) {
+        return rows[0].Ver_Id;
+      }
+
+      // rows가 객체이면
+      if (rows && rows.Ver_Id) {
+        return rows.Ver_Id;
+      }
+
+      throw new Error("사용 중인 Ver_Id가 없습니다");
+    };
+
+    // const activeData = await getActiveVerId();
+    const Ver_Id = await getActiveVerId();
+
+    const now = new Date();
+    const created_at = now.toISOString().slice(0, 19).replace("T", " ");
+    const updated_at = created_at;
 
     const surveyData = [
       newJID,
-      Ver_Id,
+      Ver_Id || "FORM0000",
       data.G_UserId,
-      data.support_id || "",
-      data.result || null, //기존 null 처리에서 Vue에서 받은 result JSON 저장
-      data.reason || null,
-      createDate,
-      updateDate,
+      data.support_id || null,
+      null,
+      null,
+      created_at,
+      updated_at,
     ];
-
-    console.log("DEBUG INSERT SURVEY:", surveyData);
-    console.log("G_UserId 전송값:", data.G_UserId);
 
     // Survey_Tbl에 설문 기본 정보 저장
     await surveyMapper.insertSurvey(surveyData);
@@ -220,10 +237,8 @@ const selectItemsByJID = async (id) => {
 const SupportById = async (id) => {
   try {
     const rows = await surveyMapper.SupportById(id);
-    if (!rows || rows.length === 0) {
-      return null;
-    }
-    return rows[0];
+    console.log("DB에서 가져온 행 개수:", rows.length);
+    return rows;
   } catch (err) {
     console.log(err);
     throw err;

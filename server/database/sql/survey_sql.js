@@ -127,6 +127,15 @@ FROM Support_Tbl
 WHERE G_UserId = ?;
 `;
 
+//현재 활성화된 아이디만 가져오는 쿼리 <김민지, 26.03.27>
+const getActiveVerId = `
+  SELECT Ver_Id 
+  FROM SurveyForm_Tbl 
+  WHERE use_yn = 'Y' 
+  ORDER BY created_at DESC 
+  LIMIT 1
+`;
+
 module.exports = {
   selectSurveyAll,
   selectSurveyById,
@@ -136,4 +145,5 @@ module.exports = {
   lastJId,
   lastAnswer,
   SupportById,
+  getActiveVerId,
 };

@@ -137,6 +137,19 @@ const SupportById = async (id) => {
   }
 };
 
+const getActiveVerId = async () => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let rows = await conn.query(surveySql.getActiveVerId);
+    return rows;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
 module.exports = {
   selectSurveyAll,
   selectSurveyById,
@@ -146,4 +159,5 @@ module.exports = {
   lastAnswer,
   insertSurveyAnswer,
   SupportById,
+  getActiveVerId,
 };

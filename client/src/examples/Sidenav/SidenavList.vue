@@ -40,45 +40,65 @@ const guserId = ref(""); //지원대상자 이름 실제값 반응형
 // });
 
 // --- [추가] 이름 선택 시 실행되는 함수 (중요!) ---
+// const onUserChange = () => {
+//   if (!Array.isArray(users.value)) {
+//     console.error("users.value가 배열이 아닙니다:", users.value);
+//     return;
+//   }
+//   // 1. 선택된 이름과 일치하는 데이터를 리스트에서 찾음
+//   const selectedUser = users.value.find(
+//     (user) => user.name === applicantName.value,
+//   );
+
+//   if (selectedUser) {
+//     // 2. 사이드바 내부 입력창들에 데이터 자동 채우기
+//     largeCategory.value = selectedUser.major;
+//     mediumCategory.value = selectedUser.middle;
+//     smallCategory.value = selectedUser.sub;
+//     gender.value = selectedUser.gender;
+//     birthDate.value = selectedUser.born;
+
+//     // 3. 부모(survey.vue)에게 선택된 support_id를 전달 (DB 저장을 위함)
+//     const support = selectedUser; // 또는 선택한 객체를 support로 지정
+//     emit("select-support", support.support_id);
+//   } else {
+//     // 선택 해제 시 초기화
+//     clearFields();
+//   }
+// };
+
 const onUserChange = () => {
-  // 1. 선택된 이름과 일치하는 데이터를 리스트에서 찾음
-  const selectedUser = users.value.find(
-    (user) => user.name === applicantName.value,
-  );
+  const selectedUser = applicantName.value;
 
-  if (selectedUser) {
-    // 2. 사이드바 내부 입력창들에 데이터 자동 채우기
-    largeCategory.value = selectedUser.major;
-    mediumCategory.value = selectedUser.middle;
-    smallCategory.value = selectedUser.sub;
-    gender.value = selectedUser.gender;
-    birthDate.value = selectedUser.born;
+  if (!selectedUser) return;
 
-    // 3. 부모(survey.vue)에게 선택된 support_id를 전달 (DB 저장을 위함)
-    emit("select-support", selectedUser.support_id);
-  } else {
-    // 선택 해제 시 초기화
-    clearFields();
-  }
+  largeCategory.value = selectedUser.major;
+  mediumCategory.value = selectedUser.middle;
+  smallCategory.value = selectedUser.sub;
+  gender.value = selectedUser.gender;
+  birthDate.value = selectedUser.born;
+
+  emit("select-support", selectedUser.support_id);
 };
 
-const clearFields = () => {
-  largeCategory.value = "";
-  mediumCategory.value = "";
-  smallCategory.value = "";
-  gender.value = "";
-  birthDate.value = "";
-};
+// const clearFields = () => {
+//   largeCategory.value = "";
+//   mediumCategory.value = "";
+//   smallCategory.value = "";
+//   gender.value = "";
+//   birthDate.value = "";
+// };
 
 onMounted(async () => {
   // .value를 붙여야 하지만, 만약 '전체 목록'을 가져오는 API라면
   // 뒤에 ID를 붙이지 않고 호출해야 할 수도 있습니다.
   // 일단 현재 코드에서 에러를 고치려면 .value를 붙입니다.
   try {
+    const userId = guserId.value || "GUSR0000";
     const resp = await axios.get(
-      `http://localhost:3000/support/${guserId.value}`,
+      `http://localhost:3000/survey/support/${userId}`,
     );
-    users.value = resp.data;
+    users.value = resp.data || [];
   } catch (error) {
     console.error("데이터 로드 실패:", error);
   }
@@ -105,7 +125,7 @@ onMounted(async () => {
               <option
                 v-for="user in users"
                 :key="user.support_id"
-                :value="user.name"
+                :value="user"
               >
                 {{ user.name }}
               </option>
@@ -163,7 +183,6 @@ onMounted(async () => {
               >
               <input
                 type="text"
-                v-member="birthDate"
                 v-model="birthDate"
                 class="form-control border custom-input text-center"
                 placeholder="YY.MM.DD"

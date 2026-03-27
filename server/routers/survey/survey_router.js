@@ -57,8 +57,9 @@ router.get("/selectItemsByJID/:id", async (req, res) => {
 // });
 
 //일반이용자가 추가한 지원대상자 정보 <김민지, 260326>
-router.get("/support", async (req, res) => {
-  let result = await surveyService.AllSupports();
+router.get("/support/:id", async (req, res) => {
+  let target = req.params.id;
+  let result = await surveyService.SupportById(target);
   res.send(result);
 });
 
