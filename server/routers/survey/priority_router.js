@@ -34,4 +34,30 @@ router.post("/:id", async (req, res) => {
   }
 });
 
+// 💡 [GET] 화면에 띄울 요청 정보 가져오기 API
+router.get("/request-info/:id", async (req, res) => {
+  try {
+    const info = await priorityService.fetchApprovalWaitInfo(req.params.id);
+    res.json(info);
+  } catch (err) {
+    res.status(500).json({ message: "서버 에러" });
+  }
+});
+
+// 💡 [POST] 승인 또는 반려 처리하기 API
+router.post("/decide/:id", async (req, res) => {
+  try {
+    // req.body 에는 { action: 'approve' | 'reject', reqPriorityCode: 'f002', rejectReason: '사유' } 가 들어옴
+    const result = await priorityService.processDecidePriority(
+      req.params.id,
+      req.body,
+    );
+
+    if (result) res.status(200).json({ message: "처리가 완료되었습니다." });
+    else res.status(500).json({ message: "DB 처리 중 오류가 발생했습니다." });
+  } catch (err) {
+    res.status(500).json({ message: "서버 에러" });
+  }
+});
+
 module.exports = router;

@@ -29,9 +29,29 @@ const selectLastApprovalId = `
 SELECT approval_Id FROM ApprovalWait_Tbl ORDER BY approval_Id DESC LIMIT 1;
 `;
 
+const selectApprovalWaitInfo = `
+SELECT appr_type as priorityCode, appr_reason as reason
+FROM ApprovalWait_Tbl
+WHERE J_ID = ? AND (appr_result IS NULL OR appr_result = '')
+ORDER BY approval_Id DESC LIMIT 1;
+`;
+
+// 💡 5. [승인] 처리 쿼리 (1: 대기테이블 승인 도장, 2: 조사지 상태 변경)
+const updateApproveWait = `UPDATE ApprovalWait_Tbl SET appr_result = 'g001' WHERE J_ID = ? AND (appr_result IS NULL OR appr_result = '')`;
+const updateSurveyPriority = `UPDATE Survey_Tbl SET result = ? WHERE J_ID = ?`;
+
+// 💡 6. [반려] 처리 쿼리 (1: 대기테이블 반려 도장+사유, 2: 조사지 상태를 f005 반려로 변경)
+const updateRejectWait = `UPDATE ApprovalWait_Tbl SET appr_result = 'g002', result_reason = ? WHERE J_ID = ? AND (appr_result IS NULL OR appr_result = '')`;
+const updateSurveyToReject = `UPDATE Survey_Tbl SET result = 'f005' WHERE J_ID = ?`;
+
 module.exports = {
   selectSupportInfo,
   insertApprovalWait,
   updateSurveyStatus,
   selectLastApprovalId,
+  selectApprovalWaitInfo,
+  updateApproveWait,
+  updateSurveyPriority,
+  updateRejectWait,
+  updateSurveyToReject,
 };
