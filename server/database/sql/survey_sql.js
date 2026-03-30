@@ -104,7 +104,7 @@ FROM SurveyItem_Tbl
 WHERE Ver_Id = (
     SELECT Ver_Id
     FROM SurveyForm_Tbl
-    WHERE is_active = 'Y'
+    WHERE use_yn = 'Y'
     LIMIT 1
 )
 ORDER BY question_no
@@ -150,16 +150,16 @@ const getActiveVerId = `
 `;
 
 const getQuestionsByJID = `
-SELECT
-  question_id,
-  question_text,
-  titleCode,
-  question_no,
-  answer_type,
-  Ver_Id
-FROM SurveyItem_Tbl
+SELECT 
+    question_id, 
+    question_text, 
+    titleCode, 
+    question_no, 
+    answer_type, 
+    Ver_Id 
+FROM SurveyItem_Tbl 
 WHERE Ver_Id = ?
-ORDER BY question_no ASC
+ORDER BY titleCode ASC, question_no ASC; 
 `;
 
 module.exports = {

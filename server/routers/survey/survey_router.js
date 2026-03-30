@@ -73,6 +73,14 @@ router.post("user", async (req, res) => {
 router.get("/getQuestionsByJID/:id", async (req, res) => {
   let { id } = req.params;
   let result = await surveyService.getQuestionsByJID(id);
+
+  res.json(result || []);
+});
+
+router.get("/getActiveVerId", async (req, res) => {
+  const result = await surveyService.getActiveVerId();
+  console.log(result);
   res.send(result);
 });
+
 module.exports = router;
