@@ -151,7 +151,6 @@ const surveyInfo = () => {
     }
   }
 
-  // 🔥 2. answers 구조 변환 (핵심!!!!)
   let flatAnswers = [];
   let qIdCount = 1;
 
@@ -163,7 +162,7 @@ const surveyInfo = () => {
         qIdx++
       ) {
         flatAnswers.push({
-          question_id: "ITEM" + String(qIdCount).padStart(4, "0"), // 🔥 임시 ID 생성
+          question_id: "ITEM" + String(qIdCount).padStart(4, "0"),
           answer: answers[sIdx][subIdx][qIdx],
         });
         qIdCount++;

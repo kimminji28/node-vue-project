@@ -54,23 +54,33 @@ ORDER BY q.question_no;
 //조사지 등록 <김민지, 조사지 등록 쿼리 작성>
 const insertSurvey = `
 INSERT INTO Survey_Tbl (
-       J_ID,
-       Ver_Id,
-       G_UserId,
-       support_id,
-       result,
-       reason,
-       created_at,
-       updated_at
-)
-VALUES (
-?,  -- J_ID
-       (SELECT Ver_Id 
-        FROM SurveyForm_Tbl 
-        WHERE use_yn = 'Y' 
-        ORDER BY created_at DESC 
-        LIMIT 1),
-       ?, ?, ?, ?, ?, ?)`;
+  J_ID,
+  Ver_Id,
+  G_UserId,
+  support_id,
+  result,
+  reason
+) VALUES (?,
+ (SELECT Ver_Id FROM SurveyForm_Tbl WHERE use_yn='Y' ORDER BY created_at DESC LIMIT 1),
+  ?, ?, ?, ?);`;
+
+// //일반유저
+const user = `
+INSERT INTO GeneralUser_Tbl (
+  G_UserId,
+  institution_id
+  name
+  id
+  password
+  tel
+  email
+  zipCode
+  address
+  document1
+  document2
+  approval
+)VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
 
 // SurveyUserAnswer_Tbl에 답변 등록 <김민지, 조사지 답변 쿼리 26.03.24 추가>
 const insertSurveyAnswer = `
@@ -116,15 +126,18 @@ LIMIT 1`;
 //일반이용자가 추가한 지원대상자 정보 <김민지, 260326>
 const SupportById = `
 SELECT 
-    support_id,
-    name,
-    major,
-    middle,
-    sub,
-    gender,
-    born
-FROM Support_Tbl 
-WHERE G_UserId = ?;
+    S.support_id, 
+    S.name, 
+    S.major, 
+    S.middle, 
+    M.description AS middle_category,
+    S.sub, 
+    S.gender, 
+    S.born
+FROM Support_Tbl S
+LEFT JOIN DisMiddle_Tbl M 
+    ON S.middle = M.j_Code
+WHERE S.G_UserId = ?;
 `;
 
 //현재 활성화된 아이디만 가져오는 쿼리 <김민지, 26.03.27>
@@ -136,6 +149,19 @@ const getActiveVerId = `
   LIMIT 1
 `;
 
+const getQuestionsByJID = `
+SELECT
+  question_id,
+  question_text,
+  titleCode,
+  question_no,
+  answer_type,
+  Ver_Id
+FROM SurveyItem_Tbl
+WHERE Ver_Id = ?
+ORDER BY question_no ASC
+`;
+
 module.exports = {
   selectSurveyAll,
   selectSurveyById,
@@ -144,6 +170,8 @@ module.exports = {
   surveySelectItem,
   lastJId,
   lastAnswer,
-  SupportById,
   getActiveVerId,
+  SupportById,
+  user,
+  getQuestionsByJID,
 };

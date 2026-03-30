@@ -10,6 +10,8 @@ import supInsert from "./supPlanInsert_router";
 import { useAdminAuthStore } from "@/stores/counter"; //admin Auth 사용 session 26.03.26 고동현 추가
 import priority from "./priority_router";
 import axios from "axios";
+import Consult from "./consult_router";
+import ConsultAdd from "./consultInsert_router";
 
 const routes = [
   {
@@ -26,6 +28,8 @@ const routes = [
   ...adminRouter,
   ...priority,
   ...supInsert,
+  ...Consult,
+  ...ConsultAdd,
 ];
 
 const router = createRouter({

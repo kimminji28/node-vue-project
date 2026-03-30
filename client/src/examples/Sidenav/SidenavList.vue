@@ -1,104 +1,118 @@
 <!-- <김민지, 전체 코드 간략하게 수정중 26.03.25>  -->
 <script setup>
-import { computed, ref, defineEmits } from "vue"; //계산된 값과 변수를 반응형으로 만듦
-import { onMounted } from "vue"; //지원대상자 이름 가지고오는 함수 시도중
-import axios from "axios";
-import { useRoute } from "vue-router"; //현재 URL 정보를 가져옴
+// import { computed, ref, defineEmits } from "vue";
+// import { onMounted } from "vue";
+// import { useRoute } from "vue-router";
+// const route = useRoute();
+// const emit = defineEmits(["select-support"]);
+
+// const isSurveyPage = computed(() => {
+//   return route.name === "userSurveyAdd" || route.path.includes("userSurveyAdd");
+// });
+
+// const applicantName = ref("");
+// const largeCategory = ref("");
+// const mediumCategory = ref("");
+// const smallCategory = ref("");
+// const gender = ref("");
+// const birthDate = ref("");
+// const users = ref([]);
+// const guserId = ref("");
+
+// const onUserChange = () => {
+//   const selectedUser = applicantName.value;
+
+//   if (!selectedUser || typeof selectedUser !== "object") return;
+
+//   largeCategory.value = selectedUser.major;
+//   mediumCategory.value = selectedUser.middle;
+//   smallCategory.value = selectedUser.sub;
+//   gender.value = selectedUser.gender;
+//   birthDate.value = selectedUser.born;
+
+//   emit("select-support", selectedUser.support_id);
+// };
+
+// onMounted(async () => {
+//   try {
+//     const userId = guserId.value || "GUSR0000";
+//     const resp = await fetch(`http://localhost:3000/survey/support/${userId}`);
+//     users.value = resp.data || [];
+//   } catch (error) {
+//     console.error("데이터 로드 실패:", error);
+//   }
+// });
+
+import { ref, defineEmits, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
+
 const route = useRoute();
-// [추가] 부모 컴포넌트(survey.vue)로 데이터를 보내기 위한 emit 정의
 const emit = defineEmits(["select-support"]);
 
-// 현재 경로가 설문 추가 페이지인지 확인 (라우트 이름 또는 경로 포함 여부 체크)
 const isSurveyPage = computed(() => {
   return route.name === "userSurveyAdd" || route.path.includes("userSurveyAdd");
 });
-//route.name === "userSurveyAdd" 라우트 이름
-//route.path.includes("userSurveyAdd") = URL에 해당 문자열 포함되어 있는지 확인
-//includes : 문자열 안에 특정 글자가 포함되어 있는지 확인하는 함수
-// || : 둘 중 하나라도 맞으면 true
-//이 함수 없으면 템플릿에서 사용한 변수가 사라지는거라 렌더딩안됨
 
-// 인풋 데이터 정의
-const applicantName = ref("");
 const largeCategory = ref("");
 const mediumCategory = ref("");
 const smallCategory = ref("");
 const gender = ref("");
 const birthDate = ref("");
-
-//지원대상자명 선택하는 함수 시도중
 const users = ref([]);
-
-//   //페이지 로딩 시 자동 실행
-const guserId = ref(""); //지원대상자 이름 실제값 반응형
-// const resp = await axios.get(
-//   `http://localhost:3000/main/support/supList/${guserId}`,
-// );
-// //   //axios : 프론트 + 백엔드 연결해주는 durgkf
-// users.value = resp.data;
-// console.log("대상자 목록 로드 완료:", users.value);
-// });
-
-// --- [추가] 이름 선택 시 실행되는 함수 (중요!) ---
-// const onUserChange = () => {
-//   if (!Array.isArray(users.value)) {
-//     console.error("users.value가 배열이 아닙니다:", users.value);
-//     return;
-//   }
-//   // 1. 선택된 이름과 일치하는 데이터를 리스트에서 찾음
-//   const selectedUser = users.value.find(
-//     (user) => user.name === applicantName.value,
-//   );
-
-//   if (selectedUser) {
-//     // 2. 사이드바 내부 입력창들에 데이터 자동 채우기
-//     largeCategory.value = selectedUser.major;
-//     mediumCategory.value = selectedUser.middle;
-//     smallCategory.value = selectedUser.sub;
-//     gender.value = selectedUser.gender;
-//     birthDate.value = selectedUser.born;
-
-//     // 3. 부모(survey.vue)에게 선택된 support_id를 전달 (DB 저장을 위함)
-//     const support = selectedUser; // 또는 선택한 객체를 support로 지정
-//     emit("select-support", support.support_id);
-//   } else {
-//     // 선택 해제 시 초기화
-//     clearFields();
-//   }
-// };
+const selectedSupportId = ref("");
+const guserId = ref("GUSR0000");
 
 const onUserChange = () => {
-  const selectedUser = applicantName.value;
+  const selectedUser = users.value.find(
+    (u) => u.support_id === selectedSupportId.value,
+  );
 
   if (!selectedUser) return;
 
-  largeCategory.value = selectedUser.major;
-  mediumCategory.value = selectedUser.middle;
-  smallCategory.value = selectedUser.sub;
-  gender.value = selectedUser.gender;
-  birthDate.value = selectedUser.born;
+  const genderMap = {
+    c001: "남",
+    c002: "여",
+  };
 
-  emit("select-support", selectedUser.support_id);
+  const categoryMap = {
+    MJ001: "기질성 정신장애",
+    MJ002: "정신 및 행동장애",
+    MJ003: "조현병 및 망상장애",
+    MJ004: "기분 장애",
+    MJ005: "신경증성 및 신체형 장애",
+    MJ006: "생리 장애 및 행동증후군",
+    MJ007: "성인 인격 및 행동의 장애",
+    MJ008: "정신지체",
+    MJ009: "정신발달장애",
+    MJ010: "소아기 및 청소년기 행동 및 정서 장애",
+    MJ011: "상세불명의 정신장애",
+  };
+
+  largeCategory.value = selectedUser.major
+    ?.split(",")
+    .map((code) => categoryMap[code] || code)
+    .join(", ");
+  mediumCategory.value = selectedUser.middle_category || "정보 없음";
+  smallCategory.value = selectedUser.sub;
+  gender.value = genderMap[selectedUser.gender] || selectedUser.gender;
+  birthDate.value = selectedUser.born?.split("T")[0];
+
+  emit("select-support", selectedSupportId.value);
 };
 
-// const clearFields = () => {
-//   largeCategory.value = "";
-//   mediumCategory.value = "";
-//   smallCategory.value = "";
-//   gender.value = "";
-//   birthDate.value = "";
-// };
-
 onMounted(async () => {
-  // .value를 붙여야 하지만, 만약 '전체 목록'을 가져오는 API라면
-  // 뒤에 ID를 붙이지 않고 호출해야 할 수도 있습니다.
-  // 일단 현재 코드에서 에러를 고치려면 .value를 붙입니다.
   try {
-    const userId = guserId.value || "GUSR0000";
-    const resp = await axios.get(
-      `http://localhost:3000/survey/support/${userId}`,
+    const response = await fetch(
+      `http://localhost:3000/survey/support/${guserId.value}`,
     );
-    users.value = resp.data || [];
+
+    if (!response.ok) {
+      throw new Error(`HTTP 오류: ${response.status}`);
+    }
+
+    const data = await response.json();
+    users.value = data || [];
+    console.log("users =", users.value);
   } catch (error) {
     console.error("데이터 로드 실패:", error);
   }
@@ -117,15 +131,15 @@ onMounted(async () => {
 
           <div class="mb-3 me-3">
             <select
-              v-model="applicantName"
+              v-model="selectedSupportId"
               @change="onUserChange"
               class="form-select border custom-input"
             >
-              <option value="">선택하세요</option>
+              <option value="">지원 대상자를 선택하세요</option>
               <option
                 v-for="user in users"
                 :key="user.support_id"
-                :value="user"
+                :value="user.support_id"
               >
                 {{ user.name }}
               </option>
@@ -133,7 +147,6 @@ onMounted(async () => {
           </div>
 
           <hr class="horizontal dark mt-4 mb-4 me-3" />
-
           <div class="mb-3 me-3">
             <label
               class="form-label text-sm font-weight-bold text-secondary mb-2"
@@ -201,10 +214,11 @@ onMounted(async () => {
 .sidebar-layout-container,
 .sidebar-main-wrapper {
   position: fixed !important;
+  overflow: hidden !important;
   top: 100px !important;
   left: 0 !important;
   width: 250px !important;
-  height: calc(100vh - 85px) !important;
+  height: auto !important;
   z-index: 1000 !important;
   background-color: #ffffff !important;
   border-right: 1px solid #e9ecef !important;

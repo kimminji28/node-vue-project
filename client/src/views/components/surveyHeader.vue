@@ -10,7 +10,7 @@
           <div class="col-auto">
             <div class="avatar avatar-xl position-relative">
               <img
-                src="@/assets/img/team-1.jpg"
+                src="@/assets/img/2조로고.png"
                 alt="profile_image"
                 class="shadow-sm w-100 border-radius-lg"
               />
@@ -62,12 +62,9 @@
                 role="tablist"
               >
                 <li class="nav-item">
-                  <RouterLink
-                    class="px-3 py-2 mb-0 nav-link active"
-                    :to="{ name: 'userSupport', params: 'userid1' }"
-                  >
+                  <span class="px-3 py-2 mb-0 nav-link active">
                     <span class="ms-1">My Page</span>
-                  </RouterLink>
+                  </span>
                 </li>
 
                 <li class="nav-item">

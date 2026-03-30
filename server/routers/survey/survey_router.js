@@ -63,4 +63,15 @@ router.get("/support/:id", async (req, res) => {
   res.send(result);
 });
 
+router.post("user", async (req, res) => {
+  let data = req.body;
+  let result = await surveyService.momUser(data);
+  res.send(result);
+});
+
+router.get("/getQuestionsByJID/:id", async (req, res) => {
+  let { id } = req.params;
+  let result = await surveyService.getQuestionsByJID(id);
+  res.send(result);
+});
 module.exports = router;

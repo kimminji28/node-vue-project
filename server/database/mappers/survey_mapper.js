@@ -137,7 +137,35 @@ const SupportById = async (id) => {
   }
 };
 
+//
 const getActiveVerId = async () => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let rows = await conn.query(surveySql.getActiveVerId);
+    return rows;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+//일반회원 부모 테이블
+const Suser = async () => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let rows = await conn.query(surveySql.user);
+    return rows;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+const getQuestionsByJID = async () => {
   let conn = null;
   try {
     conn = await pool.getConnection();
@@ -160,4 +188,6 @@ module.exports = {
   insertSurveyAnswer,
   SupportById,
   getActiveVerId,
+  Suser,
+  getQuestionsByJID,
 };
