@@ -7,8 +7,12 @@ import { Modal } from "bootstrap"; // 💡 여기서 가져온 Modal을 아래 o
 
 const route = useRoute();
 
+const currentUserRole = ref(route.path.includes("/user") ? "USER" : "GENERAL");
+
+const currentSurveyId = route.params.surveyId || route.query.surveyId || "";
+
 // 상태 변수
-const userRole = ref("GENERAL");
+const userRole = ref(currentUserRole.value);
 const planList = ref([]);
 const instiId = ref("INST0000");
 
@@ -17,7 +21,7 @@ const searchFilters = ref({
   managerName: "",
   guardianName: "",
   supportName: "",
-  surveyId: route.query.surveyId || "",
+  surveyId: currentSurveyId,
 });
 
 // 모달 객체를 담아둘 변수
@@ -26,23 +30,26 @@ let searchModalInstance = null;
 // 데이터 불러오기 함수
 const fetchPlans = async () => {
   try {
-    const response = await axios.get(
-      "http://localhost:3000/general/plan/list",
-      {
-        params: {
-          instiId: instiId.value,
-          page: 1,
-          limit: 10,
-          managerName: searchFilters.value.managerName,
-          guardianName: searchFilters.value.guardianName,
-          supportName: searchFilters.value.supportName,
-          surveyId: searchFilters.value.surveyId,
-        },
+    // 💡 3. 역할에 따라 백엔드 API 주소 분기 처리!
+    const apiUrl =
+      userRole.value === "USER"
+        ? "http://localhost:3000/user/plan/list" // 유저용 API (이제 우리가 만들 곳!)
+        : "http://localhost:3000/general/plan/list"; // 관리자용 API (이미 잘 도는 곳!)
+
+    const response = await axios.get(apiUrl, {
+      params: {
+        instiId: instiId.value, // (유저용 API에선 백엔드가 이거 무시할 거니까 냅둬도 돼)
+        page: 1,
+        limit: 10,
+        managerName: searchFilters.value.managerName,
+        guardianName: searchFilters.value.guardianName,
+        supportName: searchFilters.value.supportName,
+        surveyId: searchFilters.value.surveyId,
       },
-    );
-    planList.value = response.data;
-  } catch (err) {
-    console.error("계획서 목록 로딩 실패:", err);
+    });
+    planList.value = response.data.data ? response.data.data : response.data;
+  } catch (error) {
+    console.error("계획서 목록 로딩 실패:", error);
   }
 };
 

@@ -36,7 +36,7 @@ const props = defineProps({
               <div>
                 <span class="text-secondary text-xs">보호자</span>
                 <span class="text-dark font-weight-bold ms-1">{{
-                  item.generalName
+                  item.guardianName
                 }}</span>
               </div>
               <div>
@@ -51,21 +51,21 @@ const props = defineProps({
               <div>
                 <span class="text-secondary text-xs">장애유형</span>
                 <span class="text-dark text-sm ms-1">{{
-                  item.disMajorName
+                  item.disabilityType || "미지정"
                 }}</span>
               </div>
               <span
                 class="badge"
                 :class="{
-                  'bg-gradient-danger': item.priorityText === '긴급',
-                  'bg-gradient-success': item.priorityText === '중점',
-                  'bg-gradient-info': item.priorityText === '계획',
+                  'bg-gradient-danger': item.priorityCode === '긴급',
+                  'bg-gradient-success': item.priorityCode === '중점',
+                  'bg-gradient-info': item.priorityCode === '계획',
                   'bg-gradient-secondary':
-                    item.priorityText === '미정' ||
-                    item.priorityText === '심사중',
+                    item.priorityCode === '미정' ||
+                    item.priorityCode === '심사중',
                 }"
               >
-                {{ item.priorityText }}
+                {{ item.priorityCode }}
               </span>
             </div>
           </div>
@@ -139,18 +139,13 @@ const props = defineProps({
               <button
                 class="btn btn-sm mb-0 ms-3 px-4"
                 :class="{
-                  'btn-secondary': !item.isApproved && !item.isRejected,
-                  'btn-success': item.isApproved,
-                  'btn-danger': item.isRejected,
+                  'btn-success': item.state === 'g001',
+                  'btn-danger': item.state === 'g002',
+                  'btn-secondary':
+                    item.state !== 'g001' && item.state !== 'g002',
                 }"
               >
-                {{
-                  item.isApproved
-                    ? "승인완료"
-                    : item.isRejected
-                      ? "반려됨"
-                      : "검토중"
-                }}
+                {{ item.stateName || "검토중" }}
               </button>
             </div>
           </div>

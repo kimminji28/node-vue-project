@@ -17,8 +17,8 @@ SELECT
     sp.name as supportName, 
     sp.born as birthDate, 
     sp.gender as genderCode, 
-    dm.description as disMajorName,
-    gu.name as generalName, 
+    dm.description as disabilityType,
+    gu.name as guardianName, 
     iu.name as managerName 
 FROM Plan_Tbl p
 JOIN Survey_Tbl sv ON p.J_ID = sv.J_ID
