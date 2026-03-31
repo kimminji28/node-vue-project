@@ -20,12 +20,13 @@ const requireInstRole = (req, res, next) => {
 
   const role = req.session.loginInstUser.role;
 
-  if(role !== "a002" && !== "a003"){ //a002 == 관리자, a003 == 담당자
+  if(role !== "a002" && role !== "a003"){ //a002 == 관리자, a003 == 담당자
     return res.status(403).json({
       status : "Failed",
       message : "권한이 없습니다.",
     });
   }
+  next();
 };
 
 
