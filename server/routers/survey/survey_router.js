@@ -12,7 +12,9 @@ router.get("/user", async (req, res) => {
 //조사지 건별조회 <김민지, 브라우저에 응답 결과 전달 26.03.23 추가>
 router.get("/user/:no", async (req, res) => {
   let target = req.params.no;
+  console.log("건별조회", target);
   let result = await surveyService.findInfoByNo(target);
+  console.log("건별조회", result);
   res.send(result);
 });
 
@@ -73,7 +75,7 @@ router.post("user", async (req, res) => {
 router.get("/getQuestionsByJID/:id", async (req, res) => {
   let { id } = req.params;
   let result = await surveyService.getQuestionsByJID(id);
-  console.log("문항 조회 결과:", result);
+  // console.log("문항 조회 결과:", result);
   res.json(result || []);
 });
 
@@ -82,7 +84,6 @@ router.get("/getActiveVerId", async (req, res) => {
     const Ver_Id = await surveyService.getActiveVerId();
     res.json({ Ver_Id: Ver_Id || "FORM0004" });
   } catch (err) {
-    console.error("getActiveVerId 서버 에러:", err);
     res.json({ Ver_Id: "FORM0004" });
   }
 });

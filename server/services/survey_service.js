@@ -8,9 +8,19 @@ const findAll = async () => {
 };
 
 //조사지 건별조회 <김민지, mapper에 있는 함수 가져와서 라우터에 결과 전달>
-const findInfoByNo = async (J_ID) => {
-  let detail = await surveyMapper.selectSurveyById(J_ID);
+const findInfoByNo = async (id) => {
+  let detail = await surveyMapper.selectSurveyById(id);
   return detail;
+};
+
+//시스템 관리자가 등록한 문항 가져오기
+const getQuestionsByJID = async (id) => {
+  try {
+    const rows = await surveyMapper.getQuestionsByJID(id);
+    return rows;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 //조사지 등록 함수 <김민지, 2026.03.30 최종 완성>
@@ -119,15 +129,6 @@ const SupportById = async (id) => {
   } catch (err) {
     console.log(err);
     throw err;
-  }
-};
-
-const getQuestionsByJID = async (id) => {
-  try {
-    const rows = await surveyMapper.getQuestionsByJID(id);
-    return rows;
-  } catch (err) {
-    console.log(err);
   }
 };
 
