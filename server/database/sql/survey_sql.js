@@ -38,13 +38,13 @@ ORDER BY q.titleCode, q.question_no ASC;
 `;
 
 //조사지 답변 조회 <김민지, 260326 추가>
-const surveySelectAnswer = `
-SELECT answer_id,
-       J_ID,
-       question_id,
-       answer
-FROM SurveyUserAnswer_Tbl;
-ORDER BY answer_id`;
+// const surveySelectAnswer = `
+// SELECT answer_id,
+//        J_ID,
+//        question_id,
+//        answer
+// FROM SurveyUserAnswer_Tbl;
+// ORDER BY answer_id`;
 
 //등록페이지
 //조사지 등록 <김민지, 조사지 등록 쿼리 작성>

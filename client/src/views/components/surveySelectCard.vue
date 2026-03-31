@@ -37,6 +37,15 @@ const getAnswer = (sIdx, subIdx, qIdx) => {
 
   return flatAnswers.value[index] || "";
 };
+
+const displayDate = computed(() => {
+  if (!props.regDate) return "-";
+  const date = new Date(props.regDate);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+});
 </script>
 
 <template>
@@ -53,7 +62,7 @@ const getAnswer = (sIdx, subIdx, qIdx) => {
 
             <div class="date-center">
               <span class="text-sm font-weight-bold opacity-9">
-                등록일 : {{ regDate || "-" }}
+                등록일 : {{ displayDate }}
               </span>
             </div>
 

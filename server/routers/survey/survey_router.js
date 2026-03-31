@@ -18,21 +18,6 @@ router.get("/user/:no", async (req, res) => {
   res.send(result);
 });
 
-// //조사지 등록 <김민지, 브라우저에 응답 결과 전달 26.03.23 추가>
-// router.post(`/user`, async (req, res) => {
-//   let target = req.body;
-//   let result = await surveyService.createSurvey(target);
-//   res.send(result);
-// });
-
-// //조사지 답변 <김민지, 브라우저에 응답 결과 전달 26.03.24 추가>
-// router.post("/user", async (req, res) => {
-//   let data = req.body;
-//   let result = await surveyService.createAnswer(data);
-//   res.json({ success: true, result });
-//   // res.send(result);
-// });
-
 // //조사지 등록과 답변 <김민지, 브라우저에 응답 결과 전달 26.03.24 추가>
 router.post("/user", async (req, res) => {
   let data = req.body;
@@ -48,16 +33,6 @@ router.get("/selectItemsByJID/:id", async (req, res) => {
   res.send(result);
 });
 
-// router.post("/user", async (req, res) => {
-//   try {
-//     const result = await surveyService.surveyInfo(req.body);
-//     res.send({ status: "success", J_ID: req.body.J_ID });
-//   } catch (err) {
-//     console.error("DB ERROR:", err);
-//     res.status(400).send({ status: "fail", message: err.message });
-//   }
-// });
-
 //일반이용자가 추가한 지원대상자 정보 <김민지, 260326>
 router.get("/support/:id", async (req, res) => {
   let target = req.params.id;
@@ -65,13 +40,14 @@ router.get("/support/:id", async (req, res) => {
   res.send(result);
 });
 
-router.post("user", async (req, res) => {
-  console.log("들어온 데이터:", req.body);
-  let data = req.body;
-  let result = await surveyService.momUser(data);
-  res.send(result);
-});
+// router.post("user", async (req, res) => {
+//   console.log("들어온 데이터:", req.body);
+//   let data = req.body;
+//   let result = await surveyService.momUser(data);
+//   res.send(result);
+// });
 
+//문항 가져오는 라우터
 router.get("/getQuestionsByJID/:id", async (req, res) => {
   let { id } = req.params;
   let result = await surveyService.getQuestionsByJID(id);
@@ -79,6 +55,7 @@ router.get("/getQuestionsByJID/:id", async (req, res) => {
   res.json(result || []);
 });
 
+//활성화된 폼 아이디 가져오는 라우터
 router.get("/getActiveVerId", async (req, res) => {
   try {
     const Ver_Id = await surveyService.getActiveVerId();
