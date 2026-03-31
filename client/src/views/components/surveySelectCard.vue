@@ -1,131 +1,51 @@
 <script setup>
-import { onMounted, onUnmounted } from "vue";
+import { computed } from "vue";
 
 const props = defineProps({
-  sections: Array,
-  answers: Array,
-  extraInputs: Object,
-  extraRequest: String,
   userName: String,
   regDate: String,
+  sections: {
+    type: Array,
+    default: () => [],
+  },
+  answers: Array,
 });
 
-onMounted(() => {
-  document.body.classList.remove("g-sidenav-show");
-  const sidenav = document.getElementById("sidenav-main");
-  if (sidenav) sidenav.style.setProperty("display", "none", "important");
+const flatAnswers = computed(() => {
+  if (!props.answers?.length) return [];
+
+  const merged = props.answers.flat(2).filter(Boolean).join(",");
+  // console.log("merged:", merged);
+
+  return merged ? merged.split(",") : [];
 });
 
-onUnmounted(() => {
-  document.body.classList.add("g-sidenav-show");
-  const sidenav = document.getElementById("sidenav-main");
-  if (sidenav) sidenav.style.display = "";
-});
+const getAnswer = (sIdx, subIdx, qIdx) => {
+  let index = 0;
 
-// 기존 배열 그대로 사용하되 Vue 반응형으로 변환
-// const allSections = ref([
-//   {
-//     title: "지원사유",
-//     subs: [
-//       {
-//         subTitle: "긴급 지원 필요",
-//         questions: [
-//           "현재 긴급하게 도움이 필요한 상황(주거, 건강, 안전 등)이 있다.",
-//           "최근 돌봄 제공자(가족, 보호자)의 부재 또는 돌봄 공백이 발생하였다.",
-//           "현재 상황이 즉각적인 공공기관 또는 서비스 지원이 필요할 정도로 위급하다.",
-//         ],
-//       },
-//       {
-//         subTitle: "중점 지원 필요",
-//         questions: [
-//           "일상생활을 유지하기 위해 지속적인 도움이나 지원 서비스가 필요하다.",
-//           "현재 받고 있는 지원만으로는 생활 유지에 어려움이 있다.",
-//           "특정 영역(건강, 생활, 이동 등)에서 우선적으로 지원이 필요하다.",
-//         ],
-//       },
-//       {
-//         subTitle: "계획 수립 필요",
-//         questions: [
-//           "앞으로의 생활 또는 서비스 이용을 위한 장기적인 계획이 필요하다.",
-//           "현재 이용 가능한 지원 서비스나 제도에 대한 안내 및 상담이 필요하다.",
-//           {
-//             text: "향후 생활 지원을 위한 개인 맞춤형 계획 수립이 필요하다.",
-//             hasExtraInput: true,
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     title: "지원이 필요한 서비스",
-//     subs: [
-//       {
-//         subTitle: "개인별 지원",
-//         questions: [
-//           "개인의 상황에 맞는 맞춤형 지원 서비스가 필요하다.",
-//           "일상생활(식사, 위생, 정리 등)에 개인 지원이 필요하다.",
-//           "개인 활동(외출, 사회활동 등)에 도움이 필요하다.",
-//         ],
-//       },
-//       {
-//         title: "교통",
-//         questions: [
-//           "병원, 복지시설 등 필요한 장소로 이동하는데 어려움이 있다.",
-//           "대중교통 이용이 어렵거나 제한이 있다.",
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     title: "이용중인 복지 서비스",
-//     subs: [
-//       {
-//         subTitle: "생활안정",
-//         questions: [
-//           "현재 생활비 또는 기본적인 생계 유지에 어려움이 있다.",
-//           "안정적인 주거 환경 유지에 어려움이 있다.",
-//           "생활을 유지하기 위해 추가적인 경제적 지원이 필요하다.",
-//         ],
-//       },
-//       {
-//         subTitle: "고용",
-//         questions: [
-//           "취업을 원하지만 취업 기회를 얻기 어렵다.",
-//           "취업을 위해 직업 교육 또는 취업 지원 서비스가 필요하다.",
-//         ],
-//       },
-//     ],
-//   },
-// ]);
-
-// ================== answers, extraInputs, extraRequest 기존 그대로 ==================
-// const answers = ref([
-//   [
-//     ["예", "예", "아니오"],
-//     ["예", "예", "아니오"],
-//     ["아니오", "아니오", "예"],
-//   ],
-//   [
-//     ["예", "아니오", "예"],
-//     ["예", "아니오"],
-//   ],
-//   [
-//     ["예", "예", "아니오"],
-//     ["아니오", "아니오"],
-//   ],
-// ]);
-
-// const extraInputs = ref({ reason: "거동이 매우 불편함", date: "2026년 4월" });
-// const extraRequest = ref("가급적 빠른 처리를 부탁드립니다.");
-
-// ================== 안전하게 답변 가져오기 함수 기존 그대로 ==================
-const getSafeAnswer = (sIdx, subIdx, qIdx) => {
-  try {
-    return props.answers?.[sIdx]?.[subIdx]?.[qIdx] || "";
-  } catch (e) {
-    return "";
+  for (let i = 0; i < sIdx; i++) {
+    props.sections[i].subs?.forEach((sub) => {
+      index += sub.questions?.length || 0;
+    });
   }
+
+  for (let j = 0; j < subIdx; j++) {
+    index += props.sections[sIdx].subs[j].questions?.length || 0;
+  }
+
+  index += qIdx;
+
+  return flatAnswers.value[index] || "";
 };
+
+const displayDate = computed(() => {
+  if (!props.regDate) return "-";
+  const date = new Date(props.regDate);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+});
 </script>
 
 <template>
@@ -137,13 +57,15 @@ const getSafeAnswer = (sIdx, subIdx, qIdx) => {
             class="d-flex align-items-center p-3 px-4 text-white header-bg position-relative"
           >
             <h5 class="mb-0 font-weight-bolder text-white">
-              {{ props.userName || "대상자" }}님 조사지 결과
+              {{ userName || "대상자" }}님 조사지 결과
             </h5>
+
             <div class="date-center">
-              <span class="text-sm font-weight-bold opacity-9"
-                >등록일 : {{ props.regDate || "-" }}</span
-              >
+              <span class="text-sm font-weight-bold opacity-9">
+                등록일 : {{ displayDate }}
+              </span>
             </div>
+
             <button
               class="btn-close btn-close-white ms-auto"
               @click="$router.back()"
@@ -167,105 +89,87 @@ const getSafeAnswer = (sIdx, subIdx, qIdx) => {
                 <table
                   class="table align-items-center mb-0 custom-bordered-table"
                 >
+                  <thead>
+                    <tr class="bg-gray-100">
+                      <th
+                        class="text-center text-secondary text-xxs"
+                        style="width: 60px"
+                      >
+                        번호
+                      </th>
+                      <th class="text-start text-secondary text-xxs ps-4">
+                        조사 문항
+                      </th>
+                      <th
+                        class="text-center text-secondary text-xxs"
+                        style="width: 80px"
+                      >
+                        예
+                      </th>
+                      <th
+                        class="text-center text-secondary text-xxs"
+                        style="width: 80px"
+                      >
+                        아니오
+                      </th>
+                    </tr>
+                  </thead>
+
                   <tbody>
                     <template
                       v-for="(sub, subIdx) in section.subs"
                       :key="subIdx"
                     >
                       <tr class="sub-header-row bg-white">
-                        <td
-                          class="text-success font-weight-bolder text-sm ps-3 py-3 border-bottom-dark"
-                          style="width: 15%"
-                        >
-                          {{ sub.subTitle }}
+                        <td class="text-center bg-gray-100">
+                          {{ section.title }}
                         </td>
-                        <td
-                          class="text-dark font-weight-bolder text-sm ps-3 py-3 border-bottom-dark"
-                        >
-                          {{
-                            sub.description || "즉시 지원인식 및 서비스 필요"
-                          }}
+                        <td class="ps-4">
+                          {{ sub.description || "상세 내역 확인" }}
                         </td>
-                        <td
-                          class="text-center text-dark font-weight-bolder text-sm py-3 border-bottom-dark border-start"
-                          style="width: 80px"
-                        >
-                          예
-                        </td>
-                        <td
-                          class="text-center text-dark font-weight-bolder text-sm py-3 border-bottom-dark border-start"
-                          style="width: 80px"
-                        >
-                          아니오
-                        </td>
+                        <td colspan="2" class="bg-gray-100"></td>
                       </tr>
 
-                      <tr
-                        v-for="(q, qIdx) in sub.questions"
-                        :key="qIdx"
-                        class="question-row"
-                      >
-                        <td
-                          class="text-center text-secondary text-sm font-weight-bold border-end align-middle"
-                          style="width: 50px"
-                        >
-                          {{ qIdx + 1 }}
-                        </td>
-                        <td
-                          class="text-sm text-dark text-wrap py-3 ps-3 align-middle"
-                        >
-                          {{ typeof q === "string" ? q : q.text }}
-                          <div
-                            v-if="
-                              q.hasExtraInput &&
-                              getSafeAnswer(sIdx, subIdx, qIdx) === '예'
-                            "
-                            class="mt-3 p-3 bg-gray-100 border-radius-md border extra-info-box"
-                          >
-                            <div class="mb-2">
-                              <span class="badge bg-info-soft text-info mb-1"
-                                >[구체적 사유]</span
-                              >
-                              <div class="text-xs text-dark ps-1 fw-bold">
-                                {{ extraInputs?.reason || "내용 없음" }}
-                              </div>
-                            </div>
-                            <div>
-                              <span class="badge bg-info-soft text-info mb-1"
-                                >[필요시기]</span
-                              >
-                              <div class="text-xs text-dark ps-1 fw-bold">
-                                {{ extraInputs?.date || "내용 없음" }}
-                              </div>
-                            </div>
+                      <tr v-for="(q, qIdx) in sub.questions" :key="qIdx">
+                        <td class="text-center">{{ qIdx + 1 }}</td>
+
+                        <td class="ps-4">
+                          <div>{{ typeof q === "string" ? q : q.text }}</div>
+
+                          <div v-if="q.hasExtraInput === false" class="mt-2">
+                            <textarea
+                              class="form-control bg-light"
+                              rows="2"
+                              :value="getAnswer(sIdx, subIdx, qIdx)"
+                              readonly
+                            ></textarea>
                           </div>
                         </td>
-                        <td class="text-center border-start align-middle">
+
+                        <td class="text-center">
                           <div
-                            class="result-box"
+                            class="result-box mx-auto"
                             :class="{
                               'active-check':
-                                getSafeAnswer(sIdx, subIdx, qIdx) === '예',
+                                getAnswer(sIdx, subIdx, qIdx) === '예',
                             }"
                           >
-                            <span
-                              v-if="getSafeAnswer(sIdx, subIdx, qIdx) === '예'"
+                            <span v-if="getAnswer(sIdx, subIdx, qIdx) === '예'"
                               >✔</span
                             >
                           </div>
                         </td>
-                        <td class="text-center border-start align-middle">
+
+                        <td class="text-center">
                           <div
-                            class="result-box"
+                            class="result-box mx-auto"
                             :class="{
                               'active-check':
-                                getSafeAnswer(sIdx, subIdx, qIdx) === '아니오',
+                                getAnswer(sIdx, subIdx, qIdx) === '아니오',
                             }"
                           >
                             <span
-                              v-if="
-                                getSafeAnswer(sIdx, subIdx, qIdx) === '아니오'
-                              "
+                              v-if="getAnswer(sIdx, subIdx, qIdx) === '아니오'"
                               >✔</span
                             >
                           </div>
@@ -276,17 +180,6 @@ const getSafeAnswer = (sIdx, subIdx, qIdx) => {
                 </table>
               </div>
             </template>
-
-            <div class="mt-5 mb-5">
-              <h6 class="text-sm font-weight-bolder mb-3 text-dark">
-                <span class="text-success me-1">●</span> 추가 요청사항
-              </h6>
-              <div
-                class="p-4 bg-gray-100 border-radius-lg text-sm text-dark min-vh-10 border shadow-none comment-box"
-              >
-                {{ extraRequest || "입력된 추가 요청사항이 없습니다." }}
-              </div>
-            </div>
 
             <div class="d-flex justify-content-center mt-5 mb-4">
               <button

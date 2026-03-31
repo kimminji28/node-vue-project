@@ -75,3 +75,6 @@ app.use("/approval/plan", approvalPlanRouter);
 //담당자 지원결과서 등록
 const resultPlanRouter = require("./routers/plan/result_plan_router.js");
 app.use("/result/plan", resultPlanRouter);
+//기관담당자 지원계획서
+const managerPlanRouter = require("./routers/plan/plan_router.js");
+app.use("/manager/plan", managerPlanRouter);

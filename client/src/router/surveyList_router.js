@@ -23,4 +23,9 @@ export default [
     name: "surveySearch",
     component: () => import("../views/components/surveySelectCard.vue"),
   },
+  //기관관리자 회원가입 승인 Router(김경환 20260331)
+  {
+    path: "/general/approval",
+    component: () => import("../views/components/InstiAdminApproval.vue"),
+  },
 ];

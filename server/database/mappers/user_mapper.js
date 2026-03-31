@@ -251,6 +251,52 @@ const instiIdCheck = async (id) => {
     }
   }
 };
+
+//기관담당자 조회(김경환 20260331)
+const getManagerList = async (roll) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    console.log(roll);
+    let result = await conn.query(userSql.getManagerList, roll);
+    let info = result;
+    return info;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+};
+
+const waitUser = async (institution_id) => {
+  let conn = await pool.getConnection();
+  try {
+    const rows = await conn.query(userSql.waitUser, institution_id);
+    return rows;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+};
+
+const agreeUser = async (id) => {
+  let conn = await pool.getConnection();
+  try {
+    const result = await conn.query(userSql.agreeUser, [id]);
+    return result;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+};
 module.exports = {
   testSelect,
   insertUser,
@@ -268,4 +314,7 @@ module.exports = {
   instiIdCheck,
   getUserInfo,
   // userUdCheck,
+  getManagerList,
+  waitUser,
+  agreeUser,
 };

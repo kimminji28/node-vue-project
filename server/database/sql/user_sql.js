@@ -117,6 +117,26 @@ SELECT COUNT(*) AS cnt
 FROM InstiUser_Tbl
 WHERE id = ?
 `;
+
+//기관 담당자 조회(김경환 20260331)
+const getManagerList = `
+SELECT *
+FROM InstiUser_Tbl
+WHERE roll = 'a003'
+`;
+
+//유저 승인 및 대기 조회(김경환 20260331)
+const waitUser = `
+SELECT * 
+FROM GeneralUser_Tbl
+WHERE approval = 'g002'
+AND institution_id = ?
+`;
+
+const agreeUser = `
+UPDATE GeneralUser_Tbl
+SET approval = 'g001'
+WHERE G_UserId = ?`;
 module.exports = {
   testSelect,
   insertUser,
@@ -134,4 +154,7 @@ module.exports = {
   instiIdCheck,
   getUserInfo,
   // userIdCheck,
+  getManagerList,
+  waitUser,
+  agreeUser,
 };

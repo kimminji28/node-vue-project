@@ -96,6 +96,45 @@ const submitReject = async () => {
 const goBack = () => {
   router.push("/general");
 };
+
+// const props = defineProps({
+//   surveyList: {
+//     type: Array,
+//     required: true,
+//     default: () => [], // 만약 데이터가 안 오면 빈 배열로 에러 방지
+//   },
+//   userRole: {
+//     type: String,
+//     required: true, // "USER", "MANAGER", "ADMIN" 중 하나가 들어올 예정
+//   },
+//   totalCount: {
+//     type: Number,
+//     required: true,
+//   },
+//   currentPage: {
+//     type: Number,
+//     required: true,
+//   },
+//   limit: {
+//     type: Number,
+//     required: true,
+//   },
+// });
+
+//기관담당자 지정(김경환 20260331)
+// const getManagerList = async () => {
+//   try{
+//     if(!instiInfo.roll.length){
+//       managerList.value = []
+//       instiInfo.roll = []
+//       return
+//     }
+//   }
+// }
+
+// const onChangeManager = async () => {
+//   await getManagerList();
+// }
 </script>
 
 <template>
@@ -156,8 +195,21 @@ const goBack = () => {
               class="text-start bg-light p-3 rounded mb-4 mx-auto"
               style="max-width: 500px"
             >
-              <h6 class="text-sm">📌 우선순위 선택 사유:</h6>
-              <p class="text-sm mb-0 text-dark">{{ requestInfo.reason }}</p>
+              <div class="row g-2">
+                <div class="col">
+                  <select class="form-select" multiple>
+                    <option disabled value="">대분류선택</option>
+                    <option>asdasdas</option>
+                  </select>
+                </div>
+
+                <div class="col">
+                  <select class="form-select" multiple>
+                    <option disabled value="">중분류선택</option>
+                    <option>asdasd</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
             <h6 class="mb-4">승인하시겠습니까?</h6>

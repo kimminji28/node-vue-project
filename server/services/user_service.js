@@ -215,7 +215,7 @@ const getUserInfo = async (userId) => {
   };
 };
 
-//로그인 정보 확인(김경환 2026.03.25)(김경환 20260330 일부 수정 및 추가)
+//로그인 정보 확인(김경환 2026.03.25)(김경환 20260330 일부 수정 및 추가) //
 const confirmUser = async (id, password) => {
   // let infos = await userMapper.confirmUser(id);
   // if (!infos || infos.length === 0) {
@@ -232,7 +232,7 @@ const confirmUser = async (id, password) => {
   // } else {
   //   return { success: false };
   // }
-  //bcrypt 임시방편(암호화 여부 관계없이 로그인)
+  //bcrypt 임시방편(암호화 여부 관계없이 로그인) 해결 시 해당 부분 주석
   let user = await userMapper.confirmUser(id);
 
   if (!user) return { success: false };
@@ -240,8 +240,8 @@ const confirmUser = async (id, password) => {
   let isMatch;
 
   // bcrypt 암호화 여부 확인
-  if (user.password.startsWith("$2b$")) {
-    isMatch = await bcrypt.compare(password, user[0].password);
+  if (user.password && user.password.startsWith("$2b$")) {
+    isMatch = await bcrypt.compare(password, user.password);
   } else {
     // 예전 평문 계정
     isMatch = password === user.password;
@@ -294,6 +294,20 @@ const instiIdCheck = async (id) => {
     return { duplicate: false };
   }
 };
+
+//기관담당자 조회(김경환 20260331)
+const getManagerList = async (roll) => {
+  let info = await userMapper.getManagerList(roll);
+  return info;
+};
+
+const waitUser = async (institution_id) => {
+  return await userMapper.waitUser(institution_id);
+};
+
+const agreeUser = async (id) => {
+  return await userMapper.agreeUser(id);
+};
 module.exports = {
   testSelect,
   createUser,
@@ -307,4 +321,7 @@ module.exports = {
   userIdCheck,
   instiIdCheck,
   getUserInfo,
+  getManagerList,
+  waitUser,
+  agreeUser,
 };

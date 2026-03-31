@@ -242,4 +242,31 @@ router.post(`/ilogout`, async (req, res) => {
 //   }
 // });
 
+//기관담당자 조회(김경환 20260331)
+router.get(`/instiUsers/:roll`, async (req, res) => {
+  let target = req.params.roll;
+  let result = await userService.getManagerList(target);
+  res.send(result);
+});
+
+//이용자 승인 및 대기(김경환 20260331)
+router.get("/wait-users", async (req, res) => {
+  // 기관관리자 승인 접근
+  if (req.session.user?.roll !== "GENERAL") {
+    return res.status(403).send("권한 없음");
+  }
+  const institution_id = req.session.user.institution_id;
+
+  const result = await userService.waitUser(institution_id);
+  res.send(result);
+});
+
+router.patch("/approve/:id", async (req, res) => {
+  if (req.session.user.roll !== "GENERAL") {
+    return res.status(403).send("권한원음");
+  }
+
+  await userService.agreeUser(req.params.id);
+  res.send({ status: "success" });
+});
 module.exports = router;

@@ -17,31 +17,27 @@ ORDER BY J_ID`;
 //조사지 건별조회 <김민지, 조사지 건별조회 쿼리 작성> <김민지, 쿼리 0326수정>
 const selectSurveyById = `
 SELECT 
-    s.J_ID,
-    s.Ver_Id,
-    s.G_UserId,
-    s.support_id,
-    s.result,
-    s.reason,
-    s.created_at,
-    q.question_id,
-    q.titleCode,
-    q.question_no,
-    q.question_text,
+    m.J_ID, 
+    m.G_UserId, 
+    m.created_at, 
+    m.reason,
+    q.question_id, 
+    q.titleCode, 
+    q.question_no, 
+    q.question_text, 
     q.answer_type,
-    a.answer_id,
     a.answer
-FROM Survey_Tbl s
-JOIN SurveyItem_Tbl q
-ON   s.Ver_Id = q.Ver_Id
-LEFT JOIN SurveyAnswer_Tbl a 
-     ON q.question_id = a.question_id
-     AND s.J_ID = a.J_ID
-WHERE s.J_ID = ?
-ORDER BY q.question_no;
+FROM Survey_Tbl m
+INNER JOIN SurveyItem_Tbl q 
+    ON m.Ver_Id = q.Ver_Id
+LEFT JOIN SurveyUserAnswer_Tbl a 
+    ON q.question_id = a.question_id 
+    AND a.J_ID = m.J_ID
+WHERE m.J_ID = ?
+ORDER BY q.titleCode, q.question_no ASC;
 `;
 
-// //조사지 답변 조회 <김민지, 260326 추가>
+//조사지 답변 조회 <김민지, 260326 추가>
 // const surveySelectAnswer = `
 // SELECT answer_id,
 //        J_ID,
@@ -149,6 +145,7 @@ const getActiveVerId = `
   LIMIT 1
 `;
 
+//시스템 관리자가 업데이트한 문항 가져오기
 const getQuestionsByJID = `
 SELECT 
     question_id, 

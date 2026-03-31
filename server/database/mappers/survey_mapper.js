@@ -2,7 +2,6 @@
 const { pool } = require("../DAO");
 const surveySql = require("../sql/survey_sql");
 
-//조사지 조회페이지!!!!!!!!!!!!!!!!!
 //조사지 전체조회 <김민지, 디비에 있는 데이터 가져와서 전체조회 26.03.23 추가>
 const selectSurveyAll = async () => {
   let conn = null;
@@ -18,11 +17,11 @@ const selectSurveyAll = async () => {
 };
 
 //조사지 건별조회 <김민지, 디비에 있는 데이터 가져와서 건별조회 26.03.23 추가>
-const selectSurveyById = async (J_ID) => {
+const selectSurveyById = async (id) => {
   let conn = null;
   conn = await pool.getConnection();
   try {
-    let rows = await conn.query(surveySql.selectSurveyById, J_ID);
+    let rows = await conn.query(surveySql.selectSurveyById, [id]);
     return rows;
   } catch (err) {
     console.log(err);
@@ -31,22 +30,6 @@ const selectSurveyById = async (J_ID) => {
   }
 };
 
-// //조사지 답변 조회 <김민지 26.03.24 추가>
-// const surveySelectAnswer = async (data) => {
-//   let conn = null;
-//   try {
-//     conn = await pool.getConnection();
-//     let rows = await conn.query(surveySql.surveySelectAnswer, data);
-//     console.log(rows);
-//     return rows;
-//   } catch (err) {
-//     console.log(err);
-//   } finally {
-//     if (conn) conn.release();
-//   }
-// };
-
-//조사지 등록페이지!!!!!!!!!!!!!!!!!
 //조사지 등록 <김민지 26.03.23 추가> 👉등록1번
 const insertSurvey = async (surveyInfo) => {
   let conn = null; //아직 커넥션 안빌려왔으니 초기값을 null로 설정;
@@ -137,7 +120,7 @@ const SupportById = async (id) => {
   }
 };
 
-//
+//폼 아이디 가져오는 매퍼
 const getActiveVerId = async () => {
   let conn = null;
   try {
@@ -166,6 +149,7 @@ const Suser = async () => {
   }
 };
 
+//문항 자체를 가져옴
 const getQuestionsByJID = async (id) => {
   let conn = null;
   try {

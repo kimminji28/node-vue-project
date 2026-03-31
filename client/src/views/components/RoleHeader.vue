@@ -88,6 +88,12 @@
                     ><span class="ms-1">My Page</span></a
                   >
                 </li>
+                <li class="nav-item" v-if="userRole === 'GENERAL'">
+                  <a class="px-3 py-2 mb-0 nav-link" @click="goApproval()"
+                    ><span class="ms-1">가입 승인</span></a
+                  >
+                </li>
+
                 <li class="nav-item">
                   <a class="px-3 py-2 mb-0 nav-link" href="javascript:;"
                     ><span class="ms-1">Log Out</span></a
@@ -104,6 +110,8 @@
 
 <script setup>
 import { defineProps, computed } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 // 💡 부모(페이지)한테서 역할이랑 이름을 받아올 바구니 준비!
 defineProps({
@@ -136,4 +144,8 @@ const instiAuthStore = useInstiAuthStore();
 const instiName = computed(() => instiAuthStore.user?.name);
 // const generalName = computed(() => generalAuthStore.user.name);
 // const usersRole = computed(() => authStore.user?.roll);
+
+const goApproval = () => {
+  router.push("/general/approval");
+};
 </script>

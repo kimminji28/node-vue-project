@@ -6,7 +6,7 @@
         <SelectCard
           v-if="allSections.length > 0"
           :sections="allSections"
-          :answers="answers"
+          :answers="answerData"
           :userName="targetUserName"
           :regDate="targetRegDate"
           :extraInputs="extraInputs"
@@ -27,17 +27,15 @@ const route = useRoute();
 const targetUserName = ref("");
 const targetRegDate = ref("");
 const allSections = ref([]);
-const answers = ref([]);
+const answerData = ref([]);
 const extraInputs = ref({});
 const extraRequest = ref("");
 
 onMounted(async () => {
   try {
-    const { Ver_Id } = route.params;
-    console.log("보내는 J_Id 값:", Ver_Id);
-    const response = await fetch(
-      `http://localhost:3000/survey/getQuestionsByJID/FORM0004`,
-    );
+    const J_ID = Object.keys(route.query)[0];
+    console.log("보내는 J_ID 값:", J_ID);
+    const response = await fetch(`http://localhost:3000/survey/user/${J_ID}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -47,15 +45,16 @@ onMounted(async () => {
     console.log("DB에서 내려온 데이터:", rawQuestions);
 
     if (rawQuestions.length > 0) {
-      targetUserName.value = rawQuestions[0].user_name || "이름없음";
-      targetRegDate.value = rawQuestions[0].reg_date || "-";
+      targetUserName.value = rawQuestions[0].G_UserId || "이름없음";
+      targetRegDate.value = rawQuestions[0].created_at || "-";
     }
 
-    const sectionsMap = {};
-    // const tempAnswers = []; // 답변을 담을 임시 3중 배열
+    const allAnswers = rawQuestions.find((q) => q.answer)?.answer || "";
+    const answerArray = allAnswers.split(",").map((a) => a.trim());
 
-    rawQuestions.forEach((item) => {
-      // --- [구조 1: 질문 섹션 만들기] ---
+    const sectionsMap = {};
+
+    rawQuestions.forEach((item, index) => {
       if (!sectionsMap[item.titleCode]) {
         sectionsMap[item.titleCode] = {
           title: item.titleCode,
@@ -81,25 +80,18 @@ onMounted(async () => {
         text: item.question_text,
         question_id: item.question_id,
         hasExtraInput: item.answer_type === "e001",
+        answer_type: item.answer_type,
       });
 
-      sub.tempAnswerList.push(item.answer || "");
+      sub.tempAnswerList.push(answerArray[index] || "");
     });
 
     const finalSections = Object.values(sectionsMap);
     allSections.value = finalSections;
 
-    answers.value = finalSections.map((sec) =>
+    answerData.value = finalSections.map((sec) =>
       sec.subs.map((sub) => sub.tempAnswerList),
     );
-
-    extraRequest.value = rawQuestions[0]?.reason || "";
-    extraInputs.value = {
-      reason:
-        rawQuestions.find((d) => d.answer_type === "e001")?.extra_reason || "",
-      date:
-        rawQuestions.find((d) => d.answer_type === "e001")?.extra_date || "",
-    };
   } catch (err) {
     console.error("조사지 데이터 불러오기 실패:", err);
   }

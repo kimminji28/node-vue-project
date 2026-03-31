@@ -6,7 +6,7 @@ import Main from "./surveyList_router";
 import SurveyAdd from "./survey_router";
 import surveySelect from "./surveySelect_router";
 import adminRouter from "./admin_router";
-import supInsert from "./supPlanInsert_router";
+import supInsert from "./supPlanmanager_router";
 import { useAdminAuthStore } from "@/stores/counter"; //admin Auth 사용 session 26.03.26 고동현 추가
 import priority from "./priority_router";
 import axios from "axios";
@@ -93,7 +93,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   //기관 회원 route check
-  if (to.path === "/manager") {
+  if (to.path.startsWith("/manager") ) {
     try {
       const response = await axios.get("/api/user/isession-check");
       const result = response.data;
