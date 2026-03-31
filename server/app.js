@@ -66,3 +66,6 @@ app.use("/general/plan", generalPlanRouter);
 //일반이용자지원계획서
 const userPlanRouter = require("./routers/plan/user_plan_router");
 app.use("/user/plan", userPlanRouter);
+//기관담당자 지원계획서
+const managerPlanRouter = require("./routers/plan/plan_router.js");
+app.use("/manager/plan", managerPlanRouter);
