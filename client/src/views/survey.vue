@@ -1,5 +1,5 @@
 <template>
-  <surveyTop />
+  <RoleHeader />
   <sidebar @select-support="loadSupportDetail" />
   <div class="py-4 container-fluid">
     <div class="row">
@@ -21,7 +21,8 @@
 <script setup>
 import SurveyCard from "./components/surveyCard.vue";
 import Sidebar from "../examples/Sidenav/SidenavList.vue";
-import surveyTop from "./components/surveyHeader.vue";
+// import surveyTop from "./components/surveyHeader.vue";
+import RoleHeader from "./components/RoleHeader.vue";
 import { ref, reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
