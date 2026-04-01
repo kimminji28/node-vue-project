@@ -3,7 +3,7 @@ import { ref, onBeforeMount, onMounted, onBeforeUnmount, reactive, computed } fr
 import { useStore } from "vuex";
 import ArgonInput from "@/components/ArgonInput.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
-import MyPageHeader from "./components/myPageHeader.vue";
+import RoleHeader from "./components/RoleHeader.vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
@@ -299,7 +299,7 @@ const selectedMiddleNames = computed(() => {
 </script>
 <template>
   <main>
-    <MyPageHeader />
+    <RoleHeader />
     <div class="py-4 container-fluid">
       <div class="row align-items-stretch">
         <div class="col-md-4" style="height: 770px">

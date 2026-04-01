@@ -22,7 +22,7 @@ const routes = [
   {
     path: "/",
     name: "/",
-    redirect: "/user",
+    redirect: "/user/login",
   },
   ...Login,
   ...Signup,

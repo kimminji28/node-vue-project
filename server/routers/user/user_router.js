@@ -88,6 +88,7 @@ router.post(`/login`, async (req, res) => {
       id: result.user.id,
       tel: result.user.tel,
       email: result.user.email,
+      role : "a004"
     };
   }
   console.log("session user :", req.session.user);
@@ -269,5 +270,63 @@ router.patch("/approve/:id", async (req, res) => {
 
   await userService.agreeUser(req.params.id);
   res.send({ status: "success" });
+});
+
+
+//header 접근용 session
+// 현재 로그인 사용자 통합 조회
+router.get("/auth/me", (req, res) => {
+  try {
+    // 일반 이용자
+    if (req.session.user) {
+      return res.send({
+        success: true,
+        isLogin: true,
+        userType: "USER",
+        user: {
+          userId: req.session.user.G_UserId,
+          institutionId: req.session.user.institution_id,
+          name: req.session.user.name,
+          loginId: req.session.user.id,
+          tel: req.session.user.tel,
+          email: req.session.user.email,
+          role: req.session.user.role,
+        },
+      });
+    }
+
+    // 기관 이용자
+    if (req.session.loginInstUser) {
+      return res.send({
+        success: true,
+        isLogin: true,
+        userType: "INST",
+        user: {
+          userId: req.session.loginInstUser.I_UserId,
+          institutionId: req.session.loginInstUser.institution_id,
+          name: req.session.loginInstUser.name,
+          loginId: req.session.loginInstUser.id,
+          tel: req.session.loginInstUser.tel,
+          email: null,
+          role: req.session.loginInstUser.role, // MANAGER or GENERAL
+        },
+      });
+    }
+
+    // 로그인 안됨
+    return res.send({
+      success: false,
+      isLogin: false,
+      userType: null,
+      user: null,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({
+      success: false,
+      isLogin: false,
+      message: "세션 확인 중 오류 발생",
+    });
+  }
 });
 module.exports = router;
