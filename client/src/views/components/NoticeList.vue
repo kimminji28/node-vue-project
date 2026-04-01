@@ -1,3 +1,4 @@
+<!-- D:\node-vue-project\client\src\views\components\NoticeList.vue -->
 <script setup>
 import { ref, onMounted, computed } from "vue";
 // import { useRouter } from "vue-router";
