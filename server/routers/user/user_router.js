@@ -88,7 +88,7 @@ router.post(`/login`, async (req, res) => {
       id: result.user.id,
       tel: result.user.tel,
       email: result.user.email,
-      role : "a004"
+      role: "a004",
     };
   }
   console.log("session user :", req.session.user);
@@ -271,7 +271,6 @@ router.patch("/approve/:id", async (req, res) => {
   await userService.agreeUser(req.params.id);
   res.send({ status: "success" });
 });
-
 
 //header 접근용 session
 // 현재 로그인 사용자 통합 조회
