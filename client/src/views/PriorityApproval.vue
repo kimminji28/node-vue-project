@@ -16,6 +16,7 @@ const requestInfo = ref({
 
 const showRejectInput = ref(false);
 const rejectReasonText = ref("");
+const previousRejectReason = ref("");
 
 // 💡 화면 켜질 때 DB에서 2가지 데이터 다 가져오기!
 onMounted(async () => {
@@ -27,6 +28,11 @@ onMounted(async () => {
       `http://localhost:3000/priority/${surveyId}`,
     );
     candidateInfo.value = candidateRes.data;
+
+    // 백엔드에서 넘겨준 이전 반려 사유가 있다면 무조건 변수에 저장
+    if (candidateRes.data.rejectReason) {
+      previousRejectReason.value = candidateRes.data.rejectReason;
+    }
 
     // 2. 담당자가 올린 결재 대기 정보(사유, 요청단계)
     const requestRes = await axios.get(
@@ -78,7 +84,7 @@ const submitReject = async () => {
         `http://localhost:3000/priority/decide/${surveyId}`,
         {
           action: "reject",
-          rejectReason: rejectReasonText.value, // 관리자가 빡쳐서(?) 적은 반려 사유
+          rejectReason: rejectReasonText.value,
         },
       );
 
@@ -140,6 +146,23 @@ const goBack = () => {
             </h5>
           </div>
           <div class="card-body">
+            <div
+              v-if="previousRejectReason"
+              class="p-3 mb-4 border border-radius-md text-start mx-auto"
+              style="
+                background-color: #fff0f0;
+                border-color: #ffc6c6 !important;
+                max-width: 500px;
+              "
+            >
+              <h6 class="text-danger text-sm mb-2 font-weight-bold">
+                <i class="fas fa-exclamation-circle me-1"></i>이전 반려 사유
+              </h6>
+              <p class="text-sm text-dark mb-0">
+                {{ previousRejectReason }}
+              </p>
+            </div>
+
             <div class="mb-4">
               <div
                 class="d-inline-flex justify-content-center align-items-center bg-gradient-success text-white rounded-circle shadow"

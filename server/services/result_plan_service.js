@@ -52,4 +52,83 @@ const savePlanResult = async (data) => {
   return { success: true, id: data.result_report };
 };
 
-module.exports = { fetchApprovedPlansForModal, savePlanResult };
+const fetchGeneralResultList = async (
+  instiId,
+  managerId,
+  filters,
+  page,
+  limit,
+) => {
+  const offset = (page - 1) * limit;
+  const rawList = await mapper.getGeneralResultList(
+    instiId,
+    managerId,
+    filters,
+    limit,
+    offset,
+  );
+
+  const formattedList = rawList.map((item) => {
+    const formatDate = (dateStr) => {
+      if (!dateStr) return "";
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    };
+
+    // 🌟 상태 코드 한글 매핑
+    const stateMap = { g001: "승인 완료", g002: "반려", g003: "승인요청중" };
+
+    return {
+      ...item,
+      support_startDate: formatDate(item.support_startDate),
+      supprot_endDate: formatDate(item.supprot_endDate),
+      created_at: formatDate(item.created_at),
+      stateName: stateMap[item.state] || "대기",
+    };
+  });
+
+  return { data: formattedList, totalCount: formattedList.length };
+};
+
+// 결과서 반려 목록 조회
+const fetchRejectedResultList = async (
+  instiId,
+  managerId,
+  filters,
+  page,
+  limit,
+) => {
+  const offset = (page - 1) * limit;
+  const rawList = await mapper.getRejectedResultList(
+    instiId,
+    managerId,
+    filters,
+    limit,
+    offset,
+  );
+
+  const formattedList = rawList.map((item) => {
+    const formatDate = (dateStr) => {
+      if (!dateStr) return "";
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    };
+
+    return {
+      ...item,
+      support_startDate: formatDate(item.support_startDate),
+      supprot_endDate: formatDate(item.supprot_endDate),
+      created_at: formatDate(item.created_at),
+      stateName: "반려", // 고정
+    };
+  });
+
+  return { data: formattedList, totalCount: formattedList.length };
+};
+
+module.exports = {
+  fetchApprovedPlansForModal,
+  savePlanResult,
+  fetchGeneralResultList,
+  fetchRejectedResultList,
+};
