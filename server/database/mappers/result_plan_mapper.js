@@ -149,4 +149,5 @@ module.exports = {
   createPlanResult,
   getMaxResultId,
   getGeneralResultList,
+  getRejectedResultList,
 };

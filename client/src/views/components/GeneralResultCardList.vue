@@ -63,14 +63,15 @@ const getBadgeClass = (stateName) => {
 
           <div
             v-if="item.stateName === '반려'"
-            class="alert alert-danger text-white text-sm mb-4 py-2"
-            role="alert"
+            class="p-3 mb-4 border border-radius-md"
+            style="background-color: #fff0f0; border-color: #ffc6c6 !important"
           >
-            <strong
-              ><i class="fas fa-exclamation-triangle me-1"></i>반려
-              사유:</strong
-            >
-            {{ item.reject_reason || "사유 없음" }}
+            <h6 class="text-danger text-sm mb-2 font-weight-bold">
+              <i class="fas fa-exclamation-circle me-1"></i>반려 사유
+            </h6>
+            <p class="text-sm text-dark mb-0">
+              {{ item.reject_reason || "사유 없음" }}
+            </p>
           </div>
 
           <div class="p-3 bg-light border-radius-md mb-4">
