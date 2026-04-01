@@ -52,14 +52,75 @@ router.post("/write", async (req, res) => {
     };
     const response = await service.savePlanResult(saveData);
 
-    res
-      .status(200)
-      .json({
-        message: "지원결과서가 성공적으로 등록되었습니다.",
-        data: response,
-      });
+    res.status(200).json({
+      message: "지원결과서가 성공적으로 등록되었습니다.",
+      data: response,
+    });
   } catch (err) {
     res.status(500).json({ message: "결과서 등록 실패", error: err.message });
+  }
+});
+
+// 지원결과서 조회
+router.get("/general-list", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const role = req.query.role; // 'manager' 혹은 'general'
+
+    const instiId = "INST0000";
+    // 🌟 만약 담당자(manager)라면 본인 ID 세팅, 관리자라면 null로 넘겨서 전체 조회
+    const managerId = role === "manager" ? "IUSR0003" : null;
+
+    const filters = {
+      managerName: req.query.managerName || "",
+      guardianName: req.query.guardianName || "",
+      supportName: req.query.supportName || "",
+      surveyId: req.query.surveyId || "",
+    };
+
+    const result = await service.fetchGeneralResultList(
+      instiId,
+      managerId,
+      filters,
+      page,
+      limit,
+    );
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ message: "조회 실패", error: err.message });
+  }
+});
+
+// 지원결과서 반려 목록 조회
+router.get("/rejected-list", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const role = req.query.role;
+
+    const instiId = "INST0000";
+    const managerId = role === "manager" ? "IUSR0003" : null;
+
+    const filters = {
+      managerName: req.query.managerName || "",
+      guardianName: req.query.guardianName || "",
+      supportName: req.query.supportName || "",
+      surveyId: req.query.surveyId || "",
+    };
+
+    const result = await service.fetchRejectedResultList(
+      instiId,
+      managerId,
+      filters,
+      page,
+      limit,
+    );
+    res.status(200).json(result);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "반려 목록 조회 실패", error: err.message });
   }
 });
 

@@ -84,3 +84,6 @@ app.use("/manager/plan", managerPlanRouter);
 //기관관리자 지원결과서 승인&반려
 const approvalResultRouter = require("./routers/plan/approval_result_router.js");
 app.use("/approval/result", approvalResultRouter);
+//공지사항
+const noticeRouter = require("./routers/notice/notice_router.js");
+app.use("/notice", noticeRouter);

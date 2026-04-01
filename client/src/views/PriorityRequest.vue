@@ -8,14 +8,15 @@ const route = useRoute();
 const router = useRouter();
 
 // 상태 관리 변수들
-const candidateInfo = ref(null); // 백엔드에서 받아올 정보
-const selectedPriority = ref(""); // 선택한 우선순위 코드 (f001, f002, f003)
-const reasonText = ref(""); // 입력한 사유
+const candidateInfo = ref(null);
+const selectedPriority = ref("");
+const reasonText = ref("");
 const rejectReasonMsg = ref("");
 
+// 💡 1. 읽기 전용 상태인지 확인할 스위치 변수 추가!
+const isReadOnly = ref(false);
+
 onMounted(async () => {
-  // 💡 1. 하드코딩 변수 세팅
-  // const surveyId = "SUV0018";
   const surveyId = route.params.id;
 
   if (!surveyId) {
@@ -23,26 +24,41 @@ onMounted(async () => {
     return;
   }
 
-  // 💡 2. route 변수 사용한 척 해서 에러(no-unused-vars) 없애기
-  // console.log(`현재 페이지 ID (사용 안함): ${route.params.id}`);
-
   try {
-    // 💡 3. 네 백엔드 세팅에 맞게 /candidate/ 빼고 정확한 주소로 찌르기!
     const response = await axios.get(
       `http://localhost:3000/priority/${surveyId}`,
     );
     candidateInfo.value = response.data;
-    if (response.data.rejectReason && response.data.currentStatus === "f005") {
+
+    // 현재 상태가 '심사중(f004)'이더라도, 반려 사유 띄우기
+    if (response.data.rejectReason) {
       rejectReasonMsg.value = response.data.rejectReason;
+    }
+
+    // 🌟 2. 심사중 상태 체크 (백엔드의 '심사중' 상태 코드에 맞게 수정 필요! 보통 'f004' 등)
+    if (
+      response.data.currentStatus === "f004" ||
+      response.data.currentStatus === "심사중"
+    ) {
+      isReadOnly.value = true; // 읽기 전용 모드 ON!
+
+      // 상세 정보(우선순위 코드, 사유) 전용 API 호출
+      const detailRes = await axios.get(
+        `http://localhost:3000/priority/request-info/${surveyId}`,
+      );
+
+      if (detailRes.data) {
+        // 백엔드 SQL(selectApprovalWaitInfo)에서 정해준 이름 그대로 매칭!
+        selectedPriority.value = detailRes.data.priorityCode || "";
+        reasonText.value = detailRes.data.reason || "";
+      }
     }
   } catch (err) {
     console.error(`정보 로딩 실패: ${err}`);
   }
 });
 
-// 승인 요청 버튼 클릭 시 실행할 함수 (뼈대만)
 const submitRequest = async () => {
-  // 1. 유효성 검사 (입력 확인)
   if (!selectedPriority.value) {
     alert("우선순위(계획/중점/긴급)를 선택해주세요!");
     return;
@@ -52,24 +68,19 @@ const submitRequest = async () => {
     return;
   }
 
-  // 2. 주소창에서 조사지 ID 꺼내기 (예: SUV0019)
   const surveyId = route.params.id;
 
   try {
-    // 💡 3. 백엔드로 POST 요청 쏘기! (data 덩어리를 같이 보냄)
     const response = await axios.post(
       `http://localhost:3000/priority/${surveyId}`,
       {
-        priority: selectedPriority.value, // f001, f002, f003
-        reason: reasonText.value, // 사용자가 입력한 텍스트
+        priority: selectedPriority.value,
+        reason: reasonText.value,
       },
     );
 
-    // 💡 4. 백엔드가 성공했다고(200 OK) 답변을 주면?
     if (response.status === 200) {
       alert("우선순위 승인 요청이 완료되었습니다!");
-
-      // 요청이 끝났으니 담당자 메인 화면으로 돌려보내기
       router.push("/manager");
     }
   } catch (err) {
@@ -87,17 +98,6 @@ const goBack = () => {
   <div class="container-fluid py-4">
     <div class="row">
       <div class="col-12 col-lg-8 mx-auto">
-        <div
-          v-if="rejectReasonMsg"
-          class="alert alert-light border border-danger text-danger d-flex align-items-center mb-4"
-          role="alert"
-        >
-          <div>
-            <strong>🚨 관리자 반려 사유:</strong><br />
-            {{ rejectReasonMsg }}
-          </div>
-        </div>
-
         <div class="card mb-4">
           <div class="card-header pb-0">
             <h6 class="mb-0">지원자 정보</h6>
@@ -140,28 +140,50 @@ const goBack = () => {
             <h6 class="mb-0">
               {{ candidateInfo?.supportName || "지원자" }} 님의
               대기단계(우선순위) 설정
+              <span v-if="isReadOnly" class="badge bg-secondary ms-2 text-xs"
+                >심사중 (읽기 전용)</span
+              >
             </h6>
           </div>
           <div class="card-body">
+            <div
+              v-if="rejectReasonMsg"
+              class="p-3 mb-4 border border-radius-md"
+              style="
+                background-color: #fff0f0;
+                border-color: #ffc6c6 !important;
+              "
+            >
+              <h6 class="text-danger text-sm mb-2 font-weight-bold">
+                <i class="fas fa-exclamation-circle me-1"></i>이전 반려 사유
+              </h6>
+              <p class="text-sm text-dark mb-0">
+                {{ rejectReasonMsg }}
+              </p>
+            </div>
+
             <div class="d-flex justify-content-center gap-3 mb-4 mt-3">
               <button
                 class="btn btn-outline-info px-5"
                 :class="{ active: selectedPriority === 'f001' }"
-                @click="selectedPriority = 'f001'"
+                @click="if (!isReadOnly) selectedPriority = 'f001';"
+                :disabled="isReadOnly"
               >
                 계획
               </button>
               <button
                 class="btn btn-outline-success px-5"
                 :class="{ active: selectedPriority === 'f002' }"
-                @click="selectedPriority = 'f002'"
+                @click="if (!isReadOnly) selectedPriority = 'f002';"
+                :disabled="isReadOnly"
               >
                 중점
               </button>
               <button
                 class="btn btn-outline-danger px-5"
                 :class="{ active: selectedPriority === 'f003' }"
-                @click="selectedPriority = 'f003'"
+                @click="if (!isReadOnly) selectedPriority = 'f003';"
+                :disabled="isReadOnly"
               >
                 긴급
               </button>
@@ -177,15 +199,20 @@ const goBack = () => {
                 rows="5"
                 v-model="reasonText"
                 placeholder="해당 우선순위를 선택한 사유를 상세히 적어주세요."
+                :disabled="isReadOnly"
               ></textarea>
             </div>
 
             <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-primary mb-0" @click="submitRequest">
+              <button
+                v-if="!isReadOnly"
+                class="btn btn-primary mb-0"
+                @click="submitRequest"
+              >
                 승인 요청
               </button>
               <button class="btn btn-secondary mb-0" @click="goBack">
-                취소
+                {{ isReadOnly ? "목록으로" : "취소" }}
               </button>
             </div>
           </div>
@@ -196,7 +223,6 @@ const goBack = () => {
 </template>
 
 <style scoped>
-/* 선택된 버튼을 예쁘게 칠해주기 위한 간단한 스타일 */
 .btn-outline-info.active {
   background-color: #11cdef;
   color: white;
@@ -208,5 +234,9 @@ const goBack = () => {
 .btn-outline-danger.active {
   background-color: #f5365c;
   color: white;
+}
+/* 읽기 전용일 때 버튼 마우스 포인터 없애기 */
+button:disabled {
+  cursor: not-allowed;
 }
 </style>

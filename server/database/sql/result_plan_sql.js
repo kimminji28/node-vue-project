@@ -24,9 +24,10 @@ const selectApprovedPlansForModal = `
   LEFT JOIN DisMajor_Tbl dm ON sp.major = dm.b_Code
   WHERE p.state = 'g001' /* 🚨 무조건 승인된 계획서만! */
     AND p.I_UserId1 = ?  /* 💡 로그인한 담당자 본인 것만! */
-    /* 🌟 핵심 센스: 이미 결과서(PlanResult_Tbl)가 있는 계획서는 목록에서 제외! */
-    AND NOT EXISTS (
-      SELECT 1 FROM PlanResult_Tbl pr WHERE pr.supportPlan_id = p.supportPlan_id
+    
+    /* 🌟 핵심 해결: 현재 승인완료(g001) 또는 대기중(g003)인 결과서가 존재하는 계획서는 제외! (반려(g002)된 건 다시 노출) */
+    AND p.supportPlan_id NOT IN (
+      SELECT supportPlan_id FROM PlanResult_Tbl WHERE state IN ('g001', 'g003')
     )
 `;
 
@@ -44,8 +45,75 @@ const selectMaxResultId = `
   SELECT MAX(result_report) AS maxId FROM PlanResult_Tbl
 `;
 
+// 일반 조회 (담당자/관리자 공용)
+const selectGeneralResultList = `
+  SELECT 
+    pr.result_report,
+    pr.supportPlan_id,
+    pr.result AS resultTitle,
+    pr.content AS resultContent,
+    pr.file1,
+    pr.file2,
+    pr.created_at,
+    pr.state,
+    pr.reject_reason,
+    p.purpose AS planPurpose,
+    p.content AS planContent,
+    p.support_startDate,
+    p.supprot_endDate,
+    sp.name AS supportName,
+    sp.born AS birthDate,
+    sp.gender AS genderCode,
+    dm.description AS disabilityType,
+    gu.name AS guardianName,
+    iu.name AS managerName
+  FROM PlanResult_Tbl pr
+  JOIN Plan_Tbl p ON pr.supportPlan_id = p.supportPlan_id
+  JOIN Survey_Tbl sv ON p.J_ID = sv.J_ID
+  JOIN Support_Tbl sp ON sv.support_id = sp.support_id
+  JOIN GeneralUser_Tbl gu ON sv.G_UserId = gu.G_UserId
+  LEFT JOIN InstiUser_Tbl iu ON pr.I_UserId = iu.I_UserId
+  LEFT JOIN DisMajor_Tbl dm ON sp.major = dm.b_Code
+  WHERE iu.institution_id = ?
+`;
+
+// 반려된 결과서 목록 조회
+const selectRejectedResultList = `
+  SELECT 
+    pr.result_report,
+    pr.supportPlan_id,
+    pr.result AS resultTitle,
+    pr.content AS resultContent,
+    pr.file1,
+    pr.file2,
+    pr.created_at,
+    pr.state,
+    pr.reject_reason,
+    p.purpose AS planPurpose,
+    p.content AS planContent,
+    p.support_startDate,
+    p.supprot_endDate,
+    sp.name AS supportName,
+    sp.born AS birthDate,
+    sp.gender AS genderCode,
+    dm.description AS disabilityType,
+    gu.name AS guardianName,
+    iu.name AS managerName
+  FROM PlanResult_Tbl pr
+  JOIN Plan_Tbl p ON pr.supportPlan_id = p.supportPlan_id
+  JOIN Survey_Tbl sv ON p.J_ID = sv.J_ID
+  JOIN Support_Tbl sp ON sv.support_id = sp.support_id
+  JOIN GeneralUser_Tbl gu ON sv.G_UserId = gu.G_UserId
+  LEFT JOIN InstiUser_Tbl iu ON pr.I_UserId = iu.I_UserId
+  LEFT JOIN DisMajor_Tbl dm ON sp.major = dm.b_Code
+  WHERE pr.state = 'g002' /* 🚨 반려된 상태만! */
+    AND iu.institution_id = ?
+`;
+
 module.exports = {
   selectApprovedPlansForModal,
   insertPlanResult,
   selectMaxResultId,
+  selectGeneralResultList,
+  selectRejectedResultList,
 };
