@@ -60,4 +60,104 @@ const getMaxResultId = async () => {
   }
 };
 
-module.exports = { getApprovedPlans, createPlanResult, getMaxResultId };
+// 결과서 조회
+const getGeneralResultList = async (
+  instiId,
+  managerId,
+  filters,
+  limit,
+  offset,
+) => {
+  let conn = await pool.getConnection();
+  try {
+    let sql = sqls.selectGeneralResultList;
+    const params = [instiId];
+
+    // 🌟 권한 분기: managerId가 있으면 해당 담당자 것만 필터링
+    if (managerId) {
+      sql += ` AND pr.I_UserId = ?`;
+      params.push(managerId);
+    }
+
+    if (filters.surveyId) {
+      sql += ` AND sv.J_ID = ?`;
+      params.push(filters.surveyId);
+    }
+
+    // 상세 검색 필터링
+    if (filters.managerName) {
+      sql += ` AND iu.name LIKE ?`;
+      params.push(`%${filters.managerName}%`);
+    }
+    if (filters.guardianName) {
+      sql += ` AND gu.name LIKE ?`;
+      params.push(`%${filters.guardianName}%`);
+    }
+    if (filters.supportName) {
+      sql += ` AND sp.name LIKE ?`;
+      params.push(`%${filters.supportName}%`);
+    }
+
+    sql += ` ORDER BY pr.created_at DESC LIMIT ? OFFSET ?`;
+    params.push(Number(limit), Number(offset));
+
+    return await conn.query(sql, params);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+// 결과서 반려 목록 조회
+const getRejectedResultList = async (
+  instiId,
+  managerId,
+  filters,
+  limit,
+  offset,
+) => {
+  let conn = await pool.getConnection();
+  try {
+    let sql = sqls.selectRejectedResultList;
+    const params = [instiId];
+
+    // 담당자일 경우 본인 것만 필터링
+    if (managerId) {
+      sql += ` AND pr.I_UserId = ?`;
+      params.push(managerId);
+    }
+
+    if (filters.surveyId) {
+      sql += ` AND sv.J_ID = ?`;
+      params.push(filters.surveyId);
+    }
+
+    // 상세 검색
+    if (filters.managerName) {
+      sql += ` AND iu.name LIKE ?`;
+      params.push(`%${filters.managerName}%`);
+    }
+    if (filters.guardianName) {
+      sql += ` AND gu.name LIKE ?`;
+      params.push(`%${filters.guardianName}%`);
+    }
+    if (filters.supportName) {
+      sql += ` AND sp.name LIKE ?`;
+      params.push(`%${filters.supportName}%`);
+    }
+
+    sql += ` ORDER BY pr.created_at DESC LIMIT ? OFFSET ?`;
+    params.push(Number(limit), Number(offset));
+
+    return await conn.query(sql, params);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+module.exports = {
+  getApprovedPlans,
+  createPlanResult,
+  getMaxResultId,
+  getGeneralResultList,
+  getRejectedResultList,
+};

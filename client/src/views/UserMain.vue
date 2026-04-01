@@ -46,6 +46,7 @@ const handlePageChange = (newPage) => {
 <template>
   <div class="py-4 container-fluid">
     <RoleHeader userRole="USER" userName="고동현" />
+    <RoleHeader />
 
     <div class="row">
       <div class="col-12">

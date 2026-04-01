@@ -1,3 +1,4 @@
+<!-- D:\node-vue-project\client\src\views\components\AuthorsMainTable.vue -->
 <script setup>
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
@@ -46,6 +47,19 @@ const props = defineProps({
 const goManager = () => {
   //하드코딩상태
   router.push("/general/select-manager/SUV0057");
+};
+
+const goToResult = (surveyId) => {
+  if (props.userRole === "USER") {
+    // 일반 이용자용 결과서 상세 페이지 (필요시 주소 변경)
+    router.push(`/user/result/detail/${surveyId}`);
+  } else if (props.userRole === "MANAGER") {
+    // 기관 담당자: 우리가 방금 만든 결과서 목록 페이지로!
+    router.push(`/manager/result/list?surveyId=${surveyId}`);
+  } else if (props.userRole === "GENERAL") {
+    // 기관 관리자: 기관 전체 결과서 목록 페이지로!
+    router.push(`/general/result/list?surveyId=${surveyId}`);
+  }
 };
 </script>
 
@@ -217,6 +231,19 @@ const goManager = () => {
                   반려
                 </button>
 
+                <button
+                  v-else-if="
+                    props.userRole === 'MANAGER' &&
+                    item.priorityCode === '심사중'
+                  "
+                  class="btn btn-sm btn-secondary mb-0 px-3 py-1"
+                  @click="
+                    $router.push(`/manager/priority-request/${item.surveyId}`)
+                  "
+                >
+                  심사중
+                </button>
+
                 <span
                   v-else
                   class="badge badge-sm"
@@ -267,6 +294,7 @@ const goManager = () => {
                   class="btn btn-sm mb-0 px-3 py-1"
                   :class="item.hasResult ? 'btn-info' : 'btn-outline-secondary'"
                   :disabled="!item.hasResult"
+                  @click="goToResult(item.surveyId)"
                 >
                   보기
                 </button>

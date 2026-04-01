@@ -70,6 +70,23 @@ const props = defineProps({
             </div>
           </div>
 
+          <div
+            v-if="
+              item.state === 'g002' ||
+              item.stateName === '반려' ||
+              item.stateName === '반려됨'
+            "
+            class="p-3 mb-4 border border-radius-md"
+            style="background-color: #fff0f0; border-color: #ffc6c6 !important"
+          >
+            <h6 class="text-danger text-sm mb-2 font-weight-bold">
+              <i class="fas fa-exclamation-circle me-1"></i>반려 사유
+            </h6>
+            <p class="text-sm text-dark mb-0">
+              {{ item.reject_reason || "사유 없음" }}
+            </p>
+          </div>
+
           <div class="row mb-3">
             <div class="col-md-6">
               <span class="text-secondary text-xs">지원 시작일</span>
