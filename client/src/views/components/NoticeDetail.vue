@@ -137,7 +137,9 @@ onMounted(() => {
                 </div>
               </div>
 
-              <div class="p-4 bg-light border-radius-lg min-vh-25 mb-4">
+              <div
+                class="p-4 bg-white border border-radius-lg min-vh-25 mb-4 shadow-sm-inset"
+              >
                 <p
                   class="text-dark text-md mb-0"
                   style="white-space: pre-wrap; line-height: 1.8"
