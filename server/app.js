@@ -80,7 +80,7 @@ const managerPlanRouter = require("./routers/plan/plan_router.js");
 app.use("/manager/plan", managerPlanRouter);
 //상담기록
 const consultRouter = require("./routers/consult/consult_router.js");
-app.use("./consult", consultRouter);
+app.use("/consult", consultRouter);
 //기관관리자 지원결과서 승인&반려
 const approvalResultRouter = require("./routers/plan/approval_result_router.js");
 app.use("/approval/result", approvalResultRouter);
