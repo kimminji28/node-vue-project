@@ -79,6 +79,11 @@ const getGeneralResultList = async (
       params.push(managerId);
     }
 
+    if (filters.surveyId) {
+      sql += ` AND sv.J_ID = ?`;
+      params.push(filters.surveyId);
+    }
+
     // 상세 검색 필터링
     if (filters.managerName) {
       sql += ` AND iu.name LIKE ?`;
@@ -119,6 +124,11 @@ const getRejectedResultList = async (
     if (managerId) {
       sql += ` AND pr.I_UserId = ?`;
       params.push(managerId);
+    }
+
+    if (filters.surveyId) {
+      sql += ` AND sv.J_ID = ?`;
+      params.push(filters.surveyId);
     }
 
     // 상세 검색

@@ -38,6 +38,7 @@ const fetchRejectedResults = async () => {
           page: 1,
           limit: 10,
           role: userRole.value,
+          surveyId: route.query.surveyId,
           ...searchFilters.value,
         },
       },

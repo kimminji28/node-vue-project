@@ -38,6 +38,7 @@ const fetchResults = async () => {
           page: 1,
           limit: 10,
           role: userRole.value, // 💡 백엔드에 권한 정보 전달!
+          surveyId: route.query.surveyId,
           ...searchFilters.value,
         },
       },

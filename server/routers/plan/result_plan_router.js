@@ -76,6 +76,7 @@ router.get("/general-list", async (req, res) => {
       managerName: req.query.managerName || "",
       guardianName: req.query.guardianName || "",
       supportName: req.query.supportName || "",
+      surveyId: req.query.surveyId || "",
     };
 
     const result = await service.fetchGeneralResultList(
@@ -105,6 +106,7 @@ router.get("/rejected-list", async (req, res) => {
       managerName: req.query.managerName || "",
       guardianName: req.query.guardianName || "",
       supportName: req.query.supportName || "",
+      surveyId: req.query.surveyId || "",
     };
 
     const result = await service.fetchRejectedResultList(
