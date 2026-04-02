@@ -33,18 +33,15 @@ const pageTitle = computed(() => {
 // 1. 목록 불러오기 API 호출 (role 파라미터 포함)
 const fetchResults = async () => {
   try {
-    const response = await axios.get(
-      "http://localhost:3000/result/plan/general-list",
-      {
-        params: {
-          page: 1,
-          limit: 10,
-          role: userRole.value, // 💡 백엔드에 권한 정보 전달!
-          surveyId: route.query.surveyId,
-          ...searchFilters.value,
-        },
+    const response = await axios.get("/api/result/plan/general-list", {
+      params: {
+        page: 1,
+        limit: 10,
+        role: userRole.value, // 💡 백엔드에 권한 정보 전달!
+        surveyId: route.query.surveyId,
+        ...searchFilters.value,
       },
-    );
+    });
     resultList.value = response.data.data ? response.data.data : response.data;
   } catch (error) {
     console.error("결과서 목록 로딩 실패:", error);
