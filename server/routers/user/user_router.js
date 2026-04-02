@@ -265,7 +265,7 @@ router.get(`/instiUsers/:roll/:institution_id`, async (req, res) => {
   try {
     const { roll, institution_id } = req.params;
 
-    let result = await userService.getManagerList(roll, instId);
+    let result = await userService.getManagerList(roll, institution_id);
 
     res.json(result);
   } catch (err) {
@@ -458,9 +458,11 @@ router.patch("/approve-manager/:id", async (req, res) => {
   res.send({ status: "success" });
 });
 
-router.get("/support/by-user/:gid", async (req, res) => {
-  const gid = req.params.gid;
-  const result = await userService.getSupportInstitutionByUser(gid);
+router.get("/support/by-jid/:jid", async (req, res) => {
+  const jid = req.params.jid;
+
+  const result = await userService.getSupportInstitutionByJid(jid);
+
   res.json(result);
 });
 module.exports = router;

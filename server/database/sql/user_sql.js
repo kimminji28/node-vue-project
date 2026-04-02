@@ -276,8 +276,7 @@ SET name = ?,
 WHERE I_UserId = ?
 `;
 
-const getInstInfoById =
-`
+const getInstInfoById = `
 SELECT
   i.institution_id,
   i.institution_name,
@@ -391,7 +390,7 @@ SELECT s.support_id, gu.institution_id
 FROM Support_Tbl s
 JOIN GeneralUser_Tbl gu
   ON s.G_UserId = gu.G_UserId
-WHERE s.G_UserId = ?
+WHERE s.J_ID = ?
 `;
 
 

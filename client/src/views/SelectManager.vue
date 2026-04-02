@@ -1,6 +1,6 @@
 <template>
   <RoleHeader />
-  <div class="py-4 container-fluid">
+  <div class="py-4 container-fluid" style="position: relative; z-index: 10">
     <div class="row">
       <div class="col-12">
         <div class="row mb-3">
@@ -8,11 +8,11 @@
             <select class="form-select" v-model="mainManager">
               <option value="">담당자 선택(정)</option>
               <option
-                v-for="m in managers"
-                :key="m.I_UserId"
-                :value="m.I_UserId"
+                v-for="manager in managers"
+                :key="manager.I_UserId"
+                :value="manager.I_UserId"
               >
-                {{ m.name }} ({{ m.I_UserId }})
+                {{ manager.name }} ({{ manager.I_UserId }})
               </option>
             </select>
           </div>
@@ -20,11 +20,11 @@
             <select class="form-select" v-model="subManager">
               <option value="">담당자 선택(부)</option>
               <option
-                v-for="m in managers"
-                :key="m.I_UserId"
-                :value="m.I_UserId"
+                v-for="manager in managers"
+                :key="manager.I_UserId"
+                :value="manager.I_UserId"
               >
-                {{ m.name }} ({{ m.I_UserId }})
+                {{ manager.name }} ({{ manager.I_UserId }})
               </option>
             </select>
           </div>
@@ -35,7 +35,6 @@
           </div>
         </div>
         <SelectCard
-          v-if="allSections.length > 0"
           :sections="allSections"
           :answers="answerData"
           :userName="targetUserName"
@@ -52,7 +51,6 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-// import surveyTop from "./components/surveyHeader.vue";
 import RoleHeader from "./components/RoleHeader.vue";
 import SelectCard from "./components/surveyManagerCard.vue";
 import { useRoute } from "vue-router";
@@ -72,24 +70,57 @@ const supportId = ref("");
 
 onMounted(async () => {
   try {
-    // const J_ID = Object.keys(route.query)[0];
     const J_ID = route.params.id;
-    console.log(J_ID);
-    // console.log("보내는 J_ID 값:", J_ID);
-    const response = await fetch(`http://localhost:3000/survey/user/${J_ID}`);
+    // URL 에서 J_ID 가져오기
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // 1. 조사지 조회
+    const surveyRes = await fetch(`http://localhost:3000/survey/user/${J_ID}`);
+
+    const rawQuestions = await surveyRes.json();
+    console.log("rawQuestions[0]:", rawQuestions[0]);
+
+    // 2. 일반 사용자 ID 확보
+    const G_USER = route.query.userId || rawQuestions[0]?.G_UserId;
+
+    // 3. support_id + institution_id 조회
+    const supportRes = await fetch(
+      `http://localhost:3000/user/support/by-jid/${G_USER}`,
+    );
+
+    const supportData = await supportRes.json();
+    console.log("1. 지원 정보 데이터:", supportData);
+
+    if (!supportData || supportData.length === 0) {
+      console.error("지원 정보가 없어 기관 ID를 찾을 수 없습니다.");
+      return;
     }
 
-    const rawQuestions = await response.json();
+    const institutionId = supportData[0].institution_id;
+    console.log("2. 추출된 기관 ID:", institutionId);
+
+    const managerRes = await fetch(
+      `http://localhost:3000/user/instiUsers/a003/${institutionId}`,
+    );
+    const managerData = await managerRes.json();
+
+    console.log("3. 서버에서 받은 담당자 원본:", managerData);
+
+    // 데이터가 배열인지 확인하고 할당
+    managers.value = Array.isArray(managerData)
+      ? managerData
+      : managerData.data || [];
+    console.log("4. 최종 할당된 managers:", managers.value);
+    // ============================
+    // 아래부터는 기존 조사지 UI 구성 로직
+    // ============================
 
     if (rawQuestions.length > 0) {
       targetUserName.value = rawQuestions[0].userName || "이름없음";
       targetRegDate.value = rawQuestions[0].created_at || "-";
-      supportId.value = rawQuestions[0].support_id;
     }
+
     const allAnswers = rawQuestions.find((q) => q.answer)?.answer || "";
+
     const answerArray = allAnswers.split(",").map((a) => a.trim());
 
     const sectionsMap = {};
@@ -127,44 +158,31 @@ onMounted(async () => {
     });
 
     const finalSections = Object.values(sectionsMap);
-    //객체에서 값만 가지고와서 배열로 만듦
+
     allSections.value = finalSections;
 
     answerData.value = finalSections.map((sec) =>
       sec.subs.map((sub) => sub.tempAnswerList),
     );
-
-    const instRes = await fetch(
-      `http://localhost:3000/support/institution/${supportId.value}`,
-    );
-
-    const instData = await instRes.json();
-    const institutionId = instData.institution_id;
-
-    const managerRes = await fetch(
-      `http://localhost:3000/user/instiUsers/a003/${institutionId}`,
-    );
-
-    if (managerRes.ok) {
-      managers.value = await managerRes.json();
-      console.log("담당자 목록:", managers.value);
-    }
   } catch (err) {
     console.error("조사지 데이터 불러오기 실패:", err);
   }
 });
 
 const saveAssignment = async () => {
+  // 정/부 담당자 둘 다 선택했는지 확인
   if (!mainManager.value || !subManager.value) {
     alert("정/부 담당자를 모두 선택하세요.");
     return;
   }
 
+  // 같은 사람 선택 방지
   if (mainManager.value === subManager.value) {
     alert("정/부 담당자는 다르게 선택하세요.");
     return;
   }
 
+  // 배정 payload
   const payload = {
     support_id: supportId.value,
     I_UserId1: mainManager.value,
@@ -172,13 +190,18 @@ const saveAssignment = async () => {
   };
 
   try {
+    // 담당자 배정 저장
     const response = await fetch("http://localhost:3000/user/assign", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(payload),
     });
 
-    if (response.ok) alert("담당자 배정이 완료되었습니다.");
+    if (response.ok) {
+      alert("담당자 배정이 완료되었습니다.");
+    }
   } catch (err) {
     console.error("저장 실패:", err);
   }
