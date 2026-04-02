@@ -52,6 +52,7 @@
                       <span class="ms-1">지원계획서</span>
                     </button>
                   </li>
+                </template>
 
                   <li class="nav-item">
                     <button
