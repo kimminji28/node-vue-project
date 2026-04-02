@@ -270,6 +270,23 @@ SET name = ?,
 WHERE I_UserId = ?
 `;
 
+const getInstInfoById =
+`
+SELECT
+  i.institution_id,
+  i.institution_name,
+  i.zipCode AS institution_zipCode,
+  i.address AS institution_address,
+  i.tel AS institution_tel,
+  i.email AS institution_email,
+  i.state,
+  i.join_date
+FROM InstiUser_Tbl u
+JOIN Institution_Tbl i
+  ON u.institution_id = i.institution_id
+WHERE u.I_UserId = ?;
+`;
+
 
 module.exports = {
   testSelect,
@@ -300,4 +317,5 @@ module.exports = {
   getInstiUserPassword,
   updateInstiUserPassword,
   updateInstiUserInfo,
+  getInstInfoById,
 };

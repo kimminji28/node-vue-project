@@ -457,6 +457,25 @@ const updateInstiUserInfo = async (data) => {
   }
 };
 
+const getInstInfoById = async (iUserId) => {
+  let conn = null;
+  try{
+    conn = await pool.getConnection();
+    const rows = await conn.query(userSql.getInstInfoById, iUserId);
+
+    return rows;
+
+  }catch (err) {
+    console.log(err);
+    throw err;
+    
+  }finally {
+    if(conn){
+      conn.release();
+    }
+  }
+};
+
 
 
 module.exports = {
@@ -488,4 +507,5 @@ module.exports = {
   getInstiUserPassword,
   updateInstiUserPassword,
   updateInstiUserInfo,
+  getInstInfoById,
 };

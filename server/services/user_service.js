@@ -596,6 +596,29 @@ const updateInstiUserInfo = async (I_UserId, body) => {
   }
 };
 
+
+const getInstInfoById = async (iUserId) => {
+  try{
+    const rows = await userMapper.getInstInfoById(iUserId);
+
+    if(rows && rows.length > 0 ){
+      return {
+        status : "Success",
+        data : rows[0],
+      };
+    }
+
+    return {
+      status : "Failed",
+      message : "기관 정보를 찾을 수 없습니다.",
+      data : null,
+    };
+
+  }catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   testSelect,
   createUser,
@@ -619,4 +642,5 @@ module.exports = {
   getSupporterList,
   changeInstiUserPassword,
   updateInstiUserInfo,
+  getInstInfoById,
 };

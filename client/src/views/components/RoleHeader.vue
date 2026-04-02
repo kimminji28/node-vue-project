@@ -41,8 +41,8 @@
                   </button>
                 </li>
 
-                <!-- 기관 담당자 전용 메뉴 -->
-                <template v-if="userRole === ROLE.MANAGER">
+                <!-- 기관 관리자 전용 메뉴 -->
+                <template v-if="userRole === ROLE.ADMIN">
                   <li class="nav-item">
                     <button
                       type="button"
@@ -53,9 +53,39 @@
                     </button>
                   </li>
 
-                <template
-                  v-if="userRole === ROLE.ADMIN || userRole === ROLE.MANAGER"
-                >
+                  <li class="nav-item">
+                    <button
+                      type="button"
+                      class="px-3 py-2 nav-link border-0 bg-transparent"
+                      @click="goResult"
+                    >
+                      <span class="ms-1">지원결과</span>
+                    </button>
+                  </li>
+
+                  <li class="nav-item">
+                    <button
+                      type="button"
+                      class="px-3 py-2 nav-link border-0 bg-transparent"
+                      @click="goManager"
+                    >
+                      <span class="ms-1">기관담당자</span>
+                    </button>
+                  </li>
+                </template>
+
+                <!-- 기관 담당자 전용 메뉴 -->
+                <template v-else-if="userRole === ROLE.MANAGER">
+                  <li class="nav-item">
+                    <button
+                      type="button"
+                      class="px-3 py-2 nav-link border-0 bg-transparent"
+                      @click="goPlan"
+                    >
+                      <span class="ms-1">지원계획서</span>
+                    </button>
+                  </li>
+
                   <li class="nav-item">
                     <button
                       type="button"
@@ -123,17 +153,6 @@
                   </button>
                 </li>
 
-                <!-- 가입 승인 -->
-                <li class="nav-item" v-if="userRole === ROLE.ADMIN">
-                  <button
-                    type="button"
-                    class="px-3 py-2 mb-0 nav-link border-0 bg-transparent"
-                    @click="goApproval"
-                  >
-                    <span class="ms-1">가입 승인</span>
-                  </button>
-                </li>
-
                 <!-- 로그아웃 -->
                 <li class="nav-item" v-if="isLogin">
                   <button
@@ -160,9 +179,9 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const ROLE = {
-  ADMIN: "a002",
-  MANAGER: "a003",
-  USER: "a004",
+  ADMIN: "a002",   // 기관 관리자
+  MANAGER: "a003", // 기관 담당자
+  USER: "a004",    // 일반 이용자
 };
 
 const isLogin = ref(false);
@@ -216,6 +235,11 @@ const getLoginUser = async () => {
 };
 
 const goHome = () => {
+  if (userRole.value === ROLE.ADMIN) {
+    router.push("/general");
+    return;
+  }
+
   if (userType.value === "INST") {
     router.push("/manager");
     return;
@@ -230,16 +254,29 @@ const goHome = () => {
 };
 
 const goNotice = () => {
-  // 공지사항 주소 정해지면 수정
   // router.push("/notice");
 };
 
 const goPlan = () => {
+  if (userRole.value === ROLE.ADMIN) {
+    router.push("/general/planlist");
+    return;
+  }
+
   router.push("/manager/planlist");
 };
 
 const goResult = () => {
+  if (userRole.value === ROLE.ADMIN) {
+    router.push("/general/result");
+    return;
+  }
+
   router.push("/manager/result");
+};
+
+const goManager = () => {
+  router.push("/general/manager");
 };
 
 const goConsult = () => {
@@ -248,13 +285,11 @@ const goConsult = () => {
 
 const goHistory = () => {
   if (userType.value === "INST") {
-    // 기관 히스토리 주소 정해지면 수정
     // router.push("/manager/history");
     return;
   }
 
   if (userType.value === "USER") {
-    // 일반 사용자 히스토리 주소 정해지면 수정
     // router.push("/user/history");
     return;
   }
@@ -266,6 +301,11 @@ const goMyPage = () => {
     return;
   }
 
+  if (userRole.value === ROLE.ADMIN) {
+    router.push(`/general/${loginId.value}/mypage`);
+    return;
+  }
+
   if (userType.value === "INST") {
     router.push(`/manager/${loginId.value}/mypage`);
     return;
@@ -274,10 +314,6 @@ const goMyPage = () => {
   if (userType.value === "USER") {
     router.push(`/${loginId.value}/mypage/support`);
   }
-};
-
-const goApproval = () => {
-  router.push("/general/approval");
 };
 
 const getLogoutUrl = () => {

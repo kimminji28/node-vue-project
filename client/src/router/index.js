@@ -18,7 +18,8 @@ import ApprovalPlan from "./approval_plan_router";
 import ResultPlanWrite from "./result_plan_router";
 import ApprovalResult from "./approval_result_router";
 import Notice from "./notice_router";
-import managerMypage  from "./mngMypage_router";
+import managerMypage from "./mngMypage_router";
+import generalMypage_router from "./generalMypage_router";
 
 const routes = [
   {
@@ -44,6 +45,7 @@ const routes = [
   ...ApprovalResult,
   ...Notice,
   ...managerMypage,
+  ...generalMypage_router,
 ];
 
 const router = createRouter({
@@ -99,7 +101,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   //기관 회원 route check
-  if (to.path.startsWith("/manager")) {
+  if (to.path.startsWith("/manager") || to.path.startsWith("/general")) {
     try {
       const response = await axios.get("/api/user/isession-check");
       const result = response.data;
@@ -113,6 +115,18 @@ router.beforeEach(async (to, from, next) => {
       if (role !== "a002" && role !== "a003") {
         alert("기관 회원 권한이 없습니다.");
         return next("/user/login");
+      }
+      const loginUserId = result.user.id;
+      const urlUserId = to.params.userId;
+
+      if (urlUserId && loginUserId !== urlUserId) {
+        alert("본인 페이지에만 접근할 수 있습니다.");
+        if (role == "a002") {
+          return next(`/general/${loginUserId}/mypage`);
+        }
+        if (role == "a003") {
+          return next(`/manager/${loginUserId}/mypage`);
+        }
       }
     } catch (err) {
       console.log("기관 회원 가드 오류", err);
