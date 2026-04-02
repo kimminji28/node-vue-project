@@ -18,7 +18,7 @@ import ApprovalPlan from "./approval_plan_router";
 import ResultPlanWrite from "./result_plan_router";
 import ApprovalResult from "./approval_result_router";
 import Notice from "./notice_router";
-import managerMypage  from "./mngMypage_router";
+import managerMypage from "./mngMypage_router";
 
 const routes = [
   {
@@ -75,7 +75,12 @@ router.beforeEach(async (to, from, next) => {
   }
 
   //일반 회원 마이페이지 route check
-  if (to.path.startsWith("/user") && to.path !== "/user/login" && to.path !== "/user/ilogin") {
+  if (
+    to.path.startsWith("/user") &&
+    to.path !== "/user/login" &&
+    to.path !== "/user/ilogin" &&
+    to.path !== "/user/signup"
+  ) {
     try {
       const response = await axios.get("/api/user/session-check");
       const result = response.data;
