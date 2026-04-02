@@ -77,7 +77,12 @@ router.beforeEach(async (to, from, next) => {
   }
 
   //일반 회원 마이페이지 route check
-  if (to.path.startsWith("/user") && to.path !== "/user/login" && to.path !== "/user/ilogin") {
+  if (
+    to.path.startsWith("/user") &&
+    to.path !== "/user/login" &&
+    to.path !== "/user/ilogin" &&
+    to.path !== "/user/signup"
+  ) {
     try {
       const response = await axios.get("/api/user/session-check");
       const result = response.data;

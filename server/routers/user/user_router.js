@@ -3,7 +3,6 @@ const express = require("express");
 const router = express.Router();
 const uploadUser = require("../../middlewares/uploadFile_SignIn.js");
 
-
 const userService = require("../../services/user_service.js");
 
 const {
@@ -12,8 +11,10 @@ const {
   requireSameGUser,
 } = require("../../middlewares/generalUserMiddleware.js");
 
-const { requireInstUser, requireInstRole } = require("../../middlewares/instiUserMiddleware.js");
-
+const {
+  requireInstUser,
+  requireInstRole,
+} = require("../../middlewares/instiUserMiddleware.js");
 
 router.get(`/test`, async (req, res) => {
   let result = await userService.testSelect();
@@ -79,18 +80,30 @@ router.get(
 );
 
 //일반사용자 마이페이지 본인정보 수정
-router.put(`/info`, requireUser, uploadUser.fields([{ name: "document1", maxCount: 1 }, { name: "document2", maxCount: 1 }]), async (req, res) => {
-  const G_UserId = req.session.user.G_UserId;
-  const body = req.body;
-  const files = req.files;
+router.put(
+  `/info`,
+  requireUser,
+  uploadUser.fields([
+    { name: "document1", maxCount: 1 },
+    { name: "document2", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    const G_UserId = req.session.user.G_UserId;
+    const body = req.body;
+    const files = req.files;
 
-  body.document1 = files?.document1 ? files.document1[0].filename : body.document1 || null;
-  body.document2 = files?.document2 ? files.document2[0].filename : body.document2 || null;
+    body.document1 = files?.document1
+      ? files.document1[0].filename
+      : body.document1 || null;
+    body.document2 = files?.document2
+      ? files.document2[0].filename
+      : body.document2 || null;
 
-  const result = await userService.updateUserInfo(G_UserId, body);
+    const result = await userService.updateUserInfo(G_UserId, body);
 
-  res.send(result);
-});
+    res.send(result);
+  },
+);
 
 //일반사용자 비밀번호 변경
 router.put(`/password`, requireUser, async (req, res) => {
@@ -101,11 +114,14 @@ router.put(`/password`, requireUser, async (req, res) => {
   res.send(result);
 });
 
-
 //일반사용자 마이페이지 기관검색
 router.get(`/institutions`, requireUser, async (req, res) => {
   const { sido, sigungu, keyword } = req.query;
-  const result = await userService.searchInstitutions({ sido, sigungu, keyword });
+  const result = await userService.searchInstitutions({
+    sido,
+    sigungu,
+    keyword,
+  });
 
   res.send(result);
 });
@@ -210,7 +226,6 @@ router.post(`/logout`, async (req, res) => {
   }
 });
 
-
 // //기관
 router.post(`/ilogout`, async (req, res) => {
   try {
@@ -236,17 +251,26 @@ router.post(`/ilogout`, async (req, res) => {
   }
 });
 
-
 //기관담당자 조회(김경환 20260331)
-router.get(`/instiUsers/:roll`, async (req, res) => {
-  let target = req.params.roll;
-  let result = await userService.getManagerList(target);
-  res.send(result);
+router.get(`/instiUsers/:roll/:institution_id`, async (req, res) => {
+  try {
+    const { roll, institution_id } = req.params;
+
+    let result = await userService.getManagerList(roll, instId);
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
 });
 
 //이용자 승인 및 대기(김경환 20260331)
 router.get("/wait-users", async (req, res) => {
   // 기관관리자 승인 접근
+  if (!req.session.loginInstUser) {
+    return res.status(401).send("로그인 필요");
+  }
   const instId = req.session.loginInstUser.institution_id;
 
   const result = await userService.waitUser(instId);
@@ -323,8 +347,7 @@ router.get("/auth/me", (req, res) => {
   }
 });
 
-
-//기관담당자 마이페이지 
+//기관담당자 마이페이지
 router.get(`/instiUsersinfo`, requireInstRole, async (req, res) => {
   const instId = req.session.loginInstUser.I_UserId; //PK값임
 
@@ -338,7 +361,6 @@ router.get(`/instiSupportList`, requireInstRole, async (req, res) => {
   const result = await userService.getSupporterList(instId);
 
   res.send(result);
-
 });
 
 //기관담당자 비밀번호 변경
@@ -356,6 +378,10 @@ router.put("/instiUsersinfo", requireInstRole, async (req, res) => {
   res.send(result);
 });
 
+router.post("/assign", async (req, res) => {
+  const { I_UserId1, I_UserId2, support_id } = req.body;
+
+  await userService.updateManager(I_UserId1, I_UserId2, support_id);
 
 //해당기관 가져오기
 router.get(`/institutionInfo`, requireInstRole, async (req, res) => {
@@ -366,5 +392,37 @@ router.get(`/institutionInfo`, requireInstRole, async (req, res) => {
 });
 
 
+  res.send({ success: true });
+});
 
+router.get("/wait-insti-users", async (req, res) => {
+  // 기관관리자 승인 접근
+  if (!req.session.loginInstUser) {
+    return res.status(401).send("로그인 필요");
+  }
+
+  const instId = req.session.loginInstUser.institution_id;
+
+  const result = await userService.waitInstiUser(instId);
+
+  res.send(result);
+});
+
+router.patch("/approve-manager/:id", async (req, res) => {
+  if (!req.session.loginInstUser) {
+    return res.status(401).send("로그인 필요");
+  }
+  if (req.session.loginInstUser.role !== "a002") {
+    return res.status(403).send("권한없음");
+  }
+
+  await userService.agreeInstiUser(req.params.id);
+  res.send({ status: "success" });
+});
+
+router.get("/support/by-user/:gid", async (req, res) => {
+  const gid = req.params.gid;
+  const result = await userService.getSupportInstitutionByUser(gid);
+  res.json(result);
+});
 module.exports = router;
