@@ -383,6 +383,15 @@ router.post("/assign", async (req, res) => {
 
   await userService.updateManager(I_UserId1, I_UserId2, support_id);
 
+//해당기관 가져오기
+router.get(`/institutionInfo`, requireInstRole, async (req, res) => {
+  const iUserId = req.session.loginInstUser.I_UserId; 
+  const result = await userService.getInstInfoById(iUserId);
+
+  res.send(result);
+});
+
+
   res.send({ success: true });
 });
 

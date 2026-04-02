@@ -264,6 +264,23 @@ SET name = ?,
 WHERE I_UserId = ?
 `;
 
+const getInstInfoById =
+`
+SELECT
+  i.institution_id,
+  i.institution_name,
+  i.zipCode AS institution_zipCode,
+  i.address AS institution_address,
+  i.tel AS institution_tel,
+  i.email AS institution_email,
+  i.state,
+  i.join_date
+FROM InstiUser_Tbl u
+JOIN Institution_Tbl i
+  ON u.institution_id = i.institution_id
+WHERE u.I_UserId = ?;
+`;
+
 //담당자 선택시 보호대상자의 I_UserId1, 2 등록(김경환 20260401)
 const updateManager = `
 UPDATE Support_Tbl
@@ -324,6 +341,7 @@ module.exports = {
   getInstiUserPassword,
   updateInstiUserPassword,
   updateInstiUserInfo,
+  getInstInfoById,
   updateManager,
   waitInstiUser,
   agreeInstiUser,

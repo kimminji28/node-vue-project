@@ -455,6 +455,20 @@ const updateInstiUserInfo = async (data) => {
   }
 };
 
+const getInstInfoById = async (iUserId) => {
+  let conn = null;
+  try{
+    conn = await pool.getConnection();
+    const rows = await conn.query(userSql.getInstInfoById, iUserId);
+
+    return rows;
+
+  }catch (err) {
+    console.log(err);
+    throw err;
+    
+  }finally {
+    if(conn){
 //기관관리자의 담당자선택(김경환 20260401)
 const updateManager = async (instiId1, instiId2, supportId) => {
   let conn = await pool.getConnection();
@@ -545,6 +559,7 @@ module.exports = {
   getInstiUserPassword,
   updateInstiUserPassword,
   updateInstiUserInfo,
+  getInstInfoById,
   updateManager,
   waitInstiUser,
   agreeInstiUser,

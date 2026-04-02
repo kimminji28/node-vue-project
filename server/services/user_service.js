@@ -595,6 +595,29 @@ const updateInstiUserInfo = async (I_UserId, body) => {
   }
 };
 
+
+const getInstInfoById = async (iUserId) => {
+  try{
+    const rows = await userMapper.getInstInfoById(iUserId);
+
+    if(rows && rows.length > 0 ){
+      return {
+        status : "Success",
+        data : rows[0],
+      };
+    }
+
+    return {
+      status : "Failed",
+      message : "기관 정보를 찾을 수 없습니다.",
+      data : null,
+    };
+
+  }catch (err) {
+    console.log(err);
+  }
+};
+
 //기관관리자의 이용자의 담당자 선택(김경환 20260401)
 const updateManager = async (instiId1, instiId2, supportId) => {
   const result = await userMapper.updateManager(instiId1, instiId2, supportId);
@@ -645,6 +668,7 @@ module.exports = {
   getSupporterList,
   changeInstiUserPassword,
   updateInstiUserInfo,
+  getInstInfoById,
   updateManager,
   waitInstiUser,
   agreeInstiUser,
