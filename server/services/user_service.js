@@ -317,12 +317,18 @@ const changePassword = async (userId, passwordInfo) => {
   };
 };
 
-
 //일반이용자 기관검색
 const searchInstitutions = async (searchInfo) => {
   const { sido, sigungu, keyword } = searchInfo;
 
-  const result = await userMapper.searchInstitutions([sido || "", sido || "", sigungu || "", sigungu || "", keyword || "", keyword || "",]);
+  const result = await userMapper.searchInstitutions([
+    sido || "",
+    sido || "",
+    sigungu || "",
+    sigungu || "",
+    keyword || "",
+    keyword || "",
+  ]);
   return {
     status: "Success",
     data: result,
@@ -410,8 +416,8 @@ const instiIdCheck = async (id) => {
 };
 
 //기관담당자 조회(김경환 20260331)
-const getManagerList = async (roll) => {
-  let info = await userMapper.getManagerList(roll);
+const getManagerList = async (roll, institution_id) => {
+  let info = await userMapper.getManagerList(roll, institution_id);
   return info;
 };
 
@@ -432,7 +438,6 @@ const agreeUser = async (id) => {
   };
 };
 
-
 //기관 담당자 마이페이지
 const getInstInfo = async (instId) => {
   const result = await userMapper.getInstInfo(instId);
@@ -447,7 +452,6 @@ const getInstInfo = async (instId) => {
     data: result,
   };
 };
-
 
 const getSupporterList = async (instId) => {
   let list = await userMapper.getSupporterList(instId);
@@ -472,7 +476,7 @@ const getSupporterList = async (instId) => {
         major_name,
         middle_name,
       };
-    })
+    }),
   );
 
   return {
@@ -480,7 +484,6 @@ const getSupporterList = async (instId) => {
     data: result,
   };
 };
-
 
 // 기관 담당자 비밀번호 변경
 const changeInstiUserPassword = async (I_UserId, body) => {
@@ -505,10 +508,7 @@ const changeInstiUserPassword = async (I_UserId, body) => {
       return { status: "Failed", message: "사용자 없음" };
     }
 
-    const isMatch = await bcrypt.compare(
-      currentPassword,
-      userInfo.password
-    );
+    const isMatch = await bcrypt.compare(currentPassword, userInfo.password);
 
     if (!isMatch) {
       return {
@@ -521,7 +521,7 @@ const changeInstiUserPassword = async (I_UserId, body) => {
 
     const result = await userMapper.updateInstiUserPassword(
       hashedPassword,
-      I_UserId
+      I_UserId,
     );
 
     if (result.affectedRows > 0) {
@@ -543,7 +543,6 @@ const changeInstiUserPassword = async (I_UserId, body) => {
     };
   }
 };
-
 
 const updateInstiUserInfo = async (I_UserId, body) => {
   try {
@@ -596,6 +595,33 @@ const updateInstiUserInfo = async (I_UserId, body) => {
   }
 };
 
+//기관관리자의 이용자의 담당자 선택(김경환 20260401)
+const updateManager = async (instiId1, instiId2, supportId) => {
+  const result = await userMapper.updateManager(instiId1, instiId2, supportId);
+  return result;
+};
+
+//기관관리자의 담당자 승인(김경환 20260401)
+const waitInstiUser = async (institution_id) => {
+  const rows = await userMapper.waitInstiUser(institution_id);
+  return {
+    success: true,
+    data: rows,
+  };
+};
+
+const agreeInstiUser = async (id) => {
+  const result = await userMapper.agreeInstiUser(id);
+  return {
+    success: true,
+    result,
+  };
+};
+
+const getSupportInstitutionByJid = async (jid) => {
+  const result = await userMapper.getSupportInstitutionByJid(jid);
+  return result;
+};
 module.exports = {
   testSelect,
   createUser,
@@ -619,4 +645,8 @@ module.exports = {
   getSupporterList,
   changeInstiUserPassword,
   updateInstiUserInfo,
+  updateManager,
+  waitInstiUser,
+  agreeInstiUser,
+  getSupportInstitutionByJid,
 };

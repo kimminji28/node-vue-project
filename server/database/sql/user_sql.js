@@ -95,7 +95,6 @@ SET
 WHERE G_UserId = ?
 `;
 
-
 const getUserPasswordByGUserId = `
 SELECT G_UserId, password
 FROM GeneralUser_Tbl
@@ -108,10 +107,8 @@ SET password = ?
 WHERE G_UserId = ?
 `;
 
-
 //기관검색
-const searchInstitutions =
-`
+const searchInstitutions = `
 SELECT
   institution_id,
   institution_name,
@@ -167,11 +164,12 @@ FROM InstiUser_Tbl
 WHERE id = ?
 `;
 
-//기관 담당자 조회(김경환 20260331)
+//기관 담당자 조회, 지정(김경환 20260331)
 const getManagerList = `
 SELECT *
 FROM InstiUser_Tbl
-WHERE roll = 'a003'
+WHERE roll = ?
+AND institution_id = ?
 `;
 
 //유저 승인 및 대기 조회(김경환 20260331)
@@ -188,10 +186,8 @@ SET approval = 'g001'
 WHERE G_UserId = ?
 `;
 
-
 //기관 담당자 마이페이지
-const getInstInfo =
-`
+const getInstInfo = `
 SELECT
   iu.I_UserId,
   iu.id,
@@ -205,8 +201,7 @@ LEFT JOIN Institution_Tbl it
 WHERE iu.I_UserId = ?
 `;
 
-const getSupporterList =
-`
+const getSupporterList = `
 SELECT
   s.support_id,
   s.G_UserId,
@@ -248,7 +243,6 @@ WHERE i.I_UserId = ?
 ORDER BY s.name ASC;
 `;
 
-
 //기관 담당자 비밀번호 변경
 const getInstiUserPassword = `
 SELECT I_UserId, password
@@ -270,6 +264,36 @@ SET name = ?,
 WHERE I_UserId = ?
 `;
 
+//담당자 선택시 보호대상자의 I_UserId1, 2 등록(김경환 20260401)
+const updateManager = `
+UPDATE Support_Tbl
+SET I_UserId1 = ?,
+    I_UserId2 = ?
+WHERE support_id = ?
+`;
+
+//기관관리자의 기관담당자 회원가입 승인 및 대기(김경환 20260401)
+const waitInstiUser = `
+SELECT I_UserId ,institution_id ,name, id, password, tel, roll
+FROM InstiUser_Tbl
+WHERE approval = 'g002'
+AND institution_id = ?
+`;
+
+const agreeInstiUser = `
+UPDATE InstiUser_Tbl
+SET approval = 'g001'
+WHERE I_UserId = ?
+`;
+
+//J_ID JOIN하기(김경환 20260401)
+const getSupportInstitutionByJid = `
+SELECT s.support_id, gu.institution_id
+FROM Support_Tbl s
+JOIN GeneralUser_Tbl gu
+  ON s.G_UserId = gu.G_UserId
+WHERE s.G_UserId = ?
+`;
 
 module.exports = {
   testSelect,
@@ -300,4 +324,8 @@ module.exports = {
   getInstiUserPassword,
   updateInstiUserPassword,
   updateInstiUserInfo,
+  updateManager,
+  waitInstiUser,
+  agreeInstiUser,
+  getSupportInstitutionByJid,
 };

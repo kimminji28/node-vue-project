@@ -178,7 +178,6 @@ const getUserInfo = async (userId) => {
   }
 };
 
-
 //일반이용자 정보수정
 const updateUserInfo = async (params) => {
   let conn = null;
@@ -202,7 +201,6 @@ const getUserPasswordByGUserId = async (userId) => {
     conn = await pool.getConnection();
     const rows = await conn.query(userSql.getUserPasswordByGUserId, [userId]);
     return rows[0];
-
   } catch (err) {
     console.log(err);
     throw err;
@@ -233,17 +231,15 @@ const searchInstitutions = async (params) => {
     conn = await pool.getConnection();
     const rows = await conn.query(userSql.searchInstitutions, params);
     return rows;
-
-  }catch (err) {
+  } catch (err) {
     console.log(err);
     throw err;
-  }finally {
-    if(conn){
+  } finally {
+    if (conn) {
       conn.release();
     }
   }
 };
-
 
 //회원 로그인 확인(김경환 2026.03.25)
 const confirmUser = async (id, password) => {
@@ -319,12 +315,15 @@ const instiIdCheck = async (id) => {
 };
 
 //기관담당자 조회(김경환 20260331)
-const getManagerList = async (roll) => {
+const getManagerList = async (roll, institution_id) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    console.log(roll);
-    let result = await conn.query(userSql.getManagerList, roll);
+
+    let result = await conn.query(userSql.getManagerList, [
+      roll,
+      institution_id,
+    ]);
     let info = result;
     return info;
   } catch (err) {
@@ -366,21 +365,18 @@ const agreeUser = async (id) => {
   }
 };
 
-
-
 //기관담당자 마이페이지
 const getInstInfo = async (instId) => {
   let conn = null;
-  try{
+  try {
     conn = await pool.getConnection();
     let rows = await conn.query(userSql.getInstInfo, instId);
     return rows[0];
-
-  }catch (err) {
+  } catch (err) {
     console.log(err);
     throw err;
-  }finally {
-    if(conn){
+  } finally {
+    if (conn) {
       conn.release();
     }
   }
@@ -388,16 +384,19 @@ const getInstInfo = async (instId) => {
 
 const getSupporterList = async (instId) => {
   let conn = null;
-  try{
+  try {
     conn = await pool.getConnection();
-    let rows = await conn.query(userSql.getSupporterList, [instId,instId,instId]);
+    let rows = await conn.query(userSql.getSupporterList, [
+      instId,
+      instId,
+      instId,
+    ]);
     return rows;
-
-  }catch (err) {
+  } catch (err) {
     console.log(err);
     throw err;
-  }finally {
-    if(conn){
+  } finally {
+    if (conn) {
       conn.release();
     }
   }
@@ -436,7 +435,6 @@ const updateInstiUserPassword = async (newPassword, I_UserId) => {
   }
 };
 
-
 const updateInstiUserInfo = async (data) => {
   let conn = null;
   try {
@@ -457,8 +455,67 @@ const updateInstiUserInfo = async (data) => {
   }
 };
 
+//기관관리자의 담당자선택(김경환 20260401)
+const updateManager = async (instiId1, instiId2, supportId) => {
+  let conn = await pool.getConnection();
+  try {
+    const rows = await conn.query(userSql.updateManager, [
+      instiId1,
+      instiId2,
+      supportId,
+    ]);
+    return rows;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+};
 
+//기관관리자의 담당자회원가입승인(김경환 20260401)
+const waitInstiUser = async (institution_id) => {
+  let conn = await pool.getConnection();
+  try {
+    const rows = await conn.query(userSql.waitInstiUser, [institution_id]);
+    return rows;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+};
 
+const agreeInstiUser = async (id) => {
+  let conn = await pool.getConnection();
+  try {
+    const result = await conn.query(userSql.agreeInstiUser, [id]);
+    console.log(result);
+    return result;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+};
+
+const getSupportInstitutionByJid = async (jid) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    const result = await conn.query(userSql.getSupportInstitutionByJid, [jid]);
+    return result;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
 module.exports = {
   testSelect,
   insertUser,
@@ -488,4 +545,8 @@ module.exports = {
   getInstiUserPassword,
   updateInstiUserPassword,
   updateInstiUserInfo,
+  updateManager,
+  waitInstiUser,
+  agreeInstiUser,
+  getSupportInstitutionByJid,
 };
