@@ -83,7 +83,11 @@
           </div>
           <div class="info-item">
             <label>지원대상자</label>
-            <select @change="handleUserChange" class="form-input custom-select">
+            <select
+              v-model="form.targetId"
+              @change="handleUserChange"
+              class="form-input custom-select"
+            >
               <option value="">대상자 선택</option>
               <option
                 v-for="user in uniqueUserList"
@@ -257,17 +261,14 @@ const generatedMemberId = computed(() => {
 });
 
 //지원대상자 선택
-const handleUserChange = (event) => {
-  const selectedId = event.target.value;
-  const user = userList.value.find((u) => u.I_UserId === selectedId);
+const handleUserChange = () => {
+  const user = userList.value.find((u) => u.I_UserId === form.value.targetId);
 
   if (user) {
-    form.value.targetId = user.I_UserId;
     form.value.targetName = user.user_name;
     form.value.guardianName = user.support_name;
     form.value.support_id = user.support_id;
   } else {
-    form.value.targetId = "";
     form.value.targetName = "";
     form.value.guardianName = "";
     form.value.support_id = "";
@@ -329,7 +330,8 @@ const fetchUsers = async () => {
     if (!response.ok) throw new Error("사용자 로드 에러");
     const data = await response.json();
 
-    userList.value = data;
+    userList.value = data.data;
+    console.log("data", data);
   } catch (error) {
     console.error(error);
   }

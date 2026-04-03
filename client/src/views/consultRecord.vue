@@ -70,7 +70,7 @@
         <thead>
           <tr>
             <th width="60">번호</th>
-            <th width="120">지원대상자명</th>
+            <th width="120">일반이용자명</th>
             <th width="180">상담일시</th>
             <th width="100">상담유형</th>
             <th width="100">상담장소</th>
@@ -79,37 +79,57 @@
             <th width="120">수정/삭제</th>
           </tr>
         </thead>
-        <tbody>
-          <tr
-            v-for="(info, index) in paginatedConsults"
-            :key="info.counsult_id"
-            v-on:click="goToDetail(info.counsult_id)"
-          >
-            <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
-            <td class="fw-bold">{{ info.user_name }}</td>
-            <td class="text-secondary">
-              {{ dateFormat(info.counsult_date, info.counsult_start_time) }}
-            </td>
-            <td>{{ info.counsult_method }}</td>
-            <td>{{ info.counsult_loc }}</td>
-            <td style="text-align: left">
-              [기본요약]: {{ info.counsult_content }}<br />
-              [상담내용]: {{ info.counsult_content2 }}<br />
-              [서비스욕구]: {{ info.counsult_content3 }}<br />
-              [종합의견]: {{ info.counsult_content4 }}
-            </td>
-            <td class="manager-cell">
-              <div>정 : {{ info.name }}</div>
-              <div class="text-muted">부 : {{ info.name }}</div>
-            </td>
 
-            <td>
-              <div class="action-buttons">
+        <tbody>
+          <template v-for="group in paginatedGroups" :key="group.support_id">
+            <tr class="group-header">
+              <td colspan="8" class="fw-bold bg-light">
+                {{ group.support_name }} ({{ group.user_name }})
+              </td>
+            </tr>
+
+            <tr
+              v-for="(info, index) in group.list"
+              :key="info.counsult_id"
+              @click="goToDetail(info.counsult_id)"
+            >
+              <td>{{ index + 1 }}</td>
+
+              <td>{{ info.support_name }}</td>
+
+              <td>
+                {{ dateFormat(info.counsult_date, info.counsult_startTime) }}
+              </td>
+
+              <td>{{ info.counsult_method }}</td>
+              <td>{{ info.counsult_loc }}</td>
+
+              <td style="text-align: left">
+                [기본요약]: {{ info.counsult_content }}<br />
+                [상담내용]: {{ info.counsult_content2 }}<br />
+                [서비스욕구]: {{ info.counsult_content3 }}<br />
+                [종합의견]: {{ info.counsult_content4 }}
+              </td>
+              <td>
+                <div>
+                  <span
+                    :style="{
+                      color: info.manager_type === '정' ? 'green' : 'orange',
+                      fontWeight: 'bold',
+                    }"
+                  >
+                    {{ info.manager_type }}
+                  </span>
+                  : {{ info.name }}
+                </div>
+              </td>
+
+              <td>
                 <button class="btn-outline-edit">수정</button>
                 <button class="btn-outline-delete">삭제</button>
-              </div>
-            </td>
-          </tr>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </section>
@@ -185,21 +205,42 @@ const appliedFilters = ref({
 
 //전체 데이터 가져오기
 const consultAll = async () => {
-  let list = await fetch("http://localhost:3000/consult/user")
-    .then((resp) => resp.json())
-    .catch((err) => console.log(err));
+  try {
+    const resp = await fetch("http://localhost:3000/consult/user", {
+      credentials: "include",
+    });
 
-  consults.value = list;
+    const list = await resp.json();
 
-  const unique = [
-    ...new Map(
-      list.map((c) => [c.I_UserId, { id: c.I_UserId, name: c.name }]),
-    ).values(),
-  ];
-  managerList.value = unique;
+    const data = list.data?.data || list.data || [];
 
-  const uniqueMethods = [...new Set(list.map((c) => c.counsult_method))];
-  consultList.value = uniqueMethods;
+    consults.value = data;
+
+    // 담당자 리스트 생성
+    const unique = [
+      ...new Map(
+        consults.value.map((c) => [
+          c.I_UserId + "_" + c.manager_type,
+          {
+            id: c.I_UserId + "_" + c.manager_type,
+            name: `${c.manager_type} : ${c.name}`,
+          },
+        ]),
+      ).values(),
+    ];
+    managerList.value = unique;
+
+    // 상담유형 리스트
+    const uniqueMethods = [
+      ...new Set(consults.value.map((c) => c.counsult_method)),
+    ];
+    consultList.value = uniqueMethods;
+  } catch (err) {
+    console.log(err);
+    consults.value = [];
+    managerList.value = [];
+    consultList.value = [];
+  }
 };
 
 onBeforeMount(async () => {
@@ -230,7 +271,7 @@ const filteredConsults = computed(() => {
   return consults.value.filter((c) => {
     if (
       appliedFilters.value.manager &&
-      c.I_UserId !== appliedFilters.value.manager
+      c.I_UserId + "_" + c.manager_type !== appliedFilters.value.manager
     )
       return false;
 
@@ -258,16 +299,37 @@ const filteredConsults = computed(() => {
   });
 });
 
-//전체 페이지 수
-const totalPages = computed(() => {
-  return Math.ceil(filteredConsults.value.length / pageSize);
+//지원대상자 그룹화
+const groupedConsults = computed(() => {
+  const map = {};
+
+  filteredConsults.value.forEach((item) => {
+    const key = item.support_id;
+
+    if (!map[key]) {
+      map[key] = {
+        support_id: item.support_id,
+        support_name: item.support_name,
+        user_name: item.user_name,
+        list: [],
+      };
+    }
+
+    map[key].list.push(item);
+  });
+
+  return Object.values(map);
 });
 
-//현재 페이지 데이터
-const paginatedConsults = computed(() => {
+//그룹 기준 페이징
+const paginatedGroups = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
-  const end = start + pageSize;
-  return filteredConsults.value.slice(start, end);
+  return groupedConsults.value.slice(start, start + pageSize);
+});
+
+// 그룹 기준
+const totalPages = computed(() => {
+  return Math.ceil(groupedConsults.value.length / pageSize);
 });
 
 //페이지 번호 리스트
@@ -289,6 +351,43 @@ const applyFilter = () => {
 
   currentPage.value = 1;
 };
+
+// const getManager = async () => {
+//   try {
+//     if (!institutionId.value) {
+//       managerList.value = [];
+//       resetManager();
+//       return;
+//     }
+
+//     const result = await fetch(
+//       `/api/user/managerList?counsultId=${encodeURIComponent(institutionId.value)}`,
+//       {
+//         method: "GET",
+//         credentials: "include",
+//       },
+//     ).then((resp) => resp.json());
+
+//     console.log("manager list result :", result);
+
+//     if (result.status === "Success") {
+//       managerList.value = result.data || [];
+
+//       if (managerList.value.length > 0) {
+//         const firstManager = managerList.value[0];
+//         selectedManagerId.value = firstManager.I_UserId;
+//         setSelectedManager(firstManager);
+//       } else {
+//         resetSelectedManager();
+//       }
+//     } else {
+//       managerList.value = [];
+//       resetSelectedManager();
+//     }
+//   } catch (err) {
+//     console.log("getManager", err);
+//   }
+// };
 
 //초기화 버튼
 const resetFilter = () => {

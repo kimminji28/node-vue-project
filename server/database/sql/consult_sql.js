@@ -10,6 +10,11 @@ SELECT
   s.name AS support_name,
   g.G_UserID,
   g.name AS user_name,
+  CASE 
+    WHEN s.I_UserId1 = c.I_UserId THEN '정'
+    WHEN s.I_UserId2 = c.I_UserId THEN '부'
+    ELSE '-'
+  END AS manager_type,
   c.counsult_date,
   c.write_date,
   c.counsult_loc,
@@ -21,12 +26,21 @@ SELECT
   c.counsult_content4,
   c.updated_at,
   c.counsult_method,
-  i.name
+  i.institution_id,
+  it.institution_name,
+  i.name,
+  i.id,
+  i.tel,
+  i.approval,
+  i.roll
 FROM ConsultRecord_Tbl c
-LEFT JOIN Support_Tbl s ON c.support_id = s.support_id
+LEFT JOIN Support_Tbl s 
+       ON c.support_id = s.support_id
+      AND (s.I_UserId1 = ? OR s.I_UserId2 = ?)
 LEFT JOIN GeneralUser_Tbl g ON g.G_UserID = s.G_UserID
 LEFT JOIN InstiUser_Tbl i ON i.I_UserId = c.I_UserId
-ORDER BY c.counsult_id desc;
+LEFT JOIN Institution_Tbl it ON i.institution_id = it.institution_id
+ORDER BY c.counsult_id DESC;
 `;
 
 //폼 장애유형 대 선택

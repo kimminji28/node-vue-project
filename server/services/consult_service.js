@@ -2,9 +2,9 @@
 const consultMapper = require("../database/mappers/consult_mapper");
 
 //전체조회
-const findAll = async () => {
-  let list = await consultMapper.consultList();
-  return list;
+const findAll = async (I_UserId) => {
+  let list = await consultMapper.consultList(I_UserId);
+  return { data: list || [] };
 };
 
 //폼 장애유형 대 선택
@@ -16,6 +16,14 @@ const description = async () => {
 //폼 장애유형 중 선택
 const descriptionMiddle = async (codes) => {
   const allMiddle = await consultMapper.descriptionMiddle();
+
+  if (!codes) return allMiddle;
+
+  const codeArray = Array.isArray(codes)
+    ? codes
+    : String(codes)
+        .split(",")
+        .map((c) => c.trim());
   return allMiddle
     .filter((m) => codes.includes(m.j_Code))
     .map((m) => m.description);
@@ -68,6 +76,9 @@ const consultCount = async (info) => {
 //건별조회
 const getMiddleDescriptions = async (codes) => {
   const allMiddle = await consultMapper.descriptionMiddle();
+
+  if (!codes || !Array.isArray(codes)) return [];
+
   return allMiddle
     .filter((m) => codes.includes(m.j_Code))
     .map((m) => m.description);

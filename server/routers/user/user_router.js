@@ -148,13 +148,12 @@ router.post(`/login`, async (req, res) => {
   res.send(result);
 });
 
-
 //일반회원 탈퇴
 router.put("/withdraw", async (req, res) => {
-    const { G_UserId } = req.body;
-    const result = await userService.withdrawUser(G_UserId);
+  const { G_UserId } = req.body;
+  const result = await userService.withdrawUser(G_UserId);
 
-    res.send(result);
+  res.send(result);
 });
 
 //Router Gaurd에서 일반이용자 로그인 여부 확인을 위한 session Check Api 26.03.27 고동현추가
@@ -418,11 +417,14 @@ router.get("/manager/assignedSupport", requireInstRole, async (req, res) => {
   const institutionId = req.query.institutionId;
   const targetIUserId = req.query.iUserId;
 
-  const result = await userService.getAssignedSupportListByManager(loginIUserId, institutionId, targetIUserId);
+  const result = await userService.getAssignedSupportListByManager(
+    loginIUserId,
+    institutionId,
+    targetIUserId,
+  );
 
   res.send(result);
 });
-
 
 router.post("/assign", async (req, res) => {
   const { I_UserId1, I_UserId2, support_id } = req.body;
@@ -431,7 +433,6 @@ router.post("/assign", async (req, res) => {
 
   res.send({ success: true });
 });
-
 
 router.get("/wait-insti-users", async (req, res) => {
   // 기관관리자 승인 접근

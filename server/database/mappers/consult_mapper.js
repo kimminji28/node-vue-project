@@ -3,11 +3,11 @@ const { pool } = require("../DAO");
 const consultSql = require("../sql/consult_sql");
 
 //전체조회
-const consultList = async () => {
+const consultList = async (I_UserId) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let rows = await conn.query(consultSql.consultList);
+    let rows = await conn.query(consultSql.consultList, [I_UserId, I_UserId]);
     return rows;
   } catch (err) {
     console.log(err);

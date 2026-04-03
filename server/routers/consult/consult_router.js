@@ -5,9 +5,38 @@ const consultService = require("../../services/consult_service");
 
 //전체조회
 router.get("/user", async (req, res) => {
-  let result = await consultService.findAll();
-  // console.log("전체조회", result);
-  res.send(result);
+  try {
+    //로그인
+    if (!req.session.loginInstUser || !req.session.loginInstUser.I_UserId) {
+      return res.status(401).send({
+        success: false,
+        message: "로그인 필요",
+      });
+    }
+
+    const user = req.session.loginInstUser;
+
+    //권한 체크
+    if (user.roll && !["a002", "a003"].includes(user.roll)) {
+      return res.status(403).send({
+        success: false,
+        message: "권한 없음",
+      });
+    }
+
+    let result = await consultService.findAll(user.I_UserId);
+
+    return res.send({
+      success: true,
+      data: result.data || [],
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      success: false,
+      message: "서버 오류",
+    });
+  }
 });
 
 //건별조회
