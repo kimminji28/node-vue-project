@@ -107,6 +107,9 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { defineEmits } from "vue";
+
+const emit = defineEmits(["loaded"]);
 
 const route = useRoute();
 const surveyData = ref([]); // 서버에서 받아온 문항 데이터
@@ -215,6 +218,9 @@ const getSurveyDetail = async (id) => {
 
       userName.value = data[0].userName || "성함 없음";
       createdAt.value = data[0].created_at;
+      emit("loaded", {
+        supportId: data[0].support_id,
+      });
     } else {
       console.warn("데이터가 비어있습니다.");
       surveyData.value = [];
