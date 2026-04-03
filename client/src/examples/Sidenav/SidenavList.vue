@@ -6,7 +6,7 @@
 
         <div class="mb-3">
           <label class="form-label text-xs font-weight-bold text-secondary mb-1"
-            >지원자명</label
+            >지원대상자명</label
           >
           <select
             class="form-select border custom-input"
@@ -18,7 +18,7 @@
               :key="user.support_id"
               :value="user.support_id"
             >
-              {{ user.name }}
+              {{ user.generalUser_name }}
             </option>
           </select>
         </div>

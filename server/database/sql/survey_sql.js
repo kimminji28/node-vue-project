@@ -10,20 +10,22 @@ WHERE codeGroup = '성별구분코드';
 //지원대상자 리스트
 const support = `
 SELECT DISTINCT
-  support_id,
-  G_UserId,
-  I_UserId1,
-  I_UserId2,
-  name,
-  born,
-  gender,
-  relation,
-  zipCode,
-  address,
-  major,
-  middle,
-  sub
-FROM Support_Tbl
+  s.support_id,
+  s.G_UserId,
+  s.I_UserId1,
+  s.I_UserId2,
+  s.name,
+  s.born,
+  s.gender,
+  s.relation,
+  s.zipCode,
+  s.address,
+  s.major,
+  s.middle,
+  s.sub,
+  g.name AS generalUser_name
+FROM Support_Tbl s
+LEFT JOIN GeneralUser_Tbl g ON s.G_UserId = g.G_UserId
 `;
 
 //폼 장애유형 대 선택
@@ -76,16 +78,12 @@ LIMIT 1`;
 const items = `
 SELECT 
     i.question_id, 
-    i.Ver_Id, 
-    i.titleCode, 
-    i.question_no, 
-    i.question_text, 
-    i.answer_type
+    i.answer_type, 
+    f.use_yn,
+    f.Ver_Id as Form_Ver_Id
 FROM SurveyItem_Tbl i
-INNER JOIN SurveyForm_Tbl f ON i.Ver_Id = f.Ver_Id
-WHERE f.use_yn = 'Y'
-    AND i.Ver_Id = ?
-ORDER BY i.question_id ASC;
+LEFT JOIN SurveyForm_Tbl f ON i.Ver_Id = f.Ver_Id
+WHERE i.Ver_Id = ?;
 `;
 
 //상세조회

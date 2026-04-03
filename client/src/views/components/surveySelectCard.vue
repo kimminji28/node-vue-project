@@ -117,7 +117,7 @@ const allTitles = ref([]);
 const router = useRouter();
 
 const goBack = () => {
-  router.back(); // 바로 이전 페이지로 돌아가기
+  router.push({ name: "userMain" });
 };
 
 //타이틀 매핑 -> 서버 데이터를 (Section > Sub > Question)로 변환

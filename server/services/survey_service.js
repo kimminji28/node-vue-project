@@ -80,28 +80,9 @@ const items = async (Ver_Id) => {
 };
 
 //상세조회
-const surveyDetail = async ({ surveyId, userRole, userId, institutionId }) => {
-  let params = {
-    surveyId: surveyId,
-    institutionId: null,
-    userId: null,
-    isAdmin: false,
-  };
-
-  if (userRole === "a001") {
-    // 시스템 관리자: 제약 없음
-    params.isAdmin = true;
-  } else if (userRole === "a002") {
-    // 기관 관리자: 본인 기관 ID로 필터링
-    params.institutionId = institutionId;
-  } else if (userRole === "a003" || userRole === "a004") {
-    // 담당자/일반사용자: 본인 ID가 담당자(I_UserId1,2) 혹은 소유자인지 확인
-    params.userId = userId;
-  } else {
-    return null; // 정의되지 않은 권한
-  }
-
-  return await surveyMapper.surveyDetail(params);
+const surveyDetail = async (surveyId, userId) => {
+  let detail = await surveyMapper.surveyDetail(surveyId, userId);
+  return detail;
 };
 
 //타이틀 코드

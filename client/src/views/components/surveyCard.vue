@@ -82,39 +82,14 @@
 
                           <div
                             v-if="q.hasExtraInput"
-                            class="mt-3 p-3 bg-light border-dark-strong extra-input-container"
+                            class="extra-input-wrapper"
                           >
-                            <div class="row align-items-center">
-                              <div
-                                class="col-md-6 d-flex align-items-center mb-2 mb-md-0"
-                              >
-                                <span
-                                  class="text-xs font-weight-bold text-dark me-2"
-                                  style="white-space: nowrap"
-                                  >[구체적 사유]</span
-                                >
-                                <input
-                                  type="text"
-                                  class="form-control form-control-sm border-dark-strong"
-                                  v-model="
-                                    extraInputs[sIdx][subIdx][qIdx].reason
-                                  "
-                                  placeholder="사유를 입력해주세요"
-                                />
-                              </div>
-                              <div class="col-md-6 d-flex align-items-center">
-                                <span
-                                  class="text-xs font-weight-bold text-dark me-2"
-                                  style="white-space: nowrap"
-                                  >[필요시기]</span
-                                >
-                                <input
-                                  type="date"
-                                  class="form-control form-control-sm border-dark-strong"
-                                  v-model="extraInputs[sIdx][subIdx][qIdx].date"
-                                />
-                              </div>
-                            </div>
+                            <textarea
+                              class="form-control border-dark-strong custom-textarea"
+                              v-model="extraInputs[sIdx][subIdx][qIdx].reason"
+                              placeholder="장문형 입력란"
+                              rows="3"
+                            ></textarea>
                           </div>
                         </td>
 
@@ -172,7 +147,13 @@
 
             <div class="d-flex justify-content-center mt-5 mb-4">
               <button
-                class="btn btn-success px-6 py-2-5 me-3 shadow-sm"
+                class="btn btn-outline-secondary px-6 py-2-5 shadow-sm"
+                @click="goBack"
+              >
+                이전
+              </button>
+              <button
+                class="btn btn-outline-secondary px-6 py-2-5 shadow-sm"
                 @click="isModalOpen = true"
               >
                 저장
@@ -269,26 +250,14 @@
 
                           <div
                             v-if="q.hasExtraInput"
-                            class="mt-3 p-3 bg-light border-dark-strong extra-input-container"
+                            class="extra-input-wrapper"
                           >
-                            <span class="text-success font-weight-bold"
-                              >[구체적 사유]</span
-                            >
-                            {{
-                              (extraInputs[sIdx] &&
-                                extraInputs[sIdx][subIdx] &&
-                                extraInputs[sIdx][subIdx][qIdx].reason) ||
-                              "-"
-                            }}
-                            <span class="ms-2 text-success font-weight-bold"
-                              >[필요시기]</span
-                            >
-                            {{
-                              (extraInputs[sIdx] &&
-                                extraInputs[sIdx][subIdx] &&
-                                extraInputs[sIdx][subIdx][qIdx].date) ||
-                              "-"
-                            }}
+                            <textarea
+                              class="form-control border-dark-strong custom-textarea"
+                              v-model="extraInputs[sIdx][subIdx][qIdx].reason"
+                              placeholder="장문형 입력란"
+                              rows="3"
+                            ></textarea>
                           </div>
                         </td>
                         <td class="text-center border-start align-middle">
@@ -365,6 +334,10 @@ const extraInputs = ref([]);
 
 const Ver_Id = ref("FORM0004");
 
+const goBack = () => {
+  router.push({ name: "userMain" });
+};
+
 //날짜 형식
 const dateFormat = (dateVal) => {
   if (!dateVal) return "-";
@@ -430,7 +403,8 @@ const fetchSurveyItems = async () => {
         sub.questions.push({
           id: item.question_id,
           text: item.question_text,
-          hasExtraInput: item.use_yn === "Y",
+          hasExtraInput: item.answer_type === "e002",
+          type: item.answer_type,
         });
       });
 
@@ -731,5 +705,49 @@ onMounted(async () => {
 /* 내부 글자색 검정 */
 .text-dark {
   color: #000000 !important;
+}
+
+/* 인풋 박스의 너비를 적절하게 제한 */
+.custom-input-width {
+  width: 200px !important; /* 사유 입력창 너비 */
+}
+
+.custom-date-width {
+  width: 150px !important; /* 날짜 선택창 너비 */
+}
+
+/* 추가 입력창 컨테이너의 테두리와 여백 조정 */
+.extra-input-container {
+  border: 1px solid #000 !important; /* 첫 번째 이미지처럼 검정 테두리 */
+  background-color: #fff !important; /* 배경은 흰색 */
+  display: inline-block; /* 내용물만큼만 너비 차지 (선택 사항) */
+  padding: 10px 15px !important;
+}
+
+/* 간격 조절을 위한 유틸리티 (Bootstrap 5 미지원 시) */
+.gap-3 {
+  gap: 1rem;
+}
+
+/* 기존 .custom-input-width를 아래와 같이 변경하거나 추가 */
+.custom-textarea-full {
+  width: 100% !important;
+  resize: none; /* 사용자가 임의로 크기 조절하는 것을 막고 싶을 때 */
+  padding: 12px !important;
+  line-height: 1.5;
+  border-radius: 8px !important; /* 이미지처럼 둥근 느낌을 주려면 추가 */
+}
+/* 부모 컨테이너가 테이블 셀 안에서 가득 차도록 설정 */
+.extra-input-container {
+  /* border: 1px solid #000 !important;  <-- 이 부분을 삭제하거나 아래처럼 수정 */
+  border: none !important;
+  background-color: #f8f9fa !important; /* 연한 회색 배경 유지 혹은 투명하게 */
+  padding: 10px 0 !important; /* 테두리가 없으므로 좌우 패딩을 줄여 정렬 맞춤 */
+  width: 100%;
+}
+
+/* d-flex align-items-center와 함께 사용하여 인풋이 밀리지 않게 조절 */
+.flex-grow-1 {
+  flex-grow: 1 !important;
 }
 </style>
