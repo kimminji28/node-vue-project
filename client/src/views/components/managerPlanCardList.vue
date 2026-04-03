@@ -67,9 +67,21 @@ const getBadgeClass = (state) => {
   }
 };
 
+// 다운로드 URL
 const getFileUrl = (fileName) => {
   if (!fileName) return "";
-  return `/uploads/supportPlan/${fileName}`;
+  return `/api/manager/plan/download/${encodeURIComponent(fileName)}`;
+};
+
+// 화면 표시용 파일명
+const getDisplayFileName = (fileName) => {
+  if (!fileName) return "";
+  return fileName.replace(/^\d+_/, "");
+};
+
+// null, "", "null" 문자열 방어
+const isValidFile = (fileName) => {
+  return !!fileName && fileName !== "null";
 };
 
 const onEdit = (item) => {
@@ -179,25 +191,23 @@ const onDelete = (item) => {
               </span>
 
               <a
-                v-if="item.file"
+                v-if="isValidFile(item.file)"
                 :href="getFileUrl(item.file)"
                 class="text-primary text-sm me-3"
-                target="_blank"
               >
-                파일 1 다운로드
+                {{ getDisplayFileName(item.file) }}
               </a>
 
               <a
-                v-if="item.file2"
+                v-if="isValidFile(item.file2)"
                 :href="getFileUrl(item.file2)"
                 class="text-primary text-sm"
-                target="_blank"
               >
-                파일 2 다운로드
+                {{ getDisplayFileName(item.file2) }}
               </a>
 
               <span
-                v-if="!item.file && !item.file2"
+                v-if="!isValidFile(item.file) && !isValidFile(item.file2)"
                 class="text-secondary text-sm"
               >
                 첨부파일 없음

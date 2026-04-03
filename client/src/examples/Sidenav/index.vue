@@ -2,8 +2,6 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 import SidenavList from "./SidenavList.vue";
-// import logo from "@/assets/img/logo-ct-dark.png";
-// import logoWhite from "@/assets/img/logo-ct.png";
 
 const store = useStore();
 const isRTL = computed(() => store.state.isRTL);
@@ -11,6 +9,7 @@ const layout = computed(() => store.state.layout);
 const sidebarType = computed(() => store.state.sidebarType);
 const darkMode = computed(() => store.state.darkMode);
 </script>
+
 <template>
   <div
     v-show="layout === 'default'"
@@ -19,35 +18,23 @@ const darkMode = computed(() => store.state.darkMode);
   />
 
   <aside
-    class="my-3 overflow-auto border-0 sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl"
-    :class="`${isRTL ? 'me-3 rotate-caret fixed-end' : 'fixed-start ms-3'}    
-      ${
-        layout === 'landing' ? 'bg-transparent shadow-none' : ' '
-      } ${sidebarType}`"
+    class="overflow-auto border-0 sidenav navbar navbar-vertical navbar-expand-xs custom-sidenav"
+    :class="`${isRTL ? 'me-3 rotate-caret fixed-end' : 'fixed-start ms-3'} ${
+      layout === 'landing' ? 'bg-transparent shadow-none' : ''
+    } ${sidebarType}`"
     id="sidenav-main"
   >
-    <div class="sidenav-header">
-      <i
-        class="top-0 p-3 cursor-pointer fas fa-times text-secondary opacity-5 position-absolute end-0 d-none d-xl-none"
-        aria-hidden="true"
-        id="iconSidenav"
-      ></i>
-
-      <router-link class="m-0 navbar-brand" to="/">
-        <span class="ms-2 font-weight-bold me-2 title-text" text-center>
-          발달장애인 지원 프로그램
-        </span>
-      </router-link>
-    </div>
-
-    <hr class="mt-0 horizontal dark" />
-
     <sidenav-list />
   </aside>
 </template>
 
 <style scoped>
-.title-text {
-  font-size: 15px;
+.custom-sidenav {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
 </style>

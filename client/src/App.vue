@@ -49,7 +49,7 @@ const navClasses = computed(() => {
     class="landing-bg h-100 bg-gradient-primary position-fixed w-100"
   ></div>
 
-  <sidenav v-if="showSidenav" />
+  <sidenav v-if="showSidenav"  />
 
   <main
     class="main-content position-relative max-height-vh-100 h-100 border-radius-lg"

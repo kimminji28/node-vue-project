@@ -3,6 +3,7 @@ const express = require("express");
 const fs = require("fs");
 const router = express.Router();
 const uploadSupportPlan = require("../../middlewares/uploadFile_supPlan.js");
+const downloadFileSupPlan = require("../../middlewares/downloadFile_supPlan.js");
 const { requireInstUser, requireInstRole } = require("../../middlewares/instiUserMiddleware.js");
 const managerService = require("../../services/plan_service.js");
 
@@ -89,5 +90,8 @@ router.delete("/plan/delete/:id", async(req,res) => {
 
   res.send(result);
 });
+
+//파일 다운로드
+router.get("/download/:fileName", downloadFileSupPlan);
 
 module.exports = router;
