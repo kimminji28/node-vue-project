@@ -1,13 +1,17 @@
 <script setup>
 import { reactive, ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
+const route = useRoute();
 const router = useRouter();
 
-const MAX_TOTAL_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_TOTAL_FILE_SIZE = 50 * 1024 * 1024;
 
-// 지원계획서 입력 정보
+const planId = ref(route.query.id || "");
+
+// 지원계획서 수정 정보
 const planInfo = reactive({
+  supportPlan_id: "",
   I_UserId: "",
   writer: "",
   J_ID: "",
@@ -17,6 +21,8 @@ const planInfo = reactive({
   content: "",
   file1: null,
   file2: null,
+  oldFile1: "",
+  oldFile2: "",
 });
 
 // 상단 선택된 조사지 정보 표시용
@@ -58,8 +64,38 @@ const formatDate = (dateStr) => {
   return `${yyyy}. ${mm}. ${dd}.`;
 };
 
-//조사지 목록 불러오기
+// code -> 성별 변환
+const convertGender = (code) => {
+  if (code === "c001") return "남";
+  if (code === "c002") return "여";
+  return code || "";
+};
 
+// code -> 우선순위
+const convertResult = (code) => {
+  switch (code) {
+    case "f001":
+      return "계획";
+    case "f002":
+      return "중점";
+    case "f003":
+      return "긴급";
+    case "f004":
+      return "심사중";
+    case "f005":
+      return "반려";
+    default:
+      return "미정";
+  }
+};
+
+// 화면 표시용 파일명
+const getDisplayFileName = (fileName) => {
+  if (!fileName) return "";
+  return fileName.replace(/^\d+_/, "");
+};
+
+// 조사지 목록 불러오기
 const loadSurveyList = async () => {
   try {
     const list = await fetch(`/api/manager/plan/getSurvey`, {
@@ -67,12 +103,15 @@ const loadSurveyList = async () => {
       credentials: "include",
     })
       .then((resp) => resp.json())
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        return null;
+      });
 
-    if (list.status === "Success") {
+    if (list && list.status === "Success") {
       surveyList.value = list.data || [];
     } else {
-      alert(list.message || "조사지 목록 조회 실패");
+      alert(list?.message || "조사지 목록 조회 실패");
       surveyList.value = [];
     }
   } catch (err) {
@@ -96,36 +135,57 @@ const selectSurvey = (item) => {
   closeSurveyModal();
 };
 
-//code -> 성별 변환
-const convertGender = (code) => {
-  if (code === "c001") {
-    return "남";
-  }
-  if (code === "c002") {
-    return "여";
+// 기존 상세 조회
+const loadPlanDetail = async () => {
+  try {
+    if (!planId.value) {
+      alert("잘못된 접근입니다.");
+      router.push("/manager/planlist");
+      return;
+    }
+
+    const result = await fetch(`/api/manager/plan/detail/${planId.value}`, {
+      method: "GET",
+      credentials: "include",
+    }).then((res) => res.json());
+
+    if (result.status === "Success") {
+      const item = result.data || {};
+
+      planInfo.supportPlan_id = item.supportPlan_id || "";
+      planInfo.I_UserId = item.I_UserId || "";
+      planInfo.writer = item.writer_name || item.writer || "";
+      planInfo.J_ID = item.J_ID || "";
+      planInfo.startDate = item.support_startDate
+        ? String(item.support_startDate).slice(0, 10)
+        : "";
+      planInfo.endDate = item.supprot_endDate
+        ? String(item.supprot_endDate).slice(0, 10)
+        : "";
+      planInfo.purpose = item.purpose || "";
+      planInfo.content = item.content || "";
+      planInfo.oldFile1 = item.file || "";
+      planInfo.oldFile2 = item.file2 || "";
+
+      surveyInfo.supportName = item.support_name || "";
+      surveyInfo.generalName = item.guardian_name || item.general_name || "";
+      surveyInfo.waitingType = convertResult(item.result) || "";
+      surveyInfo.gender = convertGender(item.support_gender) || "";
+      surveyInfo.birth = formatDate(item.support_born);
+      surveyInfo.disabilityType = item.disname || "";
+    } else {
+      alert(result.message || "상세 조회 실패");
+      router.push("/manager/planlist");
+    }
+  } catch (err) {
+    console.log("지원계획서 상세 조회 오류", err);
+    alert("상세 조회 중 오류가 발생했습니다.");
+    router.push("/manager/planlist");
   }
 };
 
-//code -> 우선순위
-const convertResult = (code) => {
-  switch (code) {
-    case "f001":
-      return "계획";
-    case "f002":
-      return "중점";
-    case "f003":
-      return "긴급";
-    case "f004":
-      return "심사중";
-    case "f005":
-      return "반려";
-    default:
-      return "미정";
-  }
-};
-
-// 등록 버튼
-const insertPlan = async () => {
+// 수정 버튼
+const updatePlan = async () => {
   try {
     if (!planInfo.J_ID) {
       alert("조사지를 먼저 선택하세요.");
@@ -162,6 +222,7 @@ const insertPlan = async () => {
     }
 
     const formData = new FormData();
+    formData.append("supportPlan_id", planInfo.supportPlan_id);
     formData.append("writer", planInfo.writer);
     formData.append("I_UserId", planInfo.I_UserId);
     formData.append("J_ID", planInfo.J_ID);
@@ -169,12 +230,14 @@ const insertPlan = async () => {
     formData.append("endDate", planInfo.endDate);
     formData.append("purpose", planInfo.purpose);
     formData.append("content", planInfo.content);
+    formData.append("oldFile1", planInfo.oldFile1);
+    formData.append("oldFile2", planInfo.oldFile2);
 
     if (planInfo.file1) formData.append("file1", planInfo.file1);
     if (planInfo.file2) formData.append("file2", planInfo.file2);
 
-    const response = await fetch("/api/manager/plan/insertplan", {
-      method: "POST",
+    const response = await fetch(`/api/manager/plan/update/${planInfo.supportPlan_id}`, {
+      method: "PUT",
       body: formData,
       credentials: "include",
     });
@@ -182,33 +245,18 @@ const insertPlan = async () => {
     const result = await response.json();
 
     if (result.status === "Success") {
-      alert("지원계획서가 등록되었습니다.");
-
-      planInfo.J_ID = "";
-      planInfo.startDate = "";
-      planInfo.endDate = "";
-      planInfo.purpose = "";
-      planInfo.content = "";
-      planInfo.file1 = null;
-      planInfo.file2 = null;
-
-      surveyInfo.supportName = "";
-      surveyInfo.generalName = "";
-      surveyInfo.waitingType = "";
-      surveyInfo.gender = "";
-      surveyInfo.birth = "";
-      surveyInfo.disabilityType = "";
+      alert("지원계획서가 수정되었습니다.");
       router.push("/manager/planlist");
     } else {
-      alert(result.message || "등록 실패");
+      alert(result.message || "수정 실패");
     }
   } catch (err) {
-    console.log("지원계획서 등록 오류", err);
-    alert("등록 중 오류가 발생했습니다.");
+    console.log("지원계획서 수정 오류", err);
+    alert("수정 중 오류가 발생했습니다.");
   }
 };
 
-// 세션 확인해서 작성자 세팅
+// 세션 확인 + 상세 조회
 onMounted(async () => {
   try {
     const response = await fetch("/api/user/isession-check", {
@@ -219,11 +267,15 @@ onMounted(async () => {
 
     if (result.isLogin) {
       planInfo.I_UserId = result.user.I_UserId;
-      planInfo.writer = result.user.name;
+      if (!planInfo.writer) {
+        planInfo.writer = result.user.name;
+      }
     }
   } catch (err) {
     console.log("세션 확인 오류", err);
   }
+
+  await loadPlanDetail();
 });
 
 // 파일 선택 처리
@@ -259,9 +311,9 @@ const handleFileChange = (e, target) => {
     <div class="card-header pb-0">
       <div class="d-flex justify-content-between align-items-center flex-wrap">
         <div>
-          <h4 class="mb-1">지원계획서 등록</h4>
+          <h4 class="mb-1">지원계획서 수정</h4>
           <p class="text-sm mb-0 text-secondary">
-            지원 대상자에 대한 지원계획 내용을 작성합니다.
+            기존 지원계획 내용을 수정합니다.
           </p>
         </div>
       </div>
@@ -367,6 +419,22 @@ const handleFileChange = (e, target) => {
       <!-- 첨부 파일 -->
       <div class="mb-4">
         <h6 class="mb-3">첨부 파일</h6>
+
+        <div class="mb-3">
+          <div class="small text-muted">
+            현재 파일 1 :
+            <span class="fw-bold text-dark">
+              {{ getDisplayFileName(planInfo.oldFile1) || "없음" }}
+            </span>
+          </div>
+          <div class="small text-muted mt-1">
+            현재 파일 2 :
+            <span class="fw-bold text-dark">
+              {{ getDisplayFileName(planInfo.oldFile2) || "없음" }}
+            </span>
+          </div>
+        </div>
+
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-control-label mb-2">파일 1</label>
@@ -388,9 +456,17 @@ const handleFileChange = (e, target) => {
         </div>
       </div>
 
-      <div class="d-flex justify-content-end mt-4">
-        <button type="button" class="btn bg-gradient-dark mb-0" @click="insertPlan">
-          등록
+      <div class="d-flex justify-content-end mt-4 gap-2">
+        <button
+          type="button"
+          class="btn btn-outline-secondary mb-0"
+          @click="router.push('/manager/planlist')"
+        >
+          취소
+        </button>
+
+        <button type="button" class="btn bg-gradient-dark mb-0" @click="updatePlan">
+          수정
         </button>
       </div>
     </div>
@@ -414,39 +490,25 @@ const handleFileChange = (e, target) => {
         <table class="table align-items-center mb-0">
           <thead>
             <tr>
-              <th
-                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                 조사지작성(수정)일자
               </th>
-              <th
-                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                 지원자
               </th>
-              <th
-                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                 보호자
               </th>
-              <th
-                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                 성별
               </th>
-              <th
-                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                 생년월일
               </th>
-              <th
-                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                 장애유형
               </th>
-              <th
-                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-              >
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                 선택
               </th>
             </tr>
@@ -484,24 +546,22 @@ const handleFileChange = (e, target) => {
 </template>
 
 <style>
-/* 모달 배경 (핵심) */
 .custom-modal-backdrop {
-  position: fixed; /* 화면 기준 */
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100vw; /* 전체 화면 */
+  width: 100vw;
   height: 100vh;
 
   background-color: rgba(0, 0, 0, 0.45);
 
   display: flex;
-  justify-content: center; /* 가로 중앙 */
-  align-items: center; /* 세로 중앙 */
+  justify-content: center;
+  align-items: center;
 
-  z-index: 9999; /* 최상단 */
+  z-index: 9999;
 }
 
-/* 모달 박스 */
 .custom-modal-box {
   width: 90%;
   max-width: 1000px;
@@ -515,7 +575,6 @@ const handleFileChange = (e, target) => {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* 상단 정보 박스 */
 .survey-info-box {
   min-height: 90px;
   border: 1px solid #8c8c8c;
@@ -524,7 +583,6 @@ const handleFileChange = (e, target) => {
   padding: 16px 20px;
 }
 
-/* 라벨 */
 .label-text {
   display: block;
   font-size: 12px;
@@ -532,7 +590,6 @@ const handleFileChange = (e, target) => {
   margin-bottom: 2px;
 }
 
-/* 값 */
 .value-text {
   font-size: 15px;
   font-weight: 600;

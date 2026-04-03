@@ -36,7 +36,7 @@ defineEmits(["select"]);
               <td class="text-center">
                 <button
                   type="button"
-                  class="btn btn-sm bg-gradient-primary mb-0"
+                  class="btn btn-sm bg-gradient-success mb-0"
                   @click="$emit('select', item)"
                 >
                   보기

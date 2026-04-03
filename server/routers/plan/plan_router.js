@@ -57,7 +57,7 @@ router.post(
       const result = await managerService.insertPlan(data);
 
       return res.send(result);
-    } catch (err) {}
+    } catch (err) { }
   },
 );
 
@@ -83,6 +83,8 @@ router.get(`/list`, requireInstUser, requireInstRole, async (req, res) => {
   const guardianName = req.query.guardianName?.trim() || null;
   const supportName = req.query.supportName?.trim() || null;
   const surveyId = req.query.surveyId?.trim() || null;
+  const startDate = req.query.startDate?.trim() || null;
+  const endDate = req.query.endDate?.trim() || null;
 
   const result = await managerService.getSupportListByInstUser(
     I_UserId,
@@ -90,17 +92,45 @@ router.get(`/list`, requireInstUser, requireInstRole, async (req, res) => {
     guardianName,
     supportName,
     surveyId,
+    startDate,
+    endDate,
   );
   res.send(result);
 });
 
 //지원계획서 삭제
-router.delete("/plan/delete/:id", async (req, res) => {
+router.delete("/delete/:id", requireInstRole, async (req, res) => {
   const supportPlan_Id = req.params.id;
   const result = await managerService.deletePlan(supportPlan_Id);
 
   res.send(result);
 });
+
+//지원 계획서 수정화면
+router.get("/detail/:id", requireInstRole,  async (req, res) => {
+  const id = req.params.id;
+  const result = await managerService.getPlanDetail(id);
+  res.send(result);
+});
+//수정
+router.put(
+  "/update/:id", requireInstRole,
+  uploadSupportPlan.fields([
+    { name: "file1", maxCount: 1 },
+    { name: "file2", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    const id = req.params.id;
+    const body = req.body;
+    const files = req.files;
+
+    body.file1 = files?.file1 ? files.file1[0].filename : body.oldFile1 || null;
+    body.file2 = files?.file2 ? files.file2[0].filename : body.oldFile2 || null;
+
+    const result = await managerService.updatePlan(id, body);
+    res.send(result);
+  }
+);
 
 //파일 다운로드
 router.get("/download/:fileName", downloadFileSupPlan);

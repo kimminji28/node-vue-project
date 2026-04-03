@@ -36,7 +36,7 @@ const goLogin = () => {
 //기관이용자의 정보를 db에 전송시키는 함수(김경환 2026.03.25)
 const addInstiUserInfo = async () => {
   let data = {
-    institution_id: instiUserInfo.institution_id,
+    institution_id: guardianEditInfo.institution_id,
     name: instiUserInfo.name,
     id: instiUserInfo.id,
     password: instiUserInfo.password,
@@ -250,6 +250,7 @@ onBeforeUnmount(() => {
   body.classList.add("bg-gray-100");
 });
 </script>
+
 <template>
   <div class="container top-0 position-sticky z-index-sticky">
     <div class="row">
@@ -258,6 +259,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
   </div>
+
   <main class="main-content mt-0">
     <div
       class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg"
@@ -278,6 +280,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
+
     <div class="container">
       <div class="row mt-lg-n10 mt-md-n11 mt-n10 justify-content-center">
         <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
@@ -285,12 +288,13 @@ onBeforeUnmount(() => {
             <div class="card-header text-center pt-4">
               <h5>Register with</h5>
             </div>
+
             <div class="row px-xl-7 px-sm-8 px-8">
               <div class="mt-auto p-3 d-flex justify-content-center gap-3">
                 <div class="col-auto">
-                  <argon-button color="dark" @click="goUser()"
-                    >일반이용자</argon-button
-                  >
+                  <argon-button color="dark" @click="goUser()">
+                    일반이용자
+                  </argon-button>
                 </div>
                 <div class="col-auto">
                   <argon-button>기관직원</argon-button>
@@ -307,26 +311,37 @@ onBeforeUnmount(() => {
                   aria-label="Name"
                   v-model="instiUserInfo.name"
                 />
-                <div class="d-flex gap-2">
-                  <argon-input
-                    id="id"
-                    type="text"
-                    placeholder="아이디"
-                    aria-label="Id"
-                    v-model="instiUserInfo.id"
-                  />
+
+                <!-- 아이디 + 중복확인 높이 맞춤 -->
+                <div class="d-flex gap-2 align-items-stretch">
+                  <div class="flex-grow-1">
+                    <argon-input
+                      id="id"
+                      type="text"
+                      placeholder="아이디"
+                      aria-label="Id"
+                      v-model="instiUserInfo.id"
+                    />
+                  </div>
+
                   <argon-button
-                    class="mt-auto p-3 d-flex justify-content-center gap-3"
+                    color="dark"
+                    size="sm"
+                    class="mb-0"
+                    style="height: 38px"
                     @click.prevent="checkUserId"
-                    >중복확인</argon-button
                   >
+                    중복확인
+                  </argon-button>
                 </div>
+
                 <p
                   v-if="message"
                   :style="{ color: isDuplicate ? 'red' : 'green' }"
                 >
                   {{ message }}
                 </p>
+
                 <argon-input
                   id="password"
                   type="password"
@@ -342,6 +357,7 @@ onBeforeUnmount(() => {
                   v-model="passwordConfirm"
                 />
                 <span>{{ passwordMessage }}</span>
+
                 <argon-input
                   id="tel"
                   type="tel"
@@ -349,22 +365,32 @@ onBeforeUnmount(() => {
                   aria-label="Tel"
                   v-model="instiUserInfo.tel"
                 />
+
+                <!-- 기관명 표시박스 + 기관검색 버튼 높이 맞춤 -->
                 <div class="col-md-12 mt-3">
                   <label class="form-control-label">소속 기관</label>
-                  <div class="d-flex gap-2 align-items-center">
+                  <div class="d-flex gap-2 align-items-stretch">
                     <div class="flex-grow-1">
-                      <div class="form-control bg-light">
+                      <div
+                        class="form-control bg-light d-flex align-items-center"
+                        style="height: 36px"
+                      >
                         {{ guardianEditInfo.institution }}
                       </div>
                     </div>
+
                     <argon-button
                       color="dark"
                       size="sm"
+                      class="mb-0"
+                      style="height: 36px"
                       @click.prevent="openInstitutionModal"
-                      >기관 검색</argon-button
                     >
+                      기관 검색
+                    </argon-button>
                   </div>
                 </div>
+
                 <div
                   v-if="showInstitutionModal"
                   class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
@@ -504,6 +530,7 @@ onBeforeUnmount(() => {
                     </div>
                   </div>
                 </div>
+
                 <div class="text-center">
                   <argon-button
                     fullWidth
@@ -511,9 +538,11 @@ onBeforeUnmount(() => {
                     variant="gradient"
                     class="my-4 mb-2"
                     v-on:click.prevent="addInstiUserInfo()"
-                    >회원가입 신청</argon-button
                   >
+                    회원가입 신청
+                  </argon-button>
                 </div>
+
                 <div class="px-1 pt-0 text-center card-footer px-lg-2">
                   <p class="mx-auto mb-4 text-sm">
                     계정이 있으신가요?
@@ -521,8 +550,9 @@ onBeforeUnmount(() => {
                       href="javascript:;"
                       class="text-success text-gradient font-weight-bold"
                       @click="goLogin()"
-                      >로그인</a
                     >
+                      로그인
+                    </a>
                   </p>
                 </div>
               </form>

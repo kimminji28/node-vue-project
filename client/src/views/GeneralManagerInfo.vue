@@ -56,7 +56,6 @@ const getRoleText = (roll) => {
   return roll || "-";
 };
 
-
 const formatDate = (date) => {
   if (!date) return "-";
 
@@ -191,11 +190,12 @@ const toggleAssignedSupport = async () => {
   <main class="general-page">
     <RoleHeader />
 
-    <div class="container-fluid py-4">
-      <div class="row g-0 general-layout">
-        <!-- 좌측 담당자 목록 -->
-        <div class="col-xl-3 col-lg-4 col-md-12 left-panel">
-          <div class="card h-100 shadow-sm border-0">
+    <div class="content-wrap container-fluid py-4">
+      <div class="general-layout">
+        
+        <!-- 좌측 -->
+        <div class="left-panel">
+          <div class="card h-100 shadow-sm border-0 manager-list-card">
             <div class="card-header pb-0">
               <h5 class="mb-0">기관 내 담당자</h5>
             </div>
@@ -219,7 +219,7 @@ const toggleAssignedSupport = async () => {
                 </div>
 
                 <ArgonButton
-                  color="info"
+                  color="success"
                   class="mb-0 px-3 py-2 btn-sm"
                   @click="viewManager(manager)"
                 >
@@ -230,9 +230,9 @@ const toggleAssignedSupport = async () => {
           </div>
         </div>
 
-        <!-- 가운데 담당자 상세 -->
-        <div class="col-xl-9 col-lg-8 col-md-12 right-panel">
-          <div class="card shadow-sm border-0 mb-3">
+        <!-- 우측 -->
+        <div class="right-panel">
+          <div class="card shadow-sm border-0 mb-3 manager-info-card">
             <div class="card-header pb-0">
               <h5 class="mb-0">기관 담당자 정보</h5>
             </div>
@@ -271,7 +271,6 @@ const toggleAssignedSupport = async () => {
                   </div>
                 </div>
 
-
                 <div class="col-md-6 mb-3">
                   <label class="form-control-label">기관명</label>
                   <div class="form-control bg-light">
@@ -301,7 +300,7 @@ const toggleAssignedSupport = async () => {
             </div>
           </div>
 
-          <!-- 배정현황 목록 -->
+          <!-- 배정현황 -->
           <div v-if="showAssignedPanel" class="card shadow-sm border-0">
             <div class="card-header pb-0">
               <h5 class="mb-0">배정 지원대상자 목록</h5>
@@ -316,28 +315,28 @@ const toggleAssignedSupport = async () => {
                 <table class="table align-items-center mb-0 text-center">
                   <thead>
                     <tr>
-                      <th class="text-center">이름</th>
-                      <th class="text-center">생년월일</th>
-                      <th class="text-center">성별</th>
-                      <th class="text-center">장애유형(대)</th>
-                      <th class="text-center">담당구분</th>
+                      <th>이름</th>
+                      <th>생년월일</th>
+                      <th>성별</th>
+                      <th>장애유형(대)</th>
+                      <th>담당구분</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="item in assignedSupportList" :key="item.support_id">
-                      <td class="text-center">{{ item.name || "-" }}</td>
-                      <td class="text-center">{{ formatDate(item.born) }}</td>
-                      <td class="text-center">{{ getGenderText(item.gender) }}</td>
-                      <td class="text-center">{{ item.major_name || "-" }}</td>
-                      <td class="text-center">{{ getAssignRoleText(item) }}</td>
+                      <td>{{ item.name || "-" }}</td>
+                      <td>{{ formatDate(item.born) }}</td>
+                      <td>{{ getGenderText(item.gender) }}</td>
+                      <td>{{ item.major_name || "-" }}</td>
+                      <td>{{ getAssignRoleText(item) }}</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
+
         </div>
-        <!-- 가운데 담당자 상세 끝 -->
       </div>
     </div>
   </main>
@@ -346,18 +345,44 @@ const toggleAssignedSupport = async () => {
 <style scoped>
 .general-page {
   min-height: 100vh;
+  background: linear-gradient(
+    to bottom,
+    #36d1a5 0,
+    #36d1a5 220px,
+    #f8f9fa 220px,
+    #f8f9fa 100%
+  );
 }
 
+.content-wrap {
+  position: relative;
+  z-index: 2;
+}
+
+/* 레이아웃 */
 .general-layout {
-  border: 1px solid #dcdfe6;
-  background: #fff;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
 }
 
-.left-panel,
+/* 좌측 */
+.left-panel {
+  width: 300px;
+  flex-shrink: 0;
+}
+
+/* 우측 */
 .right-panel {
-  padding: 0;
+  flex: 1;
 }
 
+/* 🔥 핵심: 높이 맞추기 */
+.manager-info-card {
+  height: 450px; /* ← 필요하면 440~460 사이 조절 */
+}
+
+/* 카드 */
 .manager-item {
   display: flex;
   align-items: center;
@@ -375,17 +400,9 @@ const toggleAssignedSupport = async () => {
   background: #f8f9ff;
 }
 
-.manager-text {
-  min-width: 0;
-}
-
 .manager-name {
   font-weight: 700;
   color: #344767;
-}
-
-.manager-sub {
-  margin-top: 2px;
 }
 
 .form-control.bg-light {
@@ -396,14 +413,9 @@ const toggleAssignedSupport = async () => {
 
 .assigned-count-box {
   width: 110px;
-  min-width: 110px;
-  max-width: 110px;
-  min-height: 42px;
-  font-weight: 600;
 }
 
 .assigned-view-btn {
   min-height: 42px;
-  white-space: nowrap;
 }
 </style>

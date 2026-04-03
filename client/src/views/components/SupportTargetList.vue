@@ -41,7 +41,7 @@ const onEdit = (item) => {
 
           <ArgonButton
             size="sm"
-            color="dark"
+            color="info"
             class="mb-0"
             @click="onEdit(item)"
           >

@@ -15,6 +15,8 @@ const searchFilters = ref({
   managerName: "",
   guardianName: "",
   supportName: "",
+  startDate: "",
+  endDate: "",
 });
 
 let searchModalInstance = null;
@@ -32,6 +34,14 @@ const getPlanList = async () => {
 
   if (searchFilters.value.supportName?.trim()) {
     params.append("supportName", searchFilters.value.supportName.trim());
+  }
+
+  if (searchFilters.value.startDate) {
+    params.append("startDate", searchFilters.value.startDate);
+  }
+
+  if (searchFilters.value.endDate) {
+    params.append("endDate", searchFilters.value.endDate);
   }
 
   if (route.query.surveyId) {
@@ -106,16 +116,19 @@ const resetSearch = () => {
   searchFilters.value.managerName = "";
   searchFilters.value.guardianName = "";
   searchFilters.value.supportName = "";
+  searchFilters.value.startDate = "";
+  searchFilters.value.endDate = "";
+
   getPlanList();
+
   if (searchModalInstance) {
     searchModalInstance.hide();
   }
 };
 
 const handleEdit = (item) => {
-  console.log("수정:", item);
   router.push({
-    path: "/manager/editplan",
+    path: "/manager/planedit",
     query: { id: item.supportPlan_id },
   });
 };
@@ -214,9 +227,9 @@ onMounted(() => {
 
         <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label text-sm font-weight-bold"
-              >담당자 이름</label
-            >
+            <label class="form-label text-sm font-weight-bold">
+              담당자 이름
+            </label>
             <input
               type="text"
               class="form-control"
@@ -226,9 +239,9 @@ onMounted(() => {
           </div>
 
           <div class="mb-3">
-            <label class="form-label text-sm font-weight-bold"
-              >보호자 이름</label
-            >
+            <label class="form-label text-sm font-weight-bold">
+              보호자 이름
+            </label>
             <input
               type="text"
               class="form-control"
@@ -237,15 +250,37 @@ onMounted(() => {
             />
           </div>
 
-          <div class="mb-0">
-            <label class="form-label text-sm font-weight-bold"
-              >지원대상자 이름</label
-            >
+          <div class="mb-3">
+            <label class="form-label text-sm font-weight-bold">
+              지원대상자 이름
+            </label>
             <input
               type="text"
               class="form-control"
               v-model="searchFilters.supportName"
               placeholder="지원대상자 이름 입력"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-sm font-weight-bold">
+              지원 시작일
+            </label>
+            <input
+              type="date"
+              class="form-control"
+              v-model="searchFilters.startDate"
+            />
+          </div>
+
+          <div class="mb-0">
+            <label class="form-label text-sm font-weight-bold">
+              지원 종료일
+            </label>
+            <input
+              type="date"
+              class="form-control"
+              v-model="searchFilters.endDate"
             />
           </div>
         </div>
