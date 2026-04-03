@@ -60,6 +60,8 @@ const getSupportListByInstUser = async (
   guardianName,
   supportName,
   surveyId,
+  startDate,
+  endDate,
 ) => {
   let conn = null;
   try {
@@ -77,6 +79,10 @@ const getSupportListByInstUser = async (
       supportName,
       surveyId,
       surveyId,
+      startDate,
+      startDate,
+      endDate,
+      endDate,
     ]);
     return rows;
   } catch (err) {
@@ -103,10 +109,43 @@ const deletePlan = async (supportPlan_Id) => {
     }
   }
 };
+
+// 지원계획서 상세조회
+const getPlanDetail = async (supportPlanId) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    const rows = await conn.query(planSql.getPlanDetail, [supportPlanId]);
+    return rows[0] || null;
+  } catch (err) {
+    console.log("getPlanDetail mapper error :", err);
+    throw err;
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+// 지원계획서 수정
+const updatePlan = async (params) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    const result = await conn.query(planSql.updatePlan, params);
+    return result;
+  } catch (err) {
+    console.log("updatePlan mapper error :", err);
+    throw err;
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
 module.exports = {
   getLastPlanId,
   insertPlan,
   getSurveyListByInstUser,
   getSupportListByInstUser,
   deletePlan,
+  getPlanDetail,
+  updatePlan,
 };

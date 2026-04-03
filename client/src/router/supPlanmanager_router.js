@@ -11,5 +11,11 @@ export default [
     name: "planList",
     component: () => import("../views/mngPlanList.vue"),
     meta: { hideNavbar: true },
+  },
+  {
+    path : "/manager/planedit",
+    name :"planEdit",
+    component : () => import("../views/supportPlanEdit.vue"),
+    meta : { hideNavbar : true },
   }
 ];
