@@ -4,6 +4,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import RoleHeader from "./RoleHeader.vue";
+import AdminHeader from "@/views/components/adminPageHeader.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -94,8 +95,11 @@ onMounted(() => {
 
 <template>
   <div class="container-fluid py-4">
-    <RoleHeader />
-    <div class="row">
+    <template v-if="currentUserRole !== ''">
+      <AdminHeader v-if="currentUserRole === '시스템관리자'" />
+      <RoleHeader v-else />
+    </template>
+    <div class="row mt-4">
       <div class="col-12 col-lg-8 mx-auto">
         <div class="card mb-4 shadow-sm">
           <div class="card-header pb-0 border-bottom">

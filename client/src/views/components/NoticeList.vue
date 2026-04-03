@@ -117,7 +117,7 @@ onMounted(() => {
       <AdminHeader v-if="currentUserRole === '시스템관리자'" />
       <RoleHeader v-else />
     </template>
-    <div class="row">
+    <div class="row mt-4">
       <div class="col-lg-3 col-md-4 mb-4">
         <div class="card position-sticky top-1">
           <div
