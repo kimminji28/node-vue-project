@@ -118,26 +118,23 @@ onMounted(() => {
       <RoleHeader v-else />
     </template>
     <div class="row mt-4">
-      <div class="col-lg-3 col-md-4 mb-4">
-        <div class="card position-sticky top-1">
-          <div
-            class="card-header pb-0 d-flex justify-content-between align-items-center"
-          >
-            <h6 class="mb-0">상세검색</h6>
-            <button
-              class="btn btn-link text-secondary mb-0 p-0"
-              @click="resetFilters"
-            >
-              <i class="fas fa-redo-alt me-1"></i> 초기화
-            </button>
-          </div>
-          <div class="card-body pt-3">
-            <div class="form-group mb-3">
-              <label class="text-xs font-weight-bold text-secondary mb-1"
-                >정렬</label
-              >
+      <div class="notice-sidebar-wrapper mb-4">
+        <div
+          class="card position-sticky sidebar-layout-container shadow"
+          style="top: 20px"
+        >
+          <div class="sidebar-inner">
+            <div class="top-row">
+              <h5 class="sidebar-title">상세검색</h5>
+              <button type="button" class="reset-btn" @click="resetFilters">
+                초기화
+              </button>
+            </div>
+
+            <div class="form-section">
+              <label class="form-label">정렬</label>
               <select
-                class="form-select text-sm"
+                class="custom-input"
                 v-model="filters.sort"
                 @change="applySearch"
               >
@@ -146,12 +143,12 @@ onMounted(() => {
               </select>
             </div>
 
-            <div class="form-group mb-3">
-              <label class="text-xs font-weight-bold text-secondary mb-1"
-                >탭</label
-              >
+            <div class="divider"></div>
+
+            <div class="form-section">
+              <label class="form-label">탭</label>
               <select
-                class="form-select text-sm"
+                class="custom-input"
                 v-model="filters.tab"
                 @change="applySearch"
               >
@@ -161,35 +158,33 @@ onMounted(() => {
               </select>
             </div>
 
-            <div class="form-group mb-3">
-              <label class="text-xs font-weight-bold text-secondary mb-1"
-                >분류</label
-              >
-              <select class="form-select text-sm" v-model="filters.category">
+            <div class="divider"></div>
+
+            <div class="form-section">
+              <label class="form-label">분류</label>
+              <select class="custom-input" v-model="filters.category">
                 <option value="제목">제목</option>
                 <option value="내용">내용</option>
                 <option value="제목+내용">제목 + 내용</option>
               </select>
             </div>
 
-            <div class="form-group mb-3">
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control text-sm"
-                  placeholder="검색어를 입력하세요"
-                  v-model="filters.keyword"
-                  @keyup.enter="applySearch"
-                />
-                <button
-                  class="btn btn-outline-primary mb-0"
-                  type="button"
-                  @click="applySearch"
-                >
-                  <i class="fas fa-search"></i>
-                </button>
-              </div>
+            <div class="divider"></div>
+
+            <div class="form-section">
+              <label class="form-label">검색어</label>
+              <input
+                type="text"
+                class="custom-input"
+                placeholder="검색어를 입력하세요"
+                v-model="filters.keyword"
+                @keyup.enter="applySearch"
+              />
             </div>
+
+            <button type="button" class="search-btn" @click="applySearch">
+              검색
+            </button>
           </div>
         </div>
       </div>
@@ -391,12 +386,133 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* 마우스 올렸을 때 행 배경색 변경 효과 */
+/* 마우스 올렸을 때 행 배경색 변경 효과 (기존 유지) */
 .hover-bg-light:hover {
   background-color: #f8f9fa !important;
   transition: background-color 0.2s ease-in-out;
 }
 .cursor-pointer {
   cursor: pointer;
+}
+
+/* 🌟 여기서부터 팀장님 사이드바 스타일 완벽 복제! */
+.sidebar-layout-container {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 18px !important; /* 둥근 테두리 18px로 통일 */
+  border: none;
+}
+
+.sidebar-inner {
+  padding: 24px 20px 28px;
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 12px;
+}
+
+.sidebar-title {
+  margin: 0;
+  font-size: 1.5rem; /* 살짝 줄여서 비율 맞춤 */
+  font-weight: 800;
+  color: #344767;
+}
+
+.reset-btn {
+  border: 1px solid #cfd4dc;
+  background: #ffffff;
+  color: #6c757d;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-btn:hover {
+  background: #f8f9fa;
+}
+
+.form-section {
+  margin-bottom: 22px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #8392ab;
+}
+
+.custom-input {
+  width: 100%;
+  height: 46px;
+  border: 1px solid #d2d6da;
+  border-radius: 12px;
+  background: #f8f9fa;
+  padding: 0 14px;
+  font-size: 0.95rem;
+  color: #344767;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.custom-input:focus {
+  background: #ffffff;
+  border-color: #5e72e4;
+  box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.15);
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0),
+    rgba(131, 146, 171, 0.25),
+    rgba(0, 0, 0, 0)
+  );
+  margin: 20px 0;
+}
+
+.search-btn {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2dce89, #2ec5b6);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 8px 20px rgba(46, 197, 182, 0.28);
+  transition: all 0.2s ease;
+}
+
+.search-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(46, 197, 182, 0.35);
+}
+
+/* 🌟 날씬한 사이드바를 위한 다이어트 CSS */
+.notice-sidebar-wrapper {
+  width: 280px; /* 팀장님 사이드바 두께와 100% 동일하게 고정 */
+  flex: 0 0 280px;
+  padding-right: 1.5rem; /* 오른쪽 본문(목록)과의 간격 */
+}
+
+/* 화면이 좁아질 때(태블릿/모바일)는 다시 100%로 꽉 차게 반응형 처리 */
+@media (max-width: 991.98px) {
+  .notice-sidebar-wrapper {
+    width: 100%;
+    flex: 0 0 100%;
+    padding-right: calc(var(--bs-gutter-x) * 0.5);
+  }
 }
 </style>
