@@ -95,12 +95,9 @@
         </template>
 
         <div class="d-flex justify-content-center mt-5 mb-5">
-          <RouterLink
-            :to="{ name: 'userMain' }"
-            class="btn btn-dark px-6 shadow-sm"
-          >
+          <button class="btn btn-dark px-6 shadow-sm" @click="goBack">
             목록으로 돌아가기
-          </RouterLink>
+          </button>
         </div>
       </div>
     </div>
@@ -109,13 +106,19 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const surveyData = ref([]); // 서버에서 받아온 문항 데이터
 const userName = ref("");
 const createdAt = ref("");
 const allTitles = ref([]);
+
+const router = useRouter();
+
+const goBack = () => {
+  router.back(); // 바로 이전 페이지로 돌아가기
+};
 
 //타이틀 매핑 -> 서버 데이터를 (Section > Sub > Question)로 변환
 const getTitleByCode = (code) => {
