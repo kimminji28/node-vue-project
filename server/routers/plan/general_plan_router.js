@@ -3,6 +3,9 @@
 const express = require("express");
 const router = express.Router();
 const generalPlanService = require("../../services/general_plan_service.js");
+const downloadFileGeneralPlan = require("../../middlewares/downloadFile_generalPlan.js");
+
+router.get("/download/:fileName", downloadFileGeneralPlan);
 
 // 💡 [기관관리자 전용] 지원계획서 목록 조회 API
 router.get("/list", async (req, res) => {

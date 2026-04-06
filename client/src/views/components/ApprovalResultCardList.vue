@@ -11,6 +11,19 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["onApprove", "onRejectClick"]);
+
+// 🌟 지원결과서 승인(대기) 목록 전용 파일 다운로드 함수
+const downloadFile = (fileName) => {
+  if (!fileName) return;
+
+  // 🚨 [중요] 아래 URL은 서버(server.js/app.js)의 라우터 매핑 주소에 따라 달라집니다.
+  // 예: app.use('/api/approval/result', require('./routes/approval_result_router'));
+  // 위처럼 되어 있다면 아래 주소가 맞습니다!
+
+  const url = `/api/approval/result/download/${encodeURIComponent(fileName)}`;
+
+  window.location.href = url;
+};
 </script>
 
 <template>
@@ -115,25 +128,31 @@ const emit = defineEmits(["onApprove", "onRejectClick"]);
               <span class="text-dark text-sm font-weight-bold me-2"
                 ><i class="fas fa-paperclip me-1"></i>첨부파일</span
               >
+
               <a
                 v-if="item.file1"
-                :href="item.file1"
+                href="#"
+                @click.prevent="downloadFile(item.file1)"
                 class="text-primary text-sm me-3"
-                target="_blank"
-                >{{ item.file1 }}</a
               >
+                {{ item.file1 }}
+              </a>
+
               <a
                 v-if="item.file2"
-                :href="item.file2"
+                href="#"
+                @click.prevent="downloadFile(item.file2)"
                 class="text-primary text-sm"
-                target="_blank"
-                >{{ item.file2 }}</a
               >
+                {{ item.file2 }}
+              </a>
+
               <span
                 v-if="!item.file1 && !item.file2"
                 class="text-secondary text-sm"
-                >첨부파일 없음</span
               >
+                첨부파일 없음
+              </span>
             </div>
 
             <div class="d-flex align-items-center gap-2">

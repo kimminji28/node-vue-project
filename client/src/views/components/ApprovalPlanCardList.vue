@@ -10,6 +10,20 @@ const props = defineProps({
   },
 });
 
+// 🌟 계획서 승인(대기) 목록 전용 파일 다운로드 함수
+const downloadFile = (fileName) => {
+  if (!fileName) return;
+
+  // 🚨 [중요] 아래 주소는 유저님의 서버 설정에 따라 다를 수 있습니다!
+  // 만약 404 에러가 난다면, 백엔드의 라우터 연결 주소를 꼭 확인해 보세요.
+  // 예: server.js에서 app.use('/api/general/approval/plan', require('./routes/approval_plan_router')); 로 되어 있다면
+  // 아래 url도 `/api/general/approval/plan/download/...` 로 맞춰주셔야 합니다.
+
+  const url = `/api/approval/plan/download/${encodeURIComponent(fileName)}`;
+
+  window.location.href = url;
+};
+
 // 💡 부모 컴포넌트로 이벤트(승인, 반려 클릭)를 전달하기 위한 설정
 const emit = defineEmits(["onApprove", "onRejectClick"]);
 </script>
@@ -94,25 +108,31 @@ const emit = defineEmits(["onApprove", "onRejectClick"]);
               <span class="text-dark text-sm font-weight-bold me-2"
                 ><i class="fas fa-paperclip me-1"></i>첨부파일</span
               >
+
               <a
                 v-if="item.file"
-                :href="item.file"
+                href="#"
+                @click.prevent="downloadFile(item.file)"
                 class="text-primary text-sm me-3"
-                target="_blank"
-                >파일 1 다운로드</a
               >
+                파일 1 다운로드
+              </a>
+
               <a
                 v-if="item.file2"
-                :href="item.file2"
+                href="#"
+                @click.prevent="downloadFile(item.file2)"
                 class="text-primary text-sm"
-                target="_blank"
-                >파일 2 다운로드</a
               >
+                파일 2 다운로드
+              </a>
+
               <span
                 v-if="!item.file && !item.file2"
                 class="text-secondary text-sm"
-                >첨부파일 없음</span
               >
+                첨부파일 없음
+              </span>
             </div>
 
             <div class="d-flex align-items-center gap-2">

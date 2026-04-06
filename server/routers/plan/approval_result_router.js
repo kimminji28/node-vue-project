@@ -2,6 +2,9 @@
 const express = require("express");
 const router = express.Router();
 const service = require("../../services/approval_result_service.js");
+const downloadFileApprovalResult = require("../../middlewares/downloadFile_approvalResult.js");
+
+router.get("/download/:fileName", downloadFileApprovalResult);
 
 // 💡 1. 대기 목록 조회 API
 router.get("/list", async (req, res) => {

@@ -22,6 +22,8 @@ import Notice from "./notice_router";
 import managerMypage from "./mngMypage_router";
 import generalMypage_router from "./generalMypage_router";
 import general_managerInfo_router from "./general_managerInfo_router";
+import adminInstitutionRouter from "./admin_institution_router";
+import adminInstiUserRouter from "./admin_instiuser_router";
 
 const routes = [
   {
@@ -49,6 +51,8 @@ const routes = [
   ...managerMypage,
   ...generalMypage_router,
   ...general_managerInfo_router,
+  ...adminInstitutionRouter,
+  ...adminInstiUserRouter,
   ...ConsultUpdate,
 ];
 

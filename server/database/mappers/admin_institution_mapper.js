@@ -94,10 +94,30 @@ const getMaxInstId = async () => {
   }
 };
 
+/**
+ * 6. 기관 선택 삭제
+ * @param {Array} ids - 삭제할 기관 ID 배열 (예: ['INST0001', 'INST0002'])
+ */
+const deleteInstitutions = async (ids) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    // 🌟 IN (?) 절에 배열을 통째로 넣기 위해 [ids] 형태로 전달합니다.
+    const result = await conn.query(adminInstSql.deleteInstitutions, [ids]);
+    return result;
+  } catch (err) {
+    console.error(`[시스템관리자] 기관 삭제 매퍼 에러: ${err}`);
+    throw err;
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
 module.exports = {
   getInstitutionList,
   getInstitutionDetail,
   insertInstitution,
   updateInstitution,
   getMaxInstId,
+  deleteInstitutions,
 };

@@ -7,10 +7,12 @@ const selectInstitutionList = `
     tel,
     zipCode,
     address,
-    status
+    email,
+    state,
+    DATE_FORMAT(join_date, '%Y.%m.%d') as join_date
   FROM Institution_Tbl
-  WHERE ( ? IS NULL OR name LIKE CONCAT('%', ?, '%') )
-    AND ( ? IS NULL OR status = ? )
+  WHERE ( ? IS NULL OR institution_name LIKE CONCAT('%', ?, '%') )
+    AND ( ? IS NULL OR state = ? )
   ORDER BY institution_id DESC
 `;
 
@@ -22,21 +24,22 @@ const selectInstitutionDetail = `
     zipCode,
     address,
     tel,
-    status
+    email,
+    state
   FROM Institution_Tbl WHERE institution_id = ?
 `;
 
-// 💡 3. 기관 직접 등록 (대기 없이 바로 등록)
+// 💡 3. 기관 직접 등록 (email, state, join_date 추가 및 ? 갯수 7개로 맞춤!)
 const insertInstitution = `
   INSERT INTO Institution_Tbl (
-    institution_id, institution_name, zipCode, address, tel, status
-  ) VALUES (?, ?, ?, ?, ?, ?)
+    institution_id, institution_name, zipCode, address, tel, email, state, join_date
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
 `;
 
 // 💡 4. 기관 정보 수정 (상태 변경 포함)
 const updateInstitution = `
   UPDATE Institution_Tbl 
-  SET institution_name = ?, zipCode = ?, address = ?, tel = ?, status = ?
+  SET institution_name = ?, zipCode = ?, address = ?, tel = ?, email = ?, state = ?
   WHERE institution_id = ?
 `;
 
@@ -45,10 +48,16 @@ const selectMaxInstId = `
   SELECT institution_id FROM Institution_Tbl ORDER BY institution_id DESC LIMIT 1
 `;
 
+const deleteInstitutions = `
+  DELETE FROM Institution_Tbl
+  WHERE institution_id IN (?)
+`;
+
 module.exports = {
   selectInstitutionList,
   selectInstitutionDetail,
   insertInstitution,
   updateInstitution,
   selectMaxInstId,
+  deleteInstitutions,
 };

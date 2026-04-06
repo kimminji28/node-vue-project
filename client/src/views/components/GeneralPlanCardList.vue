@@ -2,6 +2,16 @@
 <script setup>
 import { defineProps } from "vue";
 
+// 🌟 지원계획서 전용 파일 다운로드 함수
+const downloadFile = (fileName) => {
+  if (!fileName) return;
+
+  // 백엔드의 기관관리자 계획서 라우터 주소에 맞춰서 호출!
+  const url = `/api/general/plan/download/${encodeURIComponent(fileName)}`;
+
+  window.location.href = url;
+};
+
 const props = defineProps({
   planList: {
     type: Array,
@@ -123,29 +133,35 @@ const props = defineProps({
           <div
             class="d-flex justify-content-between align-items-end mt-4 pt-3 border-top"
           >
-            <div>
-              <span class="text-dark text-sm font-weight-bold me-2"
-                ><i class="fas fa-paperclip me-1"></i>첨부파일</span
-              >
+            <div class="mt-4 pt-3 border-top">
+              <span class="text-dark text-sm font-weight-bold me-2">
+                <i class="fas fa-paperclip me-1"></i>첨부파일
+              </span>
+
               <a
                 v-if="item.file"
-                :href="item.file"
+                href="#"
+                @click.prevent="downloadFile(item.file)"
                 class="text-primary text-sm me-3"
-                target="_blank"
-                >파일 1 다운로드</a
               >
+                파일 1 다운로드
+              </a>
+
               <a
                 v-if="item.file2"
-                :href="item.file2"
+                href="#"
+                @click.prevent="downloadFile(item.file2)"
                 class="text-primary text-sm"
-                target="_blank"
-                >파일 2 다운로드</a
               >
+                파일 2 다운로드
+              </a>
+
               <span
                 v-if="!item.file && !item.file2"
                 class="text-secondary text-sm"
-                >첨부파일 없음</span
               >
+                첨부파일 없음
+              </span>
             </div>
 
             <div class="d-flex align-items-center">

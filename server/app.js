@@ -90,3 +90,9 @@ app.use("/notice", noticeRouter);
 //일반이용자 승인 결과서 보기
 const userResultRouter = require("./routers/plan/user_result_router.js");
 app.use("/user/result", userResultRouter);
+//시스템관리자 기관 등록
+const AdminInstitutionRouter = require("./routers/admin/admin_institution_router.js");
+app.use("/admin/institution", AdminInstitutionRouter);
+//시스템관리자 기관관리자 등록
+const AdminInstiUserRouter = require("./routers/admin/admin_instiuser_router.js");
+app.use("/admin/instiuser", AdminInstiUserRouter);
