@@ -12,6 +12,7 @@ import priority from "./priority_router";
 import axios from "axios";
 import Consult from "./consult_router";
 import ConsultAdd from "./consultInsert_router";
+import ConsultUpdate from "./consultUpdate_router";
 import GeneralPlan from "./general_plan_router";
 import RejectedList from "./rejectedList_router";
 import ApprovalPlan from "./approval_plan_router";
@@ -48,6 +49,7 @@ const routes = [
   ...managerMypage,
   ...generalMypage_router,
   ...general_managerInfo_router,
+  ...ConsultUpdate,
 ];
 
 const router = createRouter({
