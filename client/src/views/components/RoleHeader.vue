@@ -59,7 +59,7 @@
                       class="px-3 py-2 nav-link border-0 bg-transparent"
                       @click="goResult"
                     >
-                      <span class="ms-1">지원결과</span>
+                      <span class="ms-1">지원결과서</span>
                     </button>
                   </li>
 
