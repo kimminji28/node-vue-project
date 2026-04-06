@@ -115,7 +115,7 @@ const emit = defineEmits(["onApprove", "onRejectClick"]);
                 @click.prevent="downloadFile(item.file)"
                 class="text-primary text-sm me-3"
               >
-                파일 1 다운로드
+                {{ item.file }}
               </a>
 
               <a
@@ -124,7 +124,7 @@ const emit = defineEmits(["onApprove", "onRejectClick"]);
                 @click.prevent="downloadFile(item.file2)"
                 class="text-primary text-sm"
               >
-                파일 2 다운로드
+                {{ item.file2 }}
               </a>
 
               <span
