@@ -114,14 +114,14 @@ const props = defineProps({
                 :href="item.file"
                 class="text-primary text-sm me-3"
                 target="_blank"
-                >파일 1 다운로드</a
+                >{{ item.file }}</a
               >
               <a
                 v-if="item.file2"
                 :href="item.file2"
                 class="text-primary text-sm"
                 target="_blank"
-                >파일 2 다운로드</a
+                >{{ item.file2 }}</a
               >
               <span
                 v-if="!item.file && !item.file2"
