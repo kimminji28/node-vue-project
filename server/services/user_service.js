@@ -26,18 +26,10 @@ const createUser = async (userObj) => {
     document2,
   } = userObj;
   try {
-    if (!document1 || !document2) {
-      return {
-        status: "Failed",
-        message: "증빙서류를 모두 업로드해주세요.",
-      };
+    if (!name || name.trim() === "") {
+      return { status: "Failed", message: "이름을 입력해주세요." };
     }
-    if (!email || email.trim() === "") {
-      return {
-        status: "Failed",
-        message: "이메일을 입력해주세요.",
-      };
-    }
+
     if (!id || id.trim() === "") {
       return { status: "Failed", message: "아이디를 입력해주세요." };
     }
@@ -46,12 +38,24 @@ const createUser = async (userObj) => {
       return { status: "Failed", message: "비밀번호를 입력해주세요." };
     }
 
-    if (!name || name.trim() === "") {
-      return { status: "Failed", message: "이름을 입력해주세요." };
-    }
     if (!tel || tel.trim() === "") {
       return { status: "Failed", message: "연락처를 입력해주세요." };
     }
+
+    if (!email || email.trim() === "") {
+      return {
+        status: "Failed",
+        message: "이메일을 입력해주세요.",
+      };
+    }
+
+    if (!document1 || !document2) {
+      return {
+        status: "Failed",
+        message: "증빙서류를 모두 첨부해주세요.",
+      };
+    }
+
     let G_UserId;
     const lastUserId = await userMapper.getLastUserId();
     if (!lastUserId) {
@@ -443,10 +447,8 @@ const withdrawUser = async (G_UserId) => {
 
 //기관(김경환 20260330 일부 수정 및 추가)
 const confirmInstiUser = async (id, password) => {
-  let infos = await userMapper.confirmInstiUser(id, password);
-  if (infos.length > 0) {
-    return { success: true, user: infos[0], roll: "" };
-  } else {
+  let infos = await userMapper.confirmInstiUser(id);
+  if (!infos || infos.length === 0) {
     return { success: false };
   }
 
@@ -454,8 +456,9 @@ const confirmInstiUser = async (id, password) => {
 
   if (pwMatch) {
     return {
-      success: trus,
+      success: true,
       user: infos[0],
+      roll: infos[0].roll,
     };
   } else {
     return { success: false };
