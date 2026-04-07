@@ -277,7 +277,7 @@ const groupedSections = computed(() => {
 //타이틀 정보
 const fetchTitles = async () => {
   try {
-    const response = await fetch("http://localhost:3000/survey/title", {
+    const response = await fetch("/api/survey/title", {
       credentials: "include",
     });
     if (!response.ok) throw new Error("타이틀 로드 실패");
@@ -329,7 +329,7 @@ const fetchTitles = async () => {
 const getSurveyDetail = async (id) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/survey/surveySelect/${id}`,
+      `/api/survey/surveySelect/${id}`,
       {
         credentials: "include",
       },
@@ -403,7 +403,7 @@ const getSurveyDetail = async (id) => {
 const fetchAnswers = async (id) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/survey/answerSelect/${id}`,
+      `/api/survey/answerSelect/${id}`,
       { credentials: "include" },
     );
     if (!response.ok) throw new Error("답변 로드 실패");

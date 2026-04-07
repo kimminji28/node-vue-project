@@ -7,6 +7,6 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: function (path, req) { return path.replace('/api', '') }
       },
-    }
+    },
   }
 }
