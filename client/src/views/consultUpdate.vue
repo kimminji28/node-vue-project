@@ -70,8 +70,10 @@
           <div class="info-item">
             <label>상담 유형</label>
             <select v-model="form.counsult_method" class="form-select">
-              <option>대면상담</option>
+              <option>방문상담</option>
               <option>전화상담</option>
+              <option>채팅상담</option>
+              <option>영상통화</option>
             </select>
           </div>
           <div class="info-item">
@@ -79,6 +81,8 @@
             <select v-model="form.counsult_loc" class="form-select">
               <option>센터</option>
               <option>지원대상자집</option>
+              <option>외부장소</option>
+              <option>온라인</option>
             </select>
           </div>
 
