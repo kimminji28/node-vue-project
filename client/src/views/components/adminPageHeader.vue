@@ -60,17 +60,17 @@ const logout = async () => {
               </li>
 
               <li class="nav-item">
+                <router-link class="px-3 py-2 nav-link" to="/admin/surveylist">
+                  조사지현황
+                </router-link>
+              </li>
+
+              <li class="nav-item">
                 <router-link
                   class="px-3 py-2 nav-link"
                   to="/admin/instiuser/list"
                 >
                   기관관리자
-                </router-link>
-              </li>
-
-              <li class="nav-item">
-                <router-link class="px-3 py-2 nav-link" to="/admin/surveylist">
-                  조사지현황
                 </router-link>
               </li>
 

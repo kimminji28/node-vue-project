@@ -30,19 +30,18 @@
                   </button>
                 </li>
 
-                <!-- 공지사항 -->
-                <li class="nav-item">
-                  <button
-                    type="button"
-                    class="px-3 py-2 nav-link border-0 bg-transparent"
-                    @click="goNotice"
-                  >
-                    <span class="ms-1">공지사항</span>
-                  </button>
-                </li>
-
                 <!-- 기관 관리자 전용 메뉴 -->
                 <template v-if="userRole === ROLE.ADMIN">
+                  <li class="nav-item">
+                    <button
+                      type="button"
+                      class="px-3 py-2 nav-link border-0 bg-transparent"
+                      @click="goManager"
+                    >
+                      <span class="ms-1">기관담당자</span>
+                    </button>
+                  </li>
+
                   <li class="nav-item">
                     <button
                       type="button"
@@ -62,20 +61,20 @@
                       <span class="ms-1">지원결과서</span>
                     </button>
                   </li>
-
-                  <li class="nav-item">
-                    <button
-                      type="button"
-                      class="px-3 py-2 nav-link border-0 bg-transparent"
-                      @click="goManager"
-                    >
-                      <span class="ms-1">기관담당자</span>
-                    </button>
-                  </li>
                 </template>
 
                 <!-- 기관 담당자 전용 메뉴 -->
                 <template v-else-if="userRole === ROLE.MANAGER">
+                  <li class="nav-item">
+                    <button
+                      type="button"
+                      class="px-3 py-2 nav-link border-0 bg-transparent"
+                      @click="goConsult"
+                    >
+                      <span class="ms-1">상담기록</span>
+                    </button>
+                  </li>
+
                   <li class="nav-item">
                     <button
                       type="button"
@@ -95,20 +94,21 @@
                       <span class="ms-1">지원 결과서</span>
                     </button>
                   </li>
-
-                  <li class="nav-item">
-                    <button
-                      type="button"
-                      class="px-3 py-2 nav-link border-0 bg-transparent"
-                      @click="goConsult"
-                    >
-                      <span class="ms-1">상담기록</span>
-                    </button>
-                  </li>
                 </template>
 
+                <!-- 공지사항 -->
+                <li class="nav-item">
+                  <button
+                    type="button"
+                    class="px-3 py-2 nav-link border-0 bg-transparent"
+                    @click="goNotice"
+                  >
+                    <span class="ms-1">공지사항</span>
+                  </button>
+                </li>
+
                 <!-- 일반 사용자 전용 메뉴 -->
-                <template v-else-if="userRole === ROLE.USER"> </template>
+                <!-- <template v-else-if="userRole === ROLE.USER"> </template> -->
               </ul>
             </div>
           </div>
