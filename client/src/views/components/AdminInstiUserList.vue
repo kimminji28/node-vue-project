@@ -149,6 +149,23 @@ watch(
   },
 );
 
+// 🌟 [추가] 백엔드 코드를 예쁜 한글로 번역해주는 함수
+const getStateText = (state) => {
+  if (state === "g001" || state === "승인") return "승인";
+  if (state === "g002" || state === "반려") return "반려";
+  if (state === "g003" || state === "대기") return "대기중";
+  return state || "미정";
+};
+
+// 🌟 [추가] 상태에 따라 예쁜 뱃지 색상을 달아주는 함수
+const getStateBadgeClass = (state) => {
+  const text = getStateText(state);
+  if (text === "승인") return "bg-gradient-success"; // 초록색
+  if (text === "반려") return "bg-gradient-danger"; // 빨간색
+  if (text === "대기중") return "bg-gradient-secondary"; // 회색 (또는 warning 노란색)
+  return "bg-gradient-secondary";
+};
+
 onMounted(() => fetchUserList(1));
 </script>
 
@@ -295,13 +312,10 @@ onMounted(() => fetchUserList(1));
                     <td class="align-middle text-center text-xs">
                       <span
                         class="badge badge-sm"
-                        :class="
-                          item.state === '승인'
-                            ? 'bg-gradient-success'
-                            : 'bg-gradient-danger'
-                        "
-                        >{{ item.state }}</span
+                        :class="getStateBadgeClass(item.state)"
                       >
+                        {{ getStateText(item.state) }}
+                      </span>
                     </td>
                     <td class="align-middle text-center">
                       <a
