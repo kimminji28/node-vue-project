@@ -45,11 +45,7 @@
 
           <div class="info-item">
             <label>상담일자</label>
-            <input
-              type="date"
-              v-model="form.counsult_date"
-              class="form-input"
-            />
+            <input type="date" v-model="form.write_date" class="form-input" />
           </div>
           <div class="info-item">
             <label>상담 시간 (시작/종료)</label>
@@ -70,8 +66,10 @@
           <div class="info-item">
             <label>상담 유형</label>
             <select v-model="form.counsult_method" class="form-select">
-              <option>대면상담</option>
+              <option>방문상담</option>
               <option>전화상담</option>
+              <option>채팅상담</option>
+              <option>영상통화</option>
             </select>
           </div>
           <div class="info-item">
@@ -79,6 +77,8 @@
             <select v-model="form.counsult_loc" class="form-select">
               <option>센터</option>
               <option>지원대상자집</option>
+              <option>외부장소</option>
+              <option>온라인</option>
             </select>
           </div>
 
@@ -157,7 +157,7 @@ const majorMap = {
 
 const form = ref({
   counsult_id: consultId,
-  counsult_date: "",
+  write_date: "",
   counsult_startTime: "",
   counsult_endTime: "",
   counsult_method: "",
@@ -206,9 +206,7 @@ const fetchDetail = async () => {
       form.value = {
         ...data,
         counsult_id: consultId,
-        counsult_date: data.counsult_date
-          ? data.counsult_date.slice(0, 10)
-          : "",
+        write_date: data.write_date ? data.write_date.slice(0, 10) : "",
         counsult_startTime: data.counsult_startTime
           ? data.counsult_startTime.slice(0, 5)
           : "",
@@ -242,7 +240,7 @@ const updateConsult = async () => {
   if (!confirm("수정하시겠습니까?")) return;
   try {
     const updateData = {
-      counsult_date: form.value.counsult_date,
+      write_date: form.value.write_date,
       counsult_startTime: form.value.counsult_startTime,
       counsult_endTime: form.value.counsult_endTime,
       counsult_method: form.value.counsult_method,

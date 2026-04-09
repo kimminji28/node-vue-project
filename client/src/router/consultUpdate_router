@@ -2,6 +2,7 @@ export default [
   {
     path: "/consult/update/:no",
     name: "managerConsultUpdate",
-    component: () => import("@/views/consultUpdate.vue"),
+    component: () => import("../views/consultUpdate.vue"),
+    meta: { hideNavbar: true, hideSidenav: true },
   },
 ];

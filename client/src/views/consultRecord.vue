@@ -97,10 +97,10 @@
               <td>{{ info.counsult_loc }}</td>
 
               <td style="text-align: left">
-                [기본요약]: {{ info.counsult_content }}<br />
-                [상담내용]: {{ info.counsult_content2 }}<br />
-                [서비스욕구]: {{ info.counsult_content3 }}<br />
-                [종합의견]: {{ info.counsult_content4 }}
+                [기본요약]: {{ truncateText(info.counsult_content) }}<br />
+                [상담내용]: {{ truncateText(info.counsult_content2) }}<br />
+                [서비스욕구]: {{ truncateText(info.counsult_content3) }}<br />
+                [종합의견]: {{ truncateText(info.counsult_content4) }}
               </td>
 
               <td style="text-align: left">
@@ -178,6 +178,16 @@ const consultList = ref([]);
 
 const goToUpdate = (id) => {
   router.push({ name: "managerConsultUpdate", params: { no: id } });
+};
+
+//상담내용 글자 수 제한
+const truncateText = (text, maxLength = 30) => {
+  if (!text) return "";
+
+  const cleanText = text.replace(/\n/g, " ");
+  return cleanText.length > maxLength
+    ? cleanText.slice(0, maxLength) + "..."
+    : cleanText;
 };
 
 // 페이지 갯수 제한
