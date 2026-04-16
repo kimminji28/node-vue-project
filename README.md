@@ -24,6 +24,9 @@
  - (이름 / 작업내용 - 관련서비스 / yyyyMMdd)
  - EX) 홍길동 / 아이디 중복 확인 - 회원가입 / 20260325
 
+## 업무 흐름도
+<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/f2c536c3-b2c6-48a6-8bf7-bae713ddd4fc" />
+
 ## 개발 환경
 <img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/a08fd728-96a6-488f-92f8-ed8ee8133500" />
 
