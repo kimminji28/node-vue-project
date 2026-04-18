@@ -106,35 +106,35 @@ node-vue-project/
 ```
 
 ## 프로그램 흐름도
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/f2c536c3-b2c6-48a6-8bf7-bae713ddd4fc" />
+<img width="1120" height="480" alt="Image" src="https://github.com/user-attachments/assets/f2c536c3-b2c6-48a6-8bf7-bae713ddd4fc" />
 
 ## DB구성도
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/183fd569-01e2-47ed-b948-48dab221e903" />
+<img width="1120" height="480" alt="Image" src="https://github.com/user-attachments/assets/183fd569-01e2-47ed-b948-48dab221e903" />
 
 ## 메인 화면
 ### 일반 이용자 메인 페이지
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/54bef53f-b931-4bd2-bb0c-95ac3fccb992" />
+<img width="920" height="480" alt="Image" src="https://github.com/user-attachments/assets/54bef53f-b931-4bd2-bb0c-95ac3fccb992" />
 
 ### 일반 이용자 조사지 등록
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/4fd2f735-51fe-4f05-afd1-ac6b61fc1502" />
+<img width="920" height="480" alt="Image" src="https://github.com/user-attachments/assets/4fd2f735-51fe-4f05-afd1-ac6b61fc1502" />
 
 ### 기관 관리자의 기관 담당자 배정
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/ef806d97-4801-4a3a-a315-3419747e54ae" />
+<img width="920" height="480" alt="Image" src="https://github.com/user-attachments/assets/ef806d97-4801-4a3a-a315-3419747e54ae" />
 
 ### 기관 담당자 우선 순위 요청
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/58e995b8-8597-4b7f-ab35-9b7731267408" />
+<img width="920" height="480" alt="Image" src="https://github.com/user-attachments/assets/58e995b8-8597-4b7f-ab35-9b7731267408" />
 
 ### 기관 담당자 상담 기록
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/417c20ff-2c3d-4855-a4a0-474d529693d8" />
+<img width="920" height="480" alt="Image" src="https://github.com/user-attachments/assets/417c20ff-2c3d-4855-a4a0-474d529693d8" />
 
 ### 기관 담당자 지원 계획서 승인 요청
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/3ac20977-5f71-48c2-9f10-9cf3dd0504ed" />
+<img width="920" height="480" alt="Image" src="https://github.com/user-attachments/assets/3ac20977-5f71-48c2-9f10-9cf3dd0504ed" />
 
 ### 기관 담당자 지원 결과서 승인 요청
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/dae02ba8-fc83-4ed7-828c-42284e2c9d46" />
+<img width="920" height="480" alt="Image" src="https://github.com/user-attachments/assets/dae02ba8-fc83-4ed7-828c-42284e2c9d46" />
 
 ### 시스템 관리자 공지사항
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/554ff1f8-8a46-4526-82b1-c73e3bcb7ae2" />
+<img width="920" height="480" alt="Image" src="https://github.com/user-attachments/assets/554ff1f8-8a46-4526-82b1-c73e3bcb7ae2" />
 
 ## 전체 주요 기능
 ### 일반 이용자 (지원 대상자의 보호자)
