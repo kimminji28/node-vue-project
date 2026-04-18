@@ -1,10 +1,10 @@
 # 프로젝트명 : 발달장애 케어 시스템
 
 ## 발달장애인 지원관리 시스템
-사용자 및 기관 정보를 관리하고, 상담 기록과 지원 계획·결과를 통합 관리하며,
-우선순위 기반의 서비스 제공을 지원하는 시스템입니다.
-
- 시스템 관리자를 제외한 모든 이용자는 승인 여부에 따라 접근이 가능하며, 사용자 권한에 따라 사용할 수 있는 기능이 다르도록 설계하였습니다.
+ - 사용자 및 기관 정보를 관리하고, 상담 기록과 지원 계획·결과를 통합 관리하며,
+   우선순위 기반의 서비스 제공을 지원하는 시스템입니다.
+ - 시스템 관리자를 제외한 모든 이용자는 승인 여부에 따라 접근이 가능하며,
+   사용자 권한에 따라 사용할 수 있는 기능이 다르도록 설계하였습니다.
 
 ## 프로젝트 개요
  - 기획 의도 : 사용자·기관 정보와 지원 이력을 통합 관리하고, 우선순위 기반 서비스를 제공하는 시스템 구축
@@ -36,16 +36,8 @@
 | **Analysis & Design** | <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white"> <img src="https://img.shields.io/badge/Google_Docs-4285F4?style=for-the-badge&logo=googledocs&logoColor=white"> <img src="https://img.shields.io/badge/ERDCloud-4A90E2?style=for-the-badge&logoColor=white"> |
 | **IDE / Collab** | <img src="https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white"> <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"> |
 
-
-
-## 커밋 메시지 형식
- - (이름 / 작업내용 - 관련서비스 / yyyyMMdd)
- - EX) 홍길동 / 아이디 중복 확인 - 회원가입 / 20260325
-
 ## 업무 흐름도
 <img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/f2c536c3-b2c6-48a6-8bf7-bae713ddd4fc" />
 
 ## 개발 환경
 <img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/a08fd728-96a6-488f-92f8-ed8ee8133500" />
-
-
