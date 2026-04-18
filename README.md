@@ -52,7 +52,9 @@ Frontend 기술과 Backend 기술을 사용해 구현했고, DB 관리를 담당
  - 테이블 변경 이력 스크립트 관리
  - Naver Cloud Platfrom에 MariaDB 서버 구축 및 설정
 
-## 프로그램 구조
+## 프로젝트 구조
+
+```
 node-vue-project/
 ├── client/
 │   ├── public/
@@ -100,6 +102,7 @@ node-vue-project/
 │   └── package-lock.json
 │
 └── README.md
+```
 
 ## 프로그램 흐름도
 <img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/f2c536c3-b2c6-48a6-8bf7-bae713ddd4fc" />
