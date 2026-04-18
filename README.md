@@ -106,10 +106,10 @@ node-vue-project/
 ```
 
 ## 프로그램 흐름도
-<img width="1120" height="480" alt="Image" src="https://github.com/user-attachments/assets/f2c536c3-b2c6-48a6-8bf7-bae713ddd4fc" />
+<img width="920" height="480" alt="Image" src="https://github.com/user-attachments/assets/f2c536c3-b2c6-48a6-8bf7-bae713ddd4fc" />
 
 ## DB구성도
-<img width="1120" height="480" alt="Image" src="https://github.com/user-attachments/assets/183fd569-01e2-47ed-b948-48dab221e903" />
+<img width="920" height="480" alt="Image" src="https://github.com/user-attachments/assets/183fd569-01e2-47ed-b948-48dab221e903" />
 
 ## 메인 화면
 ### 일반 이용자 메인 페이지
