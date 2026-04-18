@@ -11,6 +11,14 @@
  - 김경환 - 개발 환경 구축
  - 김민지 - DB 관리
 
+## 개발 기간
+ - 전체 개발 기간 : 2026.03.10 ~ 2026.04.13
+ - 설계 기간 : 2026.03.12 ~ 2026.03.19
+ - 구현 기간 : 2026.03.20 ~ 2026.04.03
+ - 배포 및 테스트 : 2026.04.07 ~ 2026.04.08
+ - 발표 준비 : 2026.04.10 ~ 2026.04.12
+ - 프로젝트 발표 : 2026.04.13
+
 ## 기술 스택 시각화
 
 | 구분 | 사용 기술 |
@@ -22,13 +30,7 @@
 | **Analysis & Design** | <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white"> <img src="https://img.shields.io/badge/Google_Docs-4285F4?style=for-the-badge&logo=googledocs&logoColor=white"> <img src="https://img.shields.io/badge/ERDCloud-4A90E2?style=for-the-badge&logoColor=white"> |
 | **IDE / Collab** | <img src="https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white"> <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"> |
 
-## 개발 기간
- - 전체 개발 기간 : 2026.03.10 ~ 2026.04.13
- - 설계 기간 : 2026.03.12 ~ 2026.03.19
- - 구현 기간 : 2026.03.20 ~ 2026.04.03
- - 배포 및 테스트 : 2026.04.07 ~ 2026.04.08
- - 발표 준비 : 2026.04.10 ~ 2026.04.12
- - 프로젝트 발표 : 2026.04.13
+
 
 ## 커밋 메시지 형식
  - (이름 / 작업내용 - 관련서비스 / yyyyMMdd)
