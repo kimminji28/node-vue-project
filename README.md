@@ -56,7 +56,7 @@ Frontend 기술과 Backend 기술을 사용해 구현했고, DB 관리를 담당
 <img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/f2c536c3-b2c6-48a6-8bf7-bae713ddd4fc" />
 
 ## DB구성도
-<img width="3946" height="1573" alt="2조ERD" src="https://github.com/user-attachments/assets/183fd569-01e2-47ed-b948-48dab221e903" />
+<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/183fd569-01e2-47ed-b948-48dab221e903" />
 
 
 
