@@ -1,4 +1,4 @@
-<img width="1066" height="374" alt="2조ERD" src="https://github.com/user-attachments/assets/fe9646dc-596e-4051-b8f1-5d2865333860" /><img width="1128" height="572" alt="2조ERD" src="https://github.com/user-attachments/assets/86aa40c7-1b57-46a5-abc1-ae5e14fbb00e" /><img width="1893" height="778" alt="2조ERD" src="https://github.com/user-attachments/assets/193f6a19-df8c-48b1-aba1-686a02a3cdee" /><img width="1259" height="640" alt="2조ERD" src="https://github.com/user-attachments/assets/c606ba1a-9c8c-4742-94a5-d46bc7a3eaee" /># 프로젝트명 : 발달장애 케어 시스템
+# 프로젝트명 : 발달장애 케어 시스템
 
 ## 발달장애인 지원관리 시스템
  - 사용자 및 기관 정보를 관리하고, 상담 기록과 지원 계획·결과를 통합 관리하며,
